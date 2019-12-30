@@ -1,0 +1,1188 @@
+20/1/19
+
+Added feedback for whether attacks have advantage or disadvantage now in message log. (+) or (-) used after the message.
+
+Fixed thrown weapons - quantities now work properly. Used ammo appears properly at target square. Used ammo piles merge on each square automatically. Record kept of last thrown weapon so it is automatically reequipped when picked up again. Weapons which double as thrown and melee now give a choice upon being equipped as to which slot to use. Tracking of equipment slots changed to show that items can be equipped in slots other than their normal slot to allow for instances like this.
+
+Added versatile weapons - versatile weapons now give a choice upon being equipped as to whether to be wielded with one or two hands. Adds additional 1d2 damage if equipped with two hands.
+
+Thug NPC's now have sneak attack in addition to the pack tactics trait. This means that they get advantage along with additional damage when attacking in groups. This isn't consistent with the rules as written but like guard NPC's having the protection fighting style (and a magical invisible shield to use with it), I thought it was an interesting addition.
+
+23/1/19
+
+Implemented dwarvern toughness for hill dwarves. +1 hit point on character creation and level up.
+
+Properly implemented resting. Instead of just auto-healing everyone and consuming food, now 100 turns pass as you rest and you can see your party milling around while the player rests. Your rest can also be interrupted by wandering monsters - this doesn't affect the benefit of resting at the moment but is rather some gameplay flavour.
+
+24/1/19
+
+Implemented an 'order all' command using 'T' instead of 't'. This allows the player to command all followers to light or extinguish their torches, defend a location, stand their ground or clear all orders. Updated help screen for extra command.
+
+25/1/19
+
+Implemented a rough autoexplore. It's working but was too slow when things become too difficult to find unexplored squares. After a few iterations, it's fast enough and works well without obvious bugs. It has some problems when it comes to dealing with pathfinding past allies.
+
+26/1/19
+
+Fixed bug with thug sneak attack - it was checking to see if the thug was wielding a finesse or ranged weapon but of course monster's are unarmed and I just simulate a weapon's stats, so I coded an exception to allow monsters with the sneak attack trait to do so whilst unarmed.
+
+Fixed bug where water monsters would generate on dry land in the normal dungeon. They should be saved for special areas.
+
+27/1/19
+
+Fixed bug with monsters and NPC's not getting benefit for critical hits. Monster damage 
+should increase across the board.
+
+Fixed all bugs with autoexplore. Redefined the custom pathfinding function that I used with the libtcod pathfinding functions to take into account allies and built in swapping with allies in the process. 
+
+Fixed bug with keyboard input which resulted in game hanging after player death.
+
+Added new level 1 wizard spell Shield. Stays in place permanently waiting for an attack against the caster to trigger it when it then adds +5 AC to caster against all attacks before being dispelled the next turn. Also automatically blocks magic missles but is again dispelled after a single use.
+
+Added new level 1 wizard spell Sleep. Make list of all targets within range, check for immunity or other inconsistent effects, sort by current HP in ascending order, roll 5d8 for spell power and then work through list putting to sleep targets and subtracting current HP from spell power roll. Spell can affect allies and even the player. This necessitated reworking various checks to see if player and monsters were unconscious or asleep and the way in which keys were handled. New category of conditions under the umbrella of 'incapacitated' created which is different to unconscious (but includes it) and shows up on screen as sky blue.
+
+Added new level 1 wizard spell Thunderwave. Added a knockback function which can specify a source, a target and spell power. Spell checks for constitution save - if fails, applies 2d8 damage and knocks back 2 squares. On successful save, half damage applies with no knockback. Targets all creatures (allies or otherwise) within 3 squares.
+
+Changed cleric character generation to give access to all spells from the outset.
+
+Added an extra level 1 wizard spell known at character generation.
+
+Made thunderwave knock back items and inanimate objects as well.
+
+Added new level 1 cleric spell cure wounds. Heals up to 1d8 + wisdom proficiency bonus to a target (including the caster) within 1 tile.
+
+Added level 1 cleric spell healing word. 1d4 + wisdom proficiency bonus to a target in line of sight. Rules as written say that this is a bonus action and shouldn't take a turn but that concept doesn't exist in game.
+
+Added level 1 cleric spell inflict wounds. Melee spell attack inflicting 3d10 necrotic damage.
+
+Added level 1 cleric spell Shield of Faith. Select any target in view and add a long-lasting buff which gives +2 AC.
+
+Basic Rules only provide for the Champion Martial Archetype and I don't really like a lot of the others, so I'm making every fighter a champion. Added improved critical for fighters at level 3. With this ability, critical hits occur on d20 rolls of 19-20. Added higher level abilities like superior critical and additional fighting style and placeholders for high level fighter traits.
+
+28/1/19
+
+Started tracking last action taken for all objects. The 5e rules allow for movement and an attack in the same turn in either order. I had ignored this previously because of the complexity it adds but by tracking the last action taken, and as long as it is different for the next turn then it should be a free move ie. move followed by attack or attack followed by move or spell followed by move etc.
+
+Started tracking 2nd last action as well and now granting an extra turn for all actors where there is an action followed by a move or a move followed by an action.
+
+Removed those experimental features for tracking previous actions and granting extra turns. It wasn't working smoothly and just ended up being confusing. Practically, it just looked like monsters were getting double attacks and not entirely clear why. Those extra turns have been commented out but still in the code for future consideration.
+
+3/2/19
+
+To resolve issues with content in the SRD under the OGL, the Stout race has been removed and has been replaced by the Stoutheart race based on the original work of Julian Mensch in the game Incursion based on OGL 3.5e d20 - Stouthearts are a hardy race of halflings although implemented but not finished in the final version published by Julian, they were enabled once the source was released. 
+
+Wood elves and mountain dwarves have been removed and replaced by versions inspired by wood elves and mountain dwarves published under the OGL as part of the 3.5e D&D SRD.
+
+Added extra attack per turn to veteran.
+
+Created new NPCS: archmage (spells unfinished), assassin (assassinate ability unfinished), bandit captain, cult fanatic, gladiator, scout and spy.
+
+4/2/19
+
+Fixed bug with missing challenge rating data for new NPC's. 
+
+Implemented opportunity attacks. Now on every move, a check is done of adjacent creatures and compared to adjacent creatures after you have moved. If this results in a creature not being adjacent to the second tile, it is assumed that you have moved away and they get an opportunity attack on you. Amended the attack function to allow for this to enforce only a single attack on this reaction and to show the text (OA) when it takes place. 
+
+Added 3 new vault templates for the map generator. 
+
+Made poisonous monsters poison upon a successful attack.
+
+New monsters: lion, lizard, lizardfolk, mammoth, manticore, mastiff, medusa, merfolk, minotaur, mule, mummy, nothic, ochre jelly, octopus, ogre.
+
+Fixed bug with being able to give orders to and recruit unconscious NPC's. You could knock them out, then ask them to join you before reviving them, which has now been removed.
+
+Fixed bug with ordering allies to light and put out torch. Sloppy coding led to me assuming that all allies had the same torch status, while now it properly checks each one.
+
+Tweaked colours for lit and dark floors to make it easier for stealthy players to stay in the dark.
+
+5/2/19
+
+Blindsight wasn't doing anything at all so now it actually works and it's practically much the same as darkvision for now. A lot more monsters will be able to see you in the dark.
+
+Any key press now interrupts autoexplore. Previously it just kept going until it ran into an enemy, ran out of areas to explore or experienced an error for some reason.
+
+Much like the only OGL martial archetype was champion for fighters, the only domain for clerics is life. So all cleric's are now life domain and get the preserve life channel divinity power at level 2 along with being able to turn undead (both of which are works in progress).
+
+Implemented new ability menu accessible by pressing 'a'. Updated help screen to reflect this.
+
+Changed talking to monsters by making it able to target any creature in sight. I don't see why you can't yell out at an NPC to ask them to join you or die rather than having to stand next to them. Same with giving orders - it should work at a distance and it now does and this is consistent with how group ordering works as well.
+
+Realised that there was a bug where you could ask ANY monster whatsoever to join your party and not just NPC's. Fixed by adding an NPC flag to all monsters to check against. Updated various messages to reflect this new possibility.
+
+Implemented second wind ability for fighters. Can heal 1d10 + character level hp, but need to rest before can use it again. 
+
+Part of implementing abilities was this involved needing to deal with removing effects on creatures after a long rest was taken. This was done in a general sense by the creation of an instance of Condition which can have a wide range of effects and basically deals with all buffs, maluses and misc effects on creatures. I added a new flag for this 'remove_on_rest' and went through and removed all those conditions from all creatures on a long rest.
+
+Added action surge ability for fighters. Grants an extra turn on the next move but can't be used again until another rest has been taken. 
+
+6/2/19
+
+Tidied up bugs to do with action surge and it works properly now. It doesn't take a turn to activate and allows the player to effectively make a free move once at a time of their choosing - ie. two attacks or two moves or a combination of that or other actions.
+
+Implemented turn undead. Cleric can channel divinity to turn undead once per rest (twice after level 6, thrice after level 18). Created new AI type for scared creatures which means that they move away from the cleric on every turn if possible upon a failed wisdom saving throw. Undead are now scared for 20 turns upon successful turn undead - the rules as written say this expires when damage is inflicted, but I think it's more fun to be able to herd monsters into a corner and slaughter them while scared. Effects all creatures in sight with the 'undead' trait. Implemented temporary conditions to record the use of channel divinity because the number of uses per rest is also used for the purposes of the yet-to-be-implemented preserve life ability.
+
+Changed giant weasel colour because it was too similar to giant rat and shared the same character.
+
+Implemented preserve life. Also uses the same channel divinity system as turn undead. Allows the user to select as many targets in sight as they like (excluding undead and constructs, but not excluding enemies otherwise). It then goes through them removing duplicates, before healing them in order. Total healing power limited to 3 x user level and can only heal up to half of the max HP of the target creature.
+
+Made healing word not take a turn to use, although it is restricted to one use per turn. It is meant to be a bonus action in the rules as written but this concept doesn't exist neatly in game, but that workaround seems to be good enough.
+
+Fixed bug where incapacitated creatures would take opportunity attacks.
+
+Made it so that any source of healing is enough to wake up an unconscious creature and give them 1HP before applying the healing effect.
+
+7/2/19
+
+Fixed bug with poison spray cantrip - somehow an error snuck in where it caused a crash.
+
+Changed colour of title screen for no real reason.
+
+Fixed bugs with recently added game state variables not being initialised upon loading games. It caused a crash when games were loaded previously but should be working now.
+
+Fixed bug with autoexplore where target wasn't reset upon changing levels.
+
+Changed colour of bugbear because it looked like black bears.
+
+Fixed bug where protection applied to allies even when defender was unconscious.
+
+8/2/19
+
+Changed 'guard location' order to allies to a more general 'move to location'. Amended the function which allows selection of an unexplored and out-of-sight target as a destination. It can be in walls and a blocked square and the allies will still try and get to it. They deliberately don't pathfind to the target because that'll ruin dungeon exploration a bit, but they'll try to dumb-path their way there, so it can be used to send allies into unexplored rooms and the like which is helpful if you're a non-combat build.
+
+14/2/19
+
+Reversed display order of weapon name and to-hit bonus. It occurred to me that it was back to front.
+
+Reduced rest counter from 100 to 50.
+
+15/2/19
+
+Started work on level 2 wizard spells - darkness, flaming sphere, hold person, invisibility, magic weapon, misty step, shatter, web.
+
+Started work on level 2 cleric spells - aid, lesser restoration, prayer of healing, silence, spiritual weapon, warding bond.
+
+Finished darkness spell. Allows caster to target a tile and darkness effect applied to that tile and every tile within 3 steps of that spot. Overrides all illumination effects and creates an artificial dark pool. Required changes to the Effect class to allow for invisibile effects and dark effects and also changes to the light calculation routuine to look for these new dark objects. 
+
+Added changes to the general effect system. Previously it was only used for the torches seen on walls. They weren't items in the usual sense but rather an abstract effect which had the illumination tag attached. Darkness was the first effect which wasn't permanent so that meant that different issues came up with durations, effects taking turns to count down duration and finally, removal of spent effects. All these issues sorted which opens the door to a pretty useful system for things like flames, clouds, gases, caltrops, oil on the ground etc.
+
+Added darkness spell to all characters with the preset Human Wizard start for testing purposes. Otherwise 2nd level spells don't appear in-game yet because spellbooks are on the to-do list.
+
+Finished flaming sphere spell. Like for darkness, current version has it added as a spell for the preset Human Wizard for testing purposes. Creates an immobile object on the map with the illumination property. Added a special case for the Effect class take_turn function which searches for all creates adjacent. They make a saving throw against the caster's spell power (saved in the flaming sphere object as a special varialbe). On a successful save, they take 1d6 damage. On a failed save, they take 2d6 damage. Fire immune creates are not affected.
+
+16/2/19
+
+Fixed bug in companion AI. An error in the code made NPC's jump around rather than walking tile by tile when trying to heal. Should now be working properly.
+
+Finished hold person spell. On a failed wisdom save, replaces the AI with a held person AI for 20 turns or until they make a successful wisdom save. Available for all clerics and as for testing purposes on premade Human Wizards.
+
+Fixed bug where I forgot to make flaming sphere cause damage.
+
+Fixed bug where player can kill themselves with a spell area of effect, and double their XP as a result.
+
+Fixed bug in companion AI where still tried to path to player after they were dead.
+
+19/2/19
+
+Finished invisibility spell. Applies a condition to caster or another creature within touching distance which lasts 100 turns and prevents all other creatures from seeing them. Creatures with the blindsight trait can still sense them. Gives advantage to an attacker who attacks whilst invisible against an unaware creature. Changed attack function to remove invisibility condition upon any attack. Changed spell function to remove condition upon casting as well. Doesn't take into account magical detection abilities but they don't exist in-game yet.
+
+Updated opportunity attack function to make invisible creatures not take these. It cancels invisibility automatically and that's probably not something that I want people to have unwittingly happen.
+
+Updated UI to show whether proficient or not in equipped armour and shields.
+
+Fixed bug where creatures were taking opportunity attacks against unseen actors.
+
+Updated display functions to take into account hidden and invisible monsters.
+
+Added the ability for items to have temporary conditions applied to them. Added a check for every turn to loop through all items on map and all items in all actor's inventories to make those conditions take a turn. A fair bit of extra complexity but necessary for temporary effects such as the magic weapon spell.
+
+Changed message system for expiring conditions to allow messages to be given to player for effects on items in player's inventory. It also works for items in sight on the ground.
+
+Updated UI to reflect changes to items with temporary conditions. Updated combat routines to deal with items with temporary conditions.
+
+Updated UI to show whether proficient or not with armour and shields equipped. This wasn't clear before because the only outcome was disadvantage when attacking, so now it's clear.
+
+Reworked torches and their illumination quality. It was previously a trait but that was a bad fit, and instead it's not a permanent condition like other enchantments and effects on items.
+
+Finished magic weapon spell. Lets player choose an item in inventory. Creates a new effect which adds +1 to hit bonus and +1 damage for 100 turns before expiring. Doesn't work on anything which isn't a weapon. 
+
+20/2/19
+
+Finished misty step spell. Allows caster to teleport to any square within 6 tiles.
+
+Finished shatter spell. Area of effect damage 3d8 to anyone with 2 squares of target tile. Successful constitution save halves the damage.
+
+Finished web spell. Creates a new effect on each square within 2 squares of target. Web effect checks each turn for an actor on its location. If so, they must make a dexterity save. On fail, they are now 'stuck'. Stuck is handled by attaching a new condition to that actor which makes them make a successful strength saving throw before they are able to move. The duration of this condition is the same as the original effect, so they should both expire at the same time otherwise. Added checks to all move functions to account for this. 
+
+Added check for unconscious status to remove if hp ever goes above 0 for any reason. This will hopefully catch any odd instances where hp's are added somehow in a weird way.
+
+Finished aid spell. 2nd level cleric spell which lets you pick 3 creatures and boost their hp and max_hp by 5 for 8 hours. There seems to be some conjecture about what happens when the spell expires and you need those 5 hp to stay alive, so I've gone with the view that you get to keep the current hp but not the max_hp. This avoids any of those weird scenarios.
+
+Finished lesser restoration spell (for now). Touch effect to remove a range of harmful conditions. The only one that exists in game right now is being poisoned, so it just cures that. Will need to revisit for deafness, blindness, and paralysation. 
+
+21/2/19
+
+Finished prayer of healing. 2nd level cleric spell which heals up to 6 creatures in sight of 2d8 plus wisdom bonus of HP.
+
+Finished spiritual weapon. 2nd level cleric spell which creates a new object on the map of the caster's faction which fights alongside the caster. The rules as written call for a high level of control over the weapon, but that didn't seem like fun so I gave it autonomy. It's effectively a flying sword with 100 HP (making it effectively indestructible) and with a to-hit bonus and damage bonus of the caster's wisdom ability modifier. 
+
+Created a new 'summoned' condition to apply to creatures which makes them disappear after a certain duration and made this apply to spiritual weapons. Can easily be extended to any kind of summoned creature imaginable. 
+
+Adjusted pathfinding to make allies slightly prefer going through doors rather than switching places with allied creatures.
+
+1/3/19
+
+Finished tile mode.
+
+3/3/19
+
+Reimplemented ascii mode as an option to toggle between with '`'.
+
+4/3/19
+
+Changed key code for ascii to F1 because I was having some problems on different systems. Experimented with a few different view options but opted against changing things for now.
+
+Fixed typo in message for talking to non-talking creatures.
+
+Changed tile for veteran into something a bit more menacing. 
+
+5/3/19
+
+Changed ascii map view to 16x16 font for more readability and played around with a few different font options.
+
+Tidied up references to colours which existed in libtcod but not understood by BLT.
+
+Fixed functions with targetting and different display systems so everything should be working now and look relatively neat. 
+
+Added extra small ascii display mode, because I saw that Incursion did this with 8x8 font. Changed the terminal 8x8 font being used to the Incursion 8x8 font, which was very similar anyway. 
+
+FIxed bug with displaying walls in line of sight but not visible in ascii modes. They were being drawn in black and not a shade of grey.
+
+6/3/19
+
+Wizards now start with a choice of 6 level 1 spells. Considering that there is only 7 options, there isn't all that much choice at this stage. Human Wizard templates gets them all apart from thunderwave.
+
+Wizards get two spells of a level which they can cast on levelup.
+
+Changed player starting XP to 0 - this seems good enough when you have a party to keep you alive and level 1 monsters are not very threatening. 
+
+Updated acid splash to show area of effect. Updated number of wizard spells to show projectile path.
+
+7/3/19
+
+Added new AI type for magic using companions. Made this AI be allocated at NPC generation and when converted during the game if they have the 'magic' proficiency. Allocated that proficiency to all potential NPC types so that spell slots are allocated accordingly. Added artifical levels to these NCP's so they'll have the appropriate spell slots.
+
+Added ability for companions to use shocking grasp or inflict wounds when in melee range. This triggers 30% of the time currently if the spells are available.
+
+Added ability for companions to use fire bolt and sacred flame when at range. This triggers 30% of the time if spells are available.
+
+8/3/19
+
+Added ability for companions to use cure wounds if near an ally at 25% health or less during combat. Outside of combat, will look for an ally in that injured and state and walk to them and cast heal. 
+
+10/3/19
+
+Added unique tiles for each armour and weapon type along with other miscellaneous items.
+
+Changed number of wizard starting spells to 3 level 1 spells along with 3 cantrips. Changed number of new wizard spells per level up to 1 per level.
+
+Fixed bug with magic missiles causing doubling up of targets because of AI being able to use the spell.
+
+14/3/19
+
+Properly implemented benefit of constitution bonus for level up. Previously didn't recalculate this for all pre-existing character levels. Fixed this by tracking the unmodified base max HP from character creation and recalculating this from scratch on each level up by adding the HP bonus per level arising from constitution (and dwarvern toughness).
+
+Implemented potions of healing. Added custom graphical tile. Fixed some old bugs to do with items which can't be used as equipment which have lingered because this is the first non-equipment item to be implemented. 
+
+Implemented vial of acid. Thrown one-use projectile which causes 2d6 damage.
+
+20/3/19
+
+Fixed XP distribution. Now only happens on monster death, not KO. This should avoid scenarios where player can exploit KO'ing NPC's for free XP.
+
+Fixed bug where player would not be drawn as being red when dead and waiting for new game. Used a special variable in the unconscious condition to track which monster was the attacker for XP purposes if death follows. Changed around the order of a few things because with XP being awarded only at the last minute, some features of dead monsters needed to be tracked longer.
+
+Added more information for magic missile spell to make sure it's clear that you can select multiple targets.
+
+21/3/19
+
+Started work on mob generation. Basically the plan is to pick a few iconic and fun monster types and make them generate in groups. One is picked as the leader and the rest have the companion AI much like player companions. Currently there is a 1-in-10 chance of generating a mob in a vault rather than the usual monster generation routine. Special factions created for mobs named after their monster name which means that they'll be friendly to each other but hostile to the rest of the dungeon. The idea is to progress from here to giving certain mob members templates to mix things up a bit - orcs might become shamans, kobolds might become mages, and gnolls might become thugs. 
+
+Removed ability for mob companions to talk because it was annoying. Removed ability for mob companions to revive because it slowed down the AI checking. Moved around part of companion AI to try and fix bottleneck impacting on game speed.
+
+AI companion pathfinding was too inhibitive for bigger mobs, so introduced an AI constant of path_finding_chance. Player allies always use pathfinding but monsters only use it 20% of the time.
+
+Added orc mobs (made up of 3 to 5 regular orcs for now) and undead mobs (made up of 3 to 5 undead out of skeletons, ghouls and zombies).
+
+22/3/19
+
+For some reason my AI changes have broken pathfinding and I can't figure out why so reverting to old versions from a couple of days ago.
+
+Fixed rare out of bounds bug in basic monster AI.
+
+Turned pathfinding altogher for monster mobs because of the bottleneck that it creates. This might result in a few monster being separated from the rest of the pack but that's not the end of the world.
+
+Added bandit mobs led by a bandit captain.
+
+Fixed bug with shield proficiency not being displayed properly.
+
+Made names of corpses appear red in the list of objects within sight for clarity.
+
+Created templates for orc and kobold mages and shamans. 10% chance of each monster as part of those mobs being given these templates. Spells and magic proficiency given to each one along with special magic user AI.
+
+Tweaked moving routines to try and make things cleaner.
+
+26/3/19
+
+Amended targetting with +/- to give a choice between targeting hostile or friendly creatures first. Makes ranged combat and casting a lot faster.
+
+28/3/19
+
+Fixed bug with casting bless and failing to select a proper target caused a crash.
+
+Fixed allocation of cleric spells. 2nd level spells are now all awarded at character level 3 when you get your first 2nd level spell slot. Will be maintained as higher level spells are implemented.
+
+Fixed allocation of wizard spells. On each level up, you can only select a new spell which is castable for your level. This stops the player picking uncastable level 2 spells from the start etc.
+
+Added quick fire command as 'F'. Player will attempt to make a ranged attack against the last target if that target is still active and not incapacitated.
+
+Added quick cast command as 'M'. Player will attempt to cast the last spell against the last target is that target is still active and not incapacitated.
+
+Amended all possible spells with a simple target to be passed so they work with quick casting. If a spell doesn't take a target in that way and a quick cast is attempted to use it, then it will hopefully just work like an ordinary spell.
+
+Fixed out of bounds bug in companion AI.
+
+Added basic functions for adding permanent conditions to items to enchant them. Implemented routines for adding these conditions to weapons and armour. Added name overrides to make sure that the base item name isn't changed but the enchantment is displayed on screen. Added name prefixes and suffixes as well.
+
+Implemented random chance of every armour and weapon found in the dungeon to be enchanted.
+
+Implemented distribution of higher enchanted items - 10% of any enchantment at all. From there: 5% chance of +3, 20% chance of +2, 75% chance of +1.
+
+29/3/19
+
+Implemented monsters with range attacks. New AI type which will fight melee at close range or at distance will not approach but rather 50% of the time will make a ranged attack. Added new base stats for monsters which will be able to make ranged attacks. Started with kobold archers and they are implemented with a 10% chance of each kobold in a mob being an archer. Added flag to pass to attack routine to make sure it knows to look for ranged attack stats as opposed to normal stats in the stat block. 
+
+Redid movement functions to hopefully iron out some kinks by resorting to excessive long if statements. 
+
+Changed kobold archer to kobold slinger. Added orc chucker and bandit archer to the respective mobs.
+
+Fixed bug where incapacitated enemy in line of sight was preventing ally from reviving.
+
+Added open door on an attempt to move into a closed door rather than having to use the 'o'pen command.
+
+5/4/19
+
+Added flaming effect for enchanted weapons. Also adds a separate illumination so the item functions as an always-lit torch whether in the player's inventory or on the ground.
+
+Made it so that illuminated items in inventory must be equipped to cast light.
+
+Added ability for conditions to apply extra damage when they are used to hit which is necessary to give effect to flaming (and other conditions). Created generic function to apply different damage types if target is still alive after primary damage is applied.
+
+Finished flaming weapons - illumination on being equipped and 2d6 extra fire damage on successful hit. Should work for ranged, thrown and melee weapons.
+
+Finished frost weapons - 1d6 extra cold damage on successful hit.
+
+Added extra check into condition effect processing to take into account immunities.
+
+Added colour over ride variable for items with special conditions so that they show up clearly on the GUI so that players don't miss them.
+
+New tiles for player fighters and clerics because the old ones just didn't feel quite right to me.
+
+10/4/19
+
+Added visual prompts for gaining new abilities on level up. Implemented new simple message system for simple one line pop-ups.
+
+Added more onscreen cues during character creation to make things a bit clearer.
+
+11/4/19
+
+Fixed bug where poison would keep processing even when already unconscious.
+
+12/4/19
+
+Implented popup boxes for long text to be displayed with a fixed width but variable height. To be used for lengthy messages to the player re quests etc.
+
+13/4/19
+
+Implemented spell macros. Made a menu accessible through F2 which lists spells and allows the player to press a number and assign a spell accordingly. Made it so these are saved and loaded with the rest of save game data so that can be kept throughout the whole game. 
+
+Changed 'F' and 'M' so that it checks for last target and if none, then closest hostile. Streamlines ranged and magic gameplay a lot!
+
+Made it so that only the player and allies can be knocked out. It was just annoying as it was without any benefit - there were no circumstances where you would realistically want to heal or revive a neutral or hostile and monsters would rarely be in a position to do it either.
+
+Fixed bug where equipping enchanted ammunition gave bonuses to melee combat. Made it so that quiver slot is the one exception for added enchantment bonuses for equipment.
+
+14/4/19
+
+Fixed bug where function which returned whether an actor could see another actor through darkvision didn't take into account the effect of distance. It's now properly restricted to 4 squares.
+
+Fixed bug where a monster might see an enemy and could still do ranged attacks or magic attacks despite that enemy moving out of sight.
+
+17/4/19
+
+Began work on custom avatar for players. Implemented basic menu for selecting player avatars and allocated the standard ones for premade character templates. Added 50 avatars and completed menu for selecting and added F3 as key binding for this in-game so player has complete control at all times to change.
+
+18/4/19
+
+Changed avatar selector to a red box to make things clearer after user feedback.
+
+Allowed NPC's swap places with an unconscious ally (including the player) to continue fighting rather than waiting for their ally to die first in close quarters combat. This required fixing a host of small bugs in my ai code which weren't noticeable until now, shifting the has_swapped flag from the ai component to the main object component to recognise the fact that the player object doesn't have an ai and allowing for an exception for swapping places when the player is involved - the player must be incapacitated to be swapped. If that exception wasn't in place, then NPC's would swap with the player all the time which was annoying but now they'll only do it and override the player if the player goes down.
+
+Fixed bug in companion ai where a null value was passed after conversion when it shouldn't have been.
+
+20/4/19
+
+Added info screen to display player's traits and proficiencies by pressing '@'. It still needs to be crossreferenced to the game docs but at least players can see what weapons etc they can use at a glance.
+
+Added graphical tile to spiritual weapon.
+
+Added red heart icon to top right corner of ally's graphical tile.
+
+21/4/19
+
+Updated area of effect animation for bearlibterminal. Allows for a transition between two colours with increasing and decreasing alpha values with 3 random characters to be displayed.
+
+Rewrote explosion effect animation for bearlibterminal. 
+
+Rewrote ray effect animation for bearlibterminal.
+
+Implemented new bolt effect animation. Draws a line between caster and target and draws a projectile with a fading trail behind it.
+
+Implemented projectile effect animation. Draws a '*' along the path of the projectile so the player knows what's going on in combat with ranged attacks.
+
+28/4/19
+
+Implemented fireball spell. 3rd level wizard spell with radius of 3 squares, dexterity check for all targets in that radius with 8d6 damage on failed save and halved for successful save.
+
+Updated spellcaster AI so that mage companions can use the fireball spells if they are far enough away to be safe and no allies will get caught in the blast.
+
+Fixed bug where enemy archers projectiles weren't being animated.
+
+Fixed bug where actors out of sight would overwrite door squares.
+
+Added a 1 in 3 chance of kobolds, orcs and bandits in mobs to have a lit torch.
+
+Increased chance of spellcasters using shocking grasp and inflict wounds in combat to 50% per turn.
+
+Fixed bug where AI spellcasters weren't properly using spell slots.
+
+Fixed issued in compiled version where second console window opened for no reason.
+
+30/4/19
+
+Added level cap of 10 so that focus can be put on those class features under the cap.
+
+Implemented lightning bolt spell - 3rd level wizard spell with a ray sent from caster, dexterity check for all targets in the way with 8d6 damage on failed save and halved for successful save. Still not finished because it needs to keep going until it hits a wall and this currently doesn't happen.
+
+2/5/19
+
+Added transparency to custom tiles. Changed actors to be printed on another level to background and to effects so that they can be visually merged properly for a better graphical effect. Made a whole host of changes behind the scenes to do with different layers - now background is layer 0, actors, items and effects are layer 1, special effects are layer 2, and menus are layer 3. Items now stack on ground (!!!).
+
+Fixed bug in character creation where menus for high elf cantrip selection didn't clear properly.
+
+Fixed bug where last spell caused a crash when you hadn't cast anything yet.
+
+5/5/19
+
+Implemented new 8x16 font for text to help readability. Fixed all references to this in message log, info bar and pop up menus so that this font is used throughout the entire game. Reworked all custom menu screens including stat selection, party selection, avatar selection and spell macros.
+
+Fixed bug with spacing of player conditions.
+
+Fixed bug with text to do with prayer of healing.
+
+Fixed bug with trying to load saved game when there was none.
+
+Fixed long-standing bug where saving and then loading mysteriously made torches appear as visible entities.
+
+Fixed bug where using inventory wasn't taking a turn.
+
+Fixed bug where info bar would go over border.
+
+Fixed bug where projectiles were being shown out of sight.
+
+Fixed bug where artifact from magic menu was left behind after casting.
+
+6/5/19
+
+Fixed rare bug caushing crashes when death is caused by poison and melee attack on same turn.
+
+7/5/19
+
+(Hopefully) fixed bug with weird animation effects.
+
+Fixed bug where message boxes weren't being cleared properly before moving on.
+
+Added additional checks to create save file directory if necessary so that this isn't overwritten with new Steam updates.
+
+8/5/19
+
+Fixed bug to do with not displaying the character menu properly.
+
+Again hopefully fixed a bug with weird animation effects.
+
+Again hopefully fixed a bug with artifacts from menus.
+
+Fixed issue with being able to exit some menus without making a critical choice. Some menus (such as game start, spell selection and ability increase) will force you to make a choice before leaving.
+
+Hopefully fixed bug with autoexplore error by brute forcing a solution to make the player work somewhere nearby before trying again.
+
+Amended targetting so that it's much clearer on screen. There's a bit of a bug with big ascii mode where bearlibterminal isn't letting it draw properly so I've worked around it with a near-enough ascii code which is close...
+
+Fixed bug where moving followers to new level caused a hang if there was no where to place them nearby.
+
+12/5/19
+
+Implemented a rough autoplay for testing purposes. It's commented out in public builds but it combines autoexplore with invincibility and autofight.
+
+Fixed bug with error in tile setting for chimera.
+
+Fixed bug with accidental doubling up of fighting styles at level up to 10 for fighters.
+
+14/5/19
+
+Fixed bug with shocking grasp causing crash.
+
+Fixed bug with displaying armour character in non-default font in bearlibterminal.
+
+Updated character creation so that you can restart at any time and continue creating a character.
+
+Fixed number of player avatars with overly transparent backgrounds.
+
+Added heavy armour proficiency to all clerics to reflect that they are all Life domain.
+
+15/5/19
+
+Made sure that previous saved games are deleted upon player death.
+
+Fixed bug where converted bandit archers would not use ranged attacks as allies. 
+
+Updated character creation so if you press escape on the first menu, you're back to the main menu.
+
+18/5/19
+
+Fixed bug which caused crash when pressed esc while targetting spiritual weapon.
+
+20/5/19
+
+Fixed bug which caused crash when trying to set spell macros but not having any spells to choose from.
+
+Fixed problems with autoexplore dealing with doors - now the game just opens all doors when passing by them.
+
+Added additional stop to autoexplore whenever a new object is seen. 
+
+24/5/19
+
+Fixed bug which caused a crash when casting misty step and cancelling during casting.
+
+Made change to make sure that no bug would show up during casting and cancelling spiritual weapon.
+
+Amended healing prayer message to make it clear that up to 6 targets can be chosen.
+
+Amended aid and bless message to make it clear that up to 3 targets can be chosen.
+
+26/5/19
+
+Added custom names under the order menu for allies. Made it so that the game records that it is a custom name and capitalizes each word when printing from then on in case the player gives a complex name.
+
+Added custom name option for the player. For custom characters, you are now given a suggested name and asked whether you want to keep it, generate another name or enter a custom name through the new text input functions.
+
+30/5/19
+
+Changed the way that poison weapons work - no longer does it inflict a condition imposing damage per turn, it imposes poison damage straight away.
+
+Added venom magic weapons - cause additional 1d4 damage on hit to non-immune enemies.
+
+Added new check for each attack for monsters to have conditions which have effect on hit, added new poison condition to all poisonous monsters and used this to replace old poison routines. All of them do 1d4 at this stage but this will be customised shortly.
+
+31/5/19
+
+Updated poison damage for individual enemies: basilisk (2d6), flying snake (3d4), giant poisonous snake (3d6), giant scorpion (4d10), giant spider (2d8), giant wasp (3d6), giant wolf spider (2d6), medusa (4d6).
+
+Changed frost weapon names from "frost XXX" to "XXX of frost". 
+
+Added new stats for conditions applied to items and monsters which cause damage - damage on hit save types and dc's for checks if necessary. Added these details into the various places as per the rules and added a new check when these effects process to see if there is a saving throw necessary, and if so, the type and dc.
+
+Added additional variable as a modifier to apply against damage calculations on successful saves so that the damage can be reduced by half, completely or some other number as required.
+
+Changed venom weapons to dc 10 check against constitution as per rules for basic poison.
+
+Fixed bug where player with multiple ammo in inventory would be able to use the wrong one if equipped in quiver. 
+
+Added new monsters: owl, owlbear, panther, pegasus, phase spider
+
+1/6/19
+
+Fixed problem with combining various enchantment names by adding a name_tail variable for '+1' and the like to go along with name_prefix and name_suffix.
+
+3/6/19
+
+Added new monsters: plesiosaurus, poisonous snake, polar bear, pony, pteranodon, quipper, rat, raven, reef shark, riding horse, saber-toothed tiger.
+
+Fixed bug with misnamed hawk as blood hawk. 
+
+11/6/19
+
+Added change so that when trying to cast spells or do ranged attacks, if the attack or spell doesn't eventuatuate because out of ammo or spells slots etc, no turn is taken.
+
+Added number of new dungeon vaults with emphasis on wide corridors to enhance party play.
+
+Added feature to autoexplore so it finishes on the downstairs.
+
+13/6/19
+
+Resized native tile size from 16x16 to 24x24. Previously I had every tile at 16x16 for some forgotten reason during development and sized these up or down as needed as I used them. This process through the bearlibterminal library had the effect of smoothing out the images as they were upsized which always left me feeling that they looked a bit blurry. Now that effect is removed on a trial basis to see if it feels clearer.
+
+14/6/19
+
+Added purple (magic) and yellow (ranged) visual indicators at top left of tiles used for enemies and allies so that they can be identified at a glance.
+
+17/6/19
+
+Made reach weapons work. They work via the ranged combat menus by pressing 'f' or 'F' with a limited range. You can select a target within range manually or just use 'F' to auto-target within range. It works alongside thrown weapons as well so that if you're at range, those commands will throw at the target and if you're closer then they will default to a ranged melee attack.
+
+Updated menu options for ranged/reach attacks.
+
+Updated display to show when wielding a reach weapon.
+
+Reworked entire encounter and monster generation system. Single monsters are still generated depending on dungeon level and CR of the individual monster. These ones are neutral to each other but hostile to the player, NPC's and special mobs. Mob generation was reworked from scratch with new classes for Encounters and Monsters within that encounter so that special types can be defined and mobs can be specified easily with combinations of monsters along with spell users and ranged fighters. It should prove to be easily extensible in terms of special features and new mobs. There still needs to be some balancing because special mobs are hostile to everyone else which creates dungeon in-fighting but might make things a bit too easy for the player to simply kill the weakened survivors.
+
+Redid the following mobs in the new system: bandits with captain; mix of low level undead; kobolds with mages, shamans and slingers; orcs with mages, shamans and chuckers.
+
+Created new mob types: lizardfolk with a large number of weak lizards; single ogre with goblin followers; solo ogre mage.
+
+18/6/19
+
+Turned off seperate factions being generated for different mobs of monsters to experiment with no in-fighting. 
+
+19/6/19
+
+Added extra customisation of monster types in mobs. Now individual stats can be specified along with character level so that casting levels can be simulated. Applied upgraded stats to all spellcasters already implemented. 
+
+22/6/19
+
+Fixed bug where doors could appear on the outer boundary which let the player walk out of bounds.
+
+Doubled food ration spawn rate.
+
+Fixed issue where fighter's second wind ability took a turn when it should be a bonus action.
+
+Added two different starting kits for fighters. If strength is higher or equal to dexterity, you start with one of longsword, battleaxe and spear and ring mail. If dexterity is higher, you start with one of scimitar, shortsword or whip and leather armour.
+
+Fixed bug with ranged targetting when trying to select an area out of bounds.
+
+24/6/19
+
+Dealt with closing game window in every possible input state with automatic saving included. Hopefully now should work across the board cleanly. 
+
+Implemented two-weapon fighting - this was a pretty huge change through the code. Changed all the inventory and equipment routines to deal with wielding a weapon in the off hand including a menu to allow the player the choice to do so and all the various checks necessary to make sure that two-handed, versatile and other non-light weapons were swapped in and out properly. Changed the stat bar to show a second weapon being used when two-weapon combat was in effect. Implemented the two-weapon fighting style for figthers and the flow-on effect this had for damage bonus (or lack thereof) in the display code. Changed the attack function so that it identified if an attack was being made as a bonus action with the off hand, which is every situation where two-weapon fighting is in effect and this is the final attack of the turn. This means that with extra attack, those attacks go first followed by the off hand last. Implemented new messages to make it clear when two-weapon fighting is in effect and which weapon you are hitting with.
+
+Added starting kit for two-weapon fighters so they start with two mediocre light weapons.
+
+Fixed bug where inconsistent spelling of 'two handed' vs 'two-handed' resulted in fighter's with dueling fighting style getting that bonus for wielding two-handed weapons.
+
+Fixed bug where opportunity attack would be made with off hand.
+
+25/6/19
+
+Fixed bug where bonus attack for two-weapons was being applied when throwing.
+
+Added restriction on sneak attacks so that extra damage is only applied once per round.
+
+Finished ironing out all weird bugs with two-weapon fighting and inventory management that come from a number of unexpected interactions.
+
+27/6/19
+
+Added half-elf, half-orc, tiefling, aasimar, kobold and bugbear as playable races.
+
+Added new naming rules for orcs, infernal, and kobolds.
+
+Implemented relentless endurance for half-orcs (and boars for some reason, although this was just sitting on my to-do list until now). Once per long rest, when HP reduced to 0, it becomes 1 instead. 
+
+Implemented savage attacks trait for half-orcs. When a critical hit is scored, roll an extra damage die. 
+
+Implemented extra reach for bugbears, they can now reach with all weapons and an extra square with reach weapons. 
+
+Implemented healing hands ability for aasimar. Heals up to character level of damage on touch once per long rest. Useful for reviving allies during combat.
+
+28/6/19
+
+Removed animation for casting light, I didn't like how it looked.
+
+Replaced veteran with knight as starting NPC option with one less point cost. 
+
+Changed default starting party to one knight and one acolyte.
+
+Implemented resistance to various damage types. It doesn't apply to bludgeoning, piercing or slashing just yet but that'll be coming shortly.
+
+Created druid class. Implemented all character selection options at outset and level up choices. Gave the existing spells which fall under druid libraries. Still a lot to do in relation to restricting metal armour and a number of other things.
+
+Implemented rough wild shape with selection of animals of different CR's depending on character level.
+
+29/6/19
+
+Fixed bug where casting bless caused a crash due to an error in the stats display code.
+
+1/7/19
+
+Changed the way that druids get spells so they are now like clerics and instantly know all spells at a level they can cast.
+
+Updated stats display to properly display the damage type being used when in wild shape.
+
+2/7/19
+
+Started work on dynamic quest system. Implemented quest object and start of work on generating quest givers and target throughout maps.
+
+Changed AI to not attack neutrals automatically.
+
+Made it so that neutrals don't provoke opportunity attacks.
+
+3/7/19
+
+Built upon dynamic quest system. Added new long message function so that there are popup dialogue boxes to convey the quest instructions. Added quests object into saving and loading games. Ensured that quest objects are removed from general pool of actors when loading and saving and tracked through the quest system instead. Ironed out bugs with finishing kill quests.
+
+4/7/19
+
+Made it so that quests and their goals spawn on the same floor to prevent what would be an excessive amount of backtracking. Dummy quest currently has two NPCs asking for the death of the other. 
+
+Enlarged map size to accomodate quests on the same map but with targets at opposite ends. 
+
+8/7/19
+
+Added proper_noun flag to deal with oddities arising from wild shape and the name display. 
+
+Added check for player to have blindsight to deal with scenario where player wild shapes into a bat.
+
+Added checks to make sure that wild shaped creatures can't pick up or drop items as well as not being able to cast, fire or open and close doors.
+
+9/7/19
+
+Changed autoexplore algorithm to deal with wild shapes being unable to open doors.
+
+Fixed bug where followers weren't switching loyalty to new wild shape object (and back again) after transformation.
+
+Implemented preserving intelligence, wisdom and charisma and XP gains across form changes.
+
+10/7/19
+
+Fixed display issues with wild shape, now it hides the player's true name, race and role and just displays the monster shape with no gaps in spacing. 
+
+Changed map generation to make the complete map 4x3 vaults which is probably a better size and helps with generating times.
+
+Added new UI option to confirm whether player is sure they want to do an action. Linked this to attacking neutrals.
+
+Added make_hostile function which recursively works through monster list to check to see what other allied monsters need to be made hostile when player attacks.
+
+Created basic MagicMonster and RangedMonster AI's to use for non-companion creatures because that hadn't been implemented yet.
+
+Created new vault type for quests designed so that a tough NPC and followers can spawn there.
+
+Tidied up quests by removing referenecs to different levels so that all quests occur within a single level.
+
+Changed sidebar display colours so that allies are green, quests are purple, neutrals are white and hostile are red.
+
+Added mobs of allies for quest NPC's. Made it so that allies of NPC's can't be convinced to follow player.
+
+Reworked dungeon generation algorithm so the game distinguishes between normal, stair and quest vaults and implemented all three with basic options.
+
+13/7/19
+
+Reduced number of quest NPC allies to 1-3 rather than 2-5. It was too cluttered.
+
+Added a bunch of new stair and quest vaults.
+
+11/7/19 
+
+Added two new dialogue options for each stage of each quest.
+
+Added more complexity to the way in which names are printed to take into account whether there are proper nouns as names or not and whether a 'the' should be used or not.
+
+Reworked all messages to take advantage of new naming system.
+
+Reworked spell messages so that they aren't shown when a caster is out of sight of the player.
+
+14/7/19
+
+Simplified AI when it comes to healing and reviving because it seems a bit buggy.
+
+Reduced ally chat by about half because it was happening too much.
+
+Hopefully fixed a bug causing hangs to do with quest NPC's AI.
+
+17/7/19
+
+Fixed bug where crash would occur when more than 26 items picked up.
+
+Hopefully fixed bug where sometimes quest NPC's wouldn't talk.
+
+18/7/19
+
+Made sure that arrow keys worked as input across the board rather than just some of the time.
+
+Updated display to show max HP for enemies and neutrals but not current HP.
+
+Fixed bug where quest vault generation was leaving blocked out areas.
+
+21/7/19
+
+Added background image to main menu.
+
+Fixed bug where ineffective fireball and lightning bolt would do no damage.
+
+Added relentless trait to giant boar.
+
+23/7/19
+
+Fixed bug where casting thunderwave caused a crash.
+
+31/7/19
+
+Hopefully (!!!) fixed bug where it won't exit properly in Steam.
+
+Amended stealth formulas so that it should be much harder to spot a hiding creature.
+
+Reworked item generation code.
+
+Fixed long-standing bug where dropping an equipped item wouldn't properly clear the equipped status so it would be automatically equipped when picked up again.
+
+Implemented ring of protection which gives +1 AC and +1 to saving throws.
+
+1/8/19
+
+Fixed crash bug to do with lighting going up levels.
+
+5/8/19
+
+Implemented system of damage immunities, vulnerabilties and resistances to be checked each time damage is applied. 
+
+7/8/19
+
+Implemented system of remembering when an NPC has joined party previously. Implemented dismissal of NPC's, them returning to a neutral state but with a flag that they can always be recruited again.
+
+Implemented ring of invisibility which grants on demand invisibility as an ability. Needed to add an adds_trait variable to equipment to give the fighter this ability which is potentially a bit messy if equipment is removed and equipped taking this into account.
+
+Implemented wand of web. Required some background work to implement multi-use items but otherwise was very quick to put together. 
+
+Implemented wands of fireballs, lightning bolt and magic missiles. 
+
+8/8/19
+
+Implemented enchantments for armour to have various forms of resistance to magical damage. 
+
+Added restriction on sidebar printing to make sure that long names didn't go over in to the map display.
+
+Added new rare magic items: dwarven plate armour, dragon scale armour, elven chain mail, mithral armour, oil of sharpness, ring of poison resistance, potion of giant strength (with different strengths for hill, frost, stone, fire, cloud and storm giants), potion of heroism, scimitar of speed. 
+
+Changed the way in which the e'x'amine function works to properly display enchantments on items. 
+
+Fixed bug where dropping equipped items wasn't working properly.
+
+9/8/19
+
+Played around behind the scenes with items which give bonuses (or maluses) to stats to allow base stats to be recorded.
+
+Fixed bug with magic wands where a rework of how item functions were called had a flow on problem with spells. 
+
+Fixed bug with casting lesser restoration and cancelling without selecting target.
+
+11/8/19
+
+Implemented a minimap in the lower right corner.
+
+12/8/19
+
+Finished UI work for minimap and added indicator for stairs location.
+
+Turned off recharging of magic wands.
+
+15/8/19
+
+Changed the way that the game checked to see if player could see monsters doing certain actions resulting in messages. Hopefully will tidy up some issues to do with this.
+
+Added fog cloud as a level 1 druid spell.
+
+Began reworking field of vision calculations to take into account the necessity for some Effects to block sight.
+
+16/8/19
+
+Added new pre-made character to help with testing - Tiefling Druid.
+
+Finished updating field of view calculations to take into account effects which block sight.
+
+Added new tiles for various magic effects.
+
+18/8/19
+
+Added a non-diggable trait to tiles in special vaults so that set pieces can't be interrupted during mag gen.
+
+Fixed bug with using oil of sharpness on blunt weapon causing crash.
+
+Finished implementing special vaults with trigger squares causing walls to appear and disappear.
+
+20/8/19
+
+Implemented possibility for multiple special vaults per floor.
+
+Put in a whole bunch of new special vaults including ones that mirror normal vaults to cause some surprises.
+
+Fixed a bug with healer pathfinding AI which caused a rare crash.
+
+23/8/19
+
+Fixed aasimar racial charisma bonus to +2.
+
+Fixed potential bug with dying while in wild shape.
+
+Fixed potential bug with messy monster deaths.
+
+Implemented an always-on cunning action trait for rogues which allows them the unique class ability to withdraw from combat without drawing opportunity attacks.
+
+Reduced spawn rate of rare magic items.
+
+24/8/19
+
+Implemented order to give item to follower to equip. Reworked the look command and name display functions so that it will now display all actors through the look command to reveal their carried and equipped items to help with inventory management of allies. Implemented menus for equipping, dequipping items from player's inventory and follower's inventory, along with returning items to player and dropping them as well. Reworked the standard inventory menu for this to happen.
+
+Made NPC's proficient with all weapons and armour to make things simpler.
+
+Implemented monsters dropping all items on death.
+
+Implemented ranged ammo disappearing half of the time.
+
+27/8/19
+
+Removed the light property from hand crossbows so that they can't be dual wielded.
+
+Fixed bug where bugbears couldn't use ranged weapons properly because it defaulted to reach combat instead.
+
+Fixed problem where multiple ranged attacks weren't using multiple ammunition.
+
+29/8/19
+
+Changed the way the minimap draws to the screen so that it is a LOT faster.
+
+3/9/19
+
+Implemented arcane recovery for wizards. Created a custom menu to deal with this and allocating spell levels up to half character level divided by two but rounded up.
+
+4/9/19
+
+Added dungeon depth cap. Fixed issues with autoexplore and a lack of a downstairs when at max dungeon depth.
+
+Added end game encounter with an adult red dragon.
+
+6/9/19
+
+Increased the possible CR of spawning monsters to make the dungeon a whole lot more dangerous.
+
+7/9/19
+
+Fixed bug where druids were not using wisdom as their casting stat.
+
+Added different displays for warlocks and wizard spell slots. Removed spell slot displays for non-casters.
+
+Added in a whole bunch of special cases to deal with the unique way that warlock spell slots work.
+
+Implemented hellish rebuke as a level 1 warlock spell. It works as a reaction in the rules as written but that's a bit hard to translate so I made it a condition which lasts until the player rests and triggers automatically on taking damage against whoever that attacker is.
+
+Implemented eldritch blast. Cantrip which can target multiple enemies as levels go up.
+
+Implemented pact of the tome for level 3 warlocks. Reworked spell menu so that spells were always in ascending order of level due to the quirks that this new process created.
+
+Added chill touch as a wizard and warlock cantrip.
+
+Implemented infernal legacy abilities for tieflings - can cast hellish rebuke as an ability at level 3 and darkness as an ability at level 5.
+
+17/10/19
+
+Fixed oversight where attribute improvements every 4 character levels only gave one additional point rather than 2.
+
+22/10/19
+
+Started work on using higher level spell slots by reworking various menus and routines leading up to casting so that the player can choose to input a new spell level and this gets passed back to the function which converts the menu input into an actual spell.
+
+Updated hold person for higher level spell slots - grants additional targets for every spell slot level above second.
+
+Updated burning hands for higher level spell slots - grants addition d6 of damage for every spell slot level above first.
+
+Updated magic missile for higher level spell slots - grants additional missile for every spell slot level above first.
+
+Updated charm person for higher level spell slots - grants additional targets for every spell slot level above first.
+
+Updated sleep for higher level spell slots - grants additional 2d8 of spell power per spell slot level above first.
+
+Updated thunderwave for higher level spell slots - grants additional 1d8 of damage per spell slot level above first.
+
+Updated flaming sphere for higher level spell slots - grants additional 1d6 of damager per spell slot level above second. Required a rewrite of the way in which effects caused damage because flaming sphere was previously hardcoded for 2d6 and now needs to store that data in the relevant entity to track spell slot level independently of the spellcaster.
+
+Changed appearance of the flaming sphere tile because it got renamed somehow along the way when I was implementing new tiles.
+
+Updated magic weapon spell for higher level spell slots - bonus becomes +2 at spell slot level 4, +3 at spell slot level 6 and above.
+
+Fixed issue with magic weapon which allowed for stacking of enchantments with multiple casts.
+
+26/10/19
+
+Updated shatter spell so that an extra d8 of damage is given for each extra spell slot level.
+
+Fixed bug with shatter where visual effect would not appear in the right spot.
+
+Updated fireball spell so that an extra d6 of damage is given for each extra spell slot level.
+
+Fixed bug with shatter where radius of spell effect was not being shown.
+
+27/10/19
+
+Updated lightning bolt spell so that an extra d6 of damage is given for each extra spell slot level.
+
+Updated bless spell so that an extra target can be chosen for each extra spell slot level.
+
+Updated cure wounds spell so that an extra d8 of healing is given for each extra spell slot level.
+
+Updated healing word spell so that an extra d4 of healing is given for each extra spell slot level.
+
+Updated inflict wounds spell so than an extra d10 of necrotic damage is done for each extra spell slot level.
+
+Updated aid spell so that the spell power increases by an extra 5 HP per extra spell slot level.
+
+Updated prayer of healing so that an extra d8 of healing is given for each extra spell slot level.
+
+Updated spiritual weapon so that an extra d8 of damage is caused for each 2 extra spell slot levels.
+
+Updated hellish rebuke so that the spell power is stored in the condition applied to the actor and then used to calculate the damage.
+
+28/10/19
+
+Implemented warlock casting with higher level spell slots with certain predetermined power levels based on player character level.
+
+Removed the ability of warlocks to specify a higher spell level because it's meaningless for them.
+
+29/10/19
+
+Added the following monsters: satyr, scorpion, sea horse, skeleton, spectator, spider, stirge.
+
+Fixed bug where the following monsters weren't being generated: pteranodon, quipper, rat, raven, reef shark, riding horse, sabre toothed tiger.
+
+30/10/19
+
+Added rhinoceros which had been overlooked and led to the wrong graphical tiles being used for riding horses and sabre tooth tigers.
+
+4/11/19
+
+Fixed bug with opportunity attacks where a creature has died somehow (I think????)
+
+7/11/19
+
+Implemented constants for time to take actions and movement. Add cooldown variable to all objects to record this. Added method to record this value whenever actions are movements are made.
+
+11/11/19
+
+Finished implementing variable movement speed system - movement now takes 1/3 as long as other actions as base costs and these can be altered to reflect different speeds for each creature for each types of acts.
+
+Changed order of attribute display just to suit my cosmetic preference.
+
+Implemented movement delay of 50% times base value for hidden actors.
+
+Implemented movement delay of 50% times base for wearing heavy armour without requisite strength (apart from for dwarves).
+
+20/11/19
+
+Updated movement speeds for all monsters.
+
+24/11/19
+
+Implemented numpy instead of standard python lists to deal with a number of arrays for map storage to improve speed problems introduced by new speed system... and then removed it because my poor programming actually meant that it was slower!
+
+Did some tidying up of graphics routines to remove redundancies to improve speed.
+
+Added custom time costs for resting, opening and closing doors and talking.
+
+25/11/19
+
+Fixed bug with heavy armour and movement speeds not calculating properly.
+
+Updated action surge to work with new speed system which is actually a lot simpler than the previous system.
+
+Removed an anomaly with the sidebar display when the player is affected by only invisible conditions and there shouldn't be any visible sign of this.
+
+8/12/19
+
+Implemented static whole map starting level. Implemented special case light map for above ground. Amended save and load routines to deal with scenarios where there aren't any up and down stairs. Implemented a new vault type, which covers the whole map to be The Red Outpost.
+
+10/12/19
+
+Continued work on fixed level generator. Continued work on The Red Outpost. Added flipping of set map on x and y axis.
+
+Implemented trees and shrubs into level generator.
+
+Implemented unique NPC generation from map files. 
+
+Implemented flavour text for unique NPCs and necessary routines around that.
+
+Wrote Saint Othmar's custom flavour text.
+
+15/12/19
+
+Updated save system to handle different dungeon branches.
+
+18/12/19
+
+Continued work on new level generation, multiple branches and overworld content.
+
+19/12/19
+
+Updated trees to be always visible once discovered so they act as quasi-map walls.
+
+Updated commands so that options on the overworld are very restricted.
+
+Removed most of the code to do with procedural quests because they're temporarily a bad fit for the game's structure.
+
+Finished special item and monster generation code using data from dungeon branches.
+
+Fixed weird and long-standing bug to do with placement of monsters.
+
+Reworked encounter generation routines and finished compulsory special encounter generation in a random vault in the dungeon.
+
+20/12/19
+
+Implemented new tile sets for walls in normal dungeons, towns and the red prison.
+
+Got rid of the scorpion tail's from crab tiles.
+
+22/12/19
+
+Implemented basic version of North Warren with unique NPCs: Odette, Sunny, Susie.
+
+Implemented basic version of Mirefield Keep with unique NPC: Lord Wesley.
+
+23/12/19
+
+Finished implementing skeletons of remaining towns.
+
+Implemented unique monster distribution for Badbog, Catacombs, Rage Hill, Haunt and Sanctum.
+
+26/12/19
+
+Fixed bug with hidden attackers.
+
+Fixed bug with item distribution.
+
+Changed village tile to something a bit more consistent.
+
+29/12/19
+
+Reduced player XP gain by half.
+
+Added Saint Barnabas, Saint Hedwig and Cardinal Florian.
+
+Added flavour text for every generic NPC.
+
+30/12/19
+
+Hopefully fixed a bug with dungeon generation which created unintentional hordes of enemies.
+
+Added random monster generation to special item vaults.
+
+Added kobold mobs spawning to warrens:2; added kobold horde as a guaranteed mob on warrens:3.
+
+Added Nubnag, a powerful kobold boss with the savage, relentless and extra attack traits.
+
+Varied the monster generation routines so there is always a chance of a random monster turning up on any dungeon level.

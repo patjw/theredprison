@@ -1,0 +1,545 @@
+OPEN GAME LICENSE Version 1.0a
+
+The following text is the property of Wizards of the Coast, Inc. and is Copyright 2000 Wizards of the Coast, Inc (“Wizards”). All Rights Reserved.
+
+1. Definitions: (a)”Contributors” means the copyright and/or trademark owners who have contributed Open Game Content; (b)”Derivative Material” means copyrighted material including derivative works and translations (including into other computer languages), potation, modification, correction, addition, extension, upgrade, improvement, compilation, abridgment or other form in which an existing work may be recast, transformed or adapted; (c) “Distribute” means to reproduce, license, rent, lease, sell, broadcast, publicly display, transmit or otherwise distribute; (d)”Open Game Content” means the game mechanic and includes the methods, procedures, processes and routines to the extent such content does not embody the Product Identity and is an enhancement over the prior art and any additional content clearly identified as Open Game Content by the Contributor, and means any work covered by this License, including translations and derivative works under copyright law, but specifically excludes Product Identity. (e) “Product Identity” means product and product line names, logos and identifying marks including trade dress; artifacts; creatures characters; stories, storylines, plots, thematic elements, dialogue, incidents, language, artwork, symbols, designs, depictions, likenesses, formats, poses, concepts, themes and graphic, photographic and other visual or audio representations; names and descriptions of characters, spells, enchantments, personalities, teams, personas, likenesses and special abilities; places, locations, environments, creatures, equipment, magical or supernatural abilities or effects, logos, symbols, or graphic designs; and any other trademark or registered trademark clearly identified as Product identity by the owner of the Product Identity, and which specifically excludes the Open Game Content; (f) “Trademark” means the logos, names, mark, sign, motto, designs that are used by a Contributor to identify itself or its products or the associated products contributed to the Open Game License by the Contributor (g) “Use”, “Used” or “Using” means to use, Distribute, copy, edit, format, modify, translate and otherwise create Derivative Material of Open Game Content. (h) “You” or “Your” means the licensee in terms of this agreement. Not for resale. Permission granted to print or photocopy this document for personal use only.
+
+2. The License: This License applies to any Open Game Content that contains a notice indicating that the Open Game Content may only be Used under and in terms of this License. You must affix such a notice to any Open Game Content that you Use. No terms may be added to or subtracted from this License except as described by the License itself. No other terms or conditions may be applied to any Open Game Content distributed using this License.
+
+3.Offer and Acceptance: By Using the Open Game Content You indicate Your acceptance of the terms of this License.
+
+4. Grant and Consideration: In consideration for agreeing to use this License, the Contributors grant You a perpetual, worldwide, royalty-free, non-exclusive license with the exact terms of this License to Use, the Open Game Content.
+
+5.Representation of Authority to Contribute: If You are contributing original material as Open Game Content, You represent that Your Contributions are Your original creation and/or You have sufficient rights to grant the rights conveyed by this License.
+
+6. Notice of License Copyright: You must update the COPYRIGHT NOTICE portion of this License to include the exact text of the COPYRIGHT NOTICE of any Open Game Content You are copying, modifying or distributing, and You must add the title, the copyright date, and the copyright holder’s name to the COPYRIGHT NOTICE of any original Open Game Content you Distribute.
+
+7. Use of Product Identity: You agree not to Use any Product Identity, including as an indication as to compatibility, except as expressly licensed in another, independent Agreement with the owner of each element of that Product Identity. You agree not to indicate compatibility or co-adaptability with any Trademark or Registered Trademark in conjunction with a work containing Open Game Content except as expressly licensed in another, independent Agreement with the owner of such Trademark or Registered Trademark. The use of any Product Identity in Open Game Content does not constitute a challenge to the ownership of that Product Identity. The owner of any Product Identity used in Open Game Content shall retain all rights, title and interest in and to that Product Identity.
+
+8. Identification: If you distribute Open Game Content You must clearly indicate which portions of the work that you are distributing are Open Game Content.
+
+9. Updating the License: Wizards or its designated Agents may publish updated versions of this License. You may use any authorized version of this License to copy, modify and distribute any Open Game Content originally distributed under any version of this License.
+
+10. Copy of this License: You MUST include a copy of this License with every copy of the Open Game Content You Distribute.
+
+11. Use of Contributor Credits: You may not market or advertise the Open Game Content using the name of any Contributor unless You have written permission from the Contributor to do so.
+
+12. Inability to Comply: If it is impossible for You to comply with any of the terms of this License with respect to some or all of the Open Game Content due to statute, judicial order, or governmental regulation then You may not Use any Open Game Material so affected.
+
+13. Termination: This License will terminate automatically if You fail to comply with all terms herein and fail to cure such breach within 30 days of becoming aware of the breach. All sublicenses shall survive the termination of this License.
+
+14. Reformation: If any provision of this License is held to be unenforceable, such provision shall be reformed only to the extent necessary to make it enforceable.
+
+15. COPYRIGHT NOTICE
+
+Open Game License v 1.0a Copyright 2000, Wizards of the Coast, Inc.
+
+System Reference Document. Copyright 2000, Wizards of the Coast, Inc.; Authors Jonathan Tweet, Monte Cook, Skip Williams, based on material by E. Gary Gygax and Dave Arneson.
+
+System Reference Document. Copyright 2000, Wizards of the Coast, Inc.; Authors Jonathan Tweet, Monte Cook, Skip Williams, based on original material by Dave Arneson and E. Gary Gygax.
+
+System Reference Document. Copyright 2000-2003, Wizards of the Coast, Inc.; Authors Jonathan Tweet, Monte Cook, Skip Williams, Rich baker, Andy Collins, David noonan, Rich Redman, Bruce R. Cordell, based on original material by E. Gary Gygax and Dave Arneson.
+
+System Reference Document 5.0. Copyright 2016, Wizards of the Coast, Inc.; Authors Mike Mearls, Jeremy Crawford, Chris Perkins, Rodney Thompson, Peter Lee, James Wyatt, Robert J. Schwalb, Bruce R. Cordell, Chris Sims, and Steve Townshend, based on original material by E. Gary Gygax and Dave Arneson.
+
+Tome of Horrors Copyright 2002, Necromancer Games, Inc.; Authors: Scott Greene, with Clark Peterson, Erica Balsley, Kevin Baase, Casey Christofferson, Lance Hawvermale, Travis Hawvermale, Patrick Lawinger, and Bill Webb; Based on original content from TSR.
+
+Adherer, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Aerial Servant from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Aerial Servant, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Algoid, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Al-MiRaj from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Clark Peterson based on original material by Roger Musson.
+
+Amphisbaena from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Ant Lion, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Ascomoid, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Assassin Bug, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Astral Shark, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Aurumvorax from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Aurumvorax, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Axe Beak from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Babbler from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Clark Peterson based on original material by Jeremy Goodwin and Ian McDowell.
+
+Basilisk, Greater, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Bat, Mobat from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Bat: Doombat, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Beetle Giant Rhinoceros from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Beetle, Death Watch from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Beetle, Giant Boring from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Beetle, Giant Rhinoceros, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Beetle, Giant Slicer, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Blindheim from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Roger Musson.
+
+Blood Hawk, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Bloody Bones, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Boalisk, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Bone Cobbler, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Bonesucker, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Brownie from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Carbuncle from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Albie Fiore.
+
+Carbuncle, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Caryatid Column from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Jean Wells.
+
+Caryatid Column, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Caterwaul from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Albie Fiore.
+
+Cave Cricket, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Cave Fisher, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Clam, Giant, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Cobra Flower, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Coffer Corpse from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Simon Eaton.
+
+Cooshee, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Crabman from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Erica Balsey based on original material by Ian Livingstone.
+
+Crabman, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Crayfish, Monstrous, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Crypt Thing from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Roger Musson.
+
+Crypt Thing, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Dagon, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Dakon from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Ian McDowell.
+
+Dark Creeper from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Rik Shepard.
+
+Dark Creeper, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Dark Stalker from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Simon Muth.
+
+Dark Stalker, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Darnoc, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Death Dog, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Death Worm, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Decapus, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Demon Cambion from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Demon, Alu- from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Demonic Knight, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Dire Corby, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Disenchanter from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Roger Musson.
+
+Dracolisk from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Dracolisk, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Drake, Fire, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Drake, Ice, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Dust Digger, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Eblis, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Eel, Giant Moray, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Executioner’s Hood from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Eye of the Deep from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Fen Witch, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Fire Snake, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Flail Snail, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Flind from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Fly, Giant from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Foo Dog, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Forester’s Bane, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Froghemoth, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Gargoyle from the Tome of Horrors copyright 2002 by Necromancer Games Inc authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Gargoyle, Green Guardian, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Gargoyle: Four-Armed, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Gargoyle: Margoyle, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Golem, Stone Guardian, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Gorbel, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Gorgimera from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Gorgimera, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Grippli, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Groaning Spirit from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Hangman Tree, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Hippocampus, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Hoar Fox, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Jackalwere from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Jaculi, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Jelly, Mustard, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Jupiter Bloodsucker, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Kamadan, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Kampfult, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Kech, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Kelpie, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Khargra, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Korred, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Land Lamprey, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Lava Child, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Leech, Giant from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Leprechaun from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Lurker Above from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Mantari, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Midnight Peddler, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Mite, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Mite, Pestie, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Mongrelman from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Mummy of the Deep, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Necrophidius from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Simon Tilbrook.
+
+Nereid from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Nilbog from the Tome of Horrors copyright 2002 by Necromancer Games Inc author Scott Greene based on original material by Roger Musson.
+
+Olive Slime Zombie, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Olive Slime, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Pech, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Phantom from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Harold Johnson and Tom Moldvay.
+
+Phycomid, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Piercer from the Tome of Horrors copyright 2002 by Necromancer Games Inc authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Poltergeist from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Lew Pulsipher.
+
+Pyrolisk, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Quickling from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Quickwood, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Rat, Shadow, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Rot Grub from the Tome of Horrors copyright 2002 by Necromancer Games Inc authors Scott Greene and Clark Peterson based on original material by E. Gary Gygax.
+
+Russet Mold, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Sandling, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Screaming Devilkin, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Scythe Tree, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Shadow, Lesser, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Shedu from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Skeleton Warrior from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Nigel Morgan.
+
+Skeleton Warrior, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Skulk, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Slithering Tracker from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Slithering Tracker, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Slug, Giant from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Sprite from the Tome of Horrors copyright 2002 by Necromancer Games Inc author Scott Greene based on original material by E. Gary Gygax.
+
+Squealer from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Stegocentipede, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Strangle Weed, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Stunjelly from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Tabaxi, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Taer, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Therianthrope: Foxwere, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Therianthrope: Lionwere, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Therianthrope: Owlwere, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Therianthrope: Wolfwere, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Tick, Giant from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greenebased on original material by E. Gary Gygax.
+
+Trapper from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material be E. Gary Gygax.
+
+Tri-flower Frond, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Troll, Giant Two Headed from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Oliver Charles McDonald.
+
+Troll, Ice from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Russell Cole.
+
+Troll, Spectral, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Troll, Two-headed, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Tunnel Worm, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Vampire Rose, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Vegepygmy Chief, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Vegepygmy Commoner, Worker, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Vegepygmy Guard, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Vilstrak from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E.Gary Gygax.
+
+Volt from the Tome of Horrors copyright 2002 by Necromancer Games Inc author Scott Greene based on original material by Jonathon Jones.
+
+Volt, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Vulchling from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+Vulchling, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Witherstench, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Yellow Musk Creeper from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Albie Fiore.
+
+Yellow Musk Creeper, from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Yellow Musk Zombie , from the Tome of Horrors Complete, Copyright 2011, Necromancer Games, Inc., published and distributed by Frog God Games.
+
+Yellow Musk Zombie from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by Albie Fiore.
+
+Yeti from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Green based on original material by E. Gary Gygax.
+
+Zombie, Juju from the Tome of Horrors copyright 2002 by Necromancer Games, Inc., author Scott Greene based on original material by E. Gary Gygax.
+
+EN World EN5ider. Copyright 2015–2017 EN Publishing.
+
+EN World EN5ider Presents: A Touch of Class. Copyright 2017 EN Publishing.
+
+Burok Torn: City Under Siege Copyright 2002, White Wolf Publishing, Inc.
+
+Creature Collection 2: Dark Menagerie Copyright 2001, White Wolf Publishing, Inc.
+
+Creature Collection Copyright 2001, Clark Peterson.
+
+Eldritch Sorcery Copyright 2005, Necromancer Games, Inc.; Authors Patrick Lawinger, Scott Greene, and David Mannes, with Erica Balsley, Chris Bernhardt, Casey W. Christofferson, Bill Collins, Jim Collura, Chad Coulter, Patrick Goulah, Skeeter Green, Jeff Harkness, Lance Hawvermale, Travis Hawvermale, Richard Hughes, Robert Hunter, Al Krombach, Rob Mason, Matt McGee, Clark Peterson, Michael Proteau, Greg Ragland, Gary Schotter, Joe Walmsley, and Bill Webb.
+
+Evolved Grottoes & Griffons: Teratic Tome 1st Edition copyright 2013 by Rafael Chandler.
+
+Faeries Copyright 2003, Bastion Press, Inc.
+
+Hollowfaust: City of Necromancers Copyright 2001, White Wolf Publishing, Inc.
+
+If Thoughts Could Kill Copyright 2002, Bruce R. Cordell. All Right Reserved.
+
+Mithril: City of the Golem Copyright 2001, White Wolf Publishing, Inc.
+
+Monster Compendium: 0e, Copyright 2008, Matthew J. Finch.
+
+Monstrosities, © 2012, Frog God Games LLC; Authors Andrew Trent (“the Venomous Pao”), Trent Foster, Salvatore Macri (“Skathros”), Scott Wylie Roberts (“Myrystyr”), Sean Stone (“Stonegiant”), Sean Wills (“Geordie Racer”), Cameron DuBeers, Matt Hoover (“Random”), Mike Davison, Russell Cone (“Grim”), Mudguard, Old Crawler, Michael Shorten (“Chgowiz”), Mark Ahmed, Scott Casper (“Scottenkainen”), The Lizard of Oz, James Malizsewski, Michael Kotschi, J.D. Jarvis, John Turcotte, Guy Fullerton, Michael Coté, Thomas Clark, Tanner Adams, and Matt Finch (“Mythmere”). Cyclopean Deeps: Volume 1 — Copyright 2014 Matthew J. Finch, Frog God Games LLC.
+
+Classic Play – The Book of the Planes Copyright 2004, Mongoose Publishing Ltd.
+
+Original Spell Name Compendium, Copyright 2002 Clark Peterson; based on NPC-named spells from the Player’s Handbook that were renamed in the System Reference Document. The Compendium can be found on the legal page of www.necromancergames.com.
+
+OSRIC appendices copyright 2006-08 by Stuart Marshall and James D. Kramer.
+
+OSRIC Chapter I copyright 2006-08 by Stuart Marshall.
+
+OSRIC Chapter II copyright 2006-08 by Stuart Marshall.
+
+OSRIC Chapter III copyright 2006- 08 by Stuart Marshall, Trent Foster, James Boney and Vincent Frug ©.
+
+OSRIC Chapter IV copyright 2006-08 by Stuart Marshall, Trent Foster, James Boney and Vincent Frug ©.
+
+OSRIC Chapter V copyright 2007-08 by Stuart Marshall, Chris Hopkins, James Boney, Robert Ross, Jeremy Goehring, Mike Davison, Daniel Proctor, B. Scot Hoover, Chris Cain, Bill Silvey, Floyd Canaday, Vincent Frug © and Matthew James Stanham.
+
+OSRIC Chapter VI copyright 2007-08 by Stuart Marshall, Daniel Proctor and Vincent Frug ©.
+
+Relics & Rituals: Excalibur Copyright 2005, White Wolf Publishing, Inc.
+
+Relics & Rituals: Olympus Copyright 2004, White Wolf Publishing, Inc.
+
+Relics and Rituals 2: Lost Lore Copyright 2002, White Wolf Publishing, Inc.
+
+Scarred Lands Campaign Setting: Ghelspad Copyright 2002, White Wolf Publishing, Inc.
+
+Secrets and Societies Copyright 2002, White Wolf Publishing, Inc.
+
+Skreyn’s Register: The Bonds of Magic. © 2002, Sean K Reynolds.
+
+Swords & Wizardry Core Rules, Copyright 2008, Matthew J. Finch Swords & Wizardry Complete Rules, Copyright 2010, Matthew J. Finch.
+
+The Book of Experimental Might Copyright 2008, Monte J. Cook. All rights reserved.
+
+The Divine and the Defeated Copyright 2001, White Wolf Publishing, Inc.
+
+Vigil Watch: Warrens of the Ratmen Copyright 2002, White Wolf Publishing, Inc.
+
+Advanced Player’s Guide Copyright 2010 Paizo Publishing, LLC; Author: Jason Bulmahn.
+
+Pathfinder Roleplaying Game Core Rulebook © 2011, Paizo Publishing, LLC; Author: Jason Bulmahn, based on material by Jonathan Tweet, Monte Cook, and Skip Williams.
+
+Pathfinder RPG Bestiary © 2009, Paizo Publishing, LLC; Author: Jason Bulmahn, based on material by Jonathan Tweet, Monte Cook, and Skip Williams.
+
+Pathfinder Roleplaying Game Bestiary 2 © 2010, Paizo Publishing, LLC; Authors Wolfgang Baur, Jason Bulmahn, Adam Daigle, Graeme Davis, Crystal Frasier, Joshua J. Frost, Tim Hitchcock, Brandon Hodge, James Jacobs, Steve Kenson, Hal MacLean, Martin Mason, Rob McCreary, Erik Mona, Jason Nelson, Patrick Renie, Sean K Reynolds, F. Wesley Schneider, Owen K.C. Stephens, James L. Sutter, Russ Taylor, and Greg A. Vaughan, based on material by Jonathan Tweet, Monte Cook, and Skip Williams.
+
+Pathfinder Roleplaying Game Ultimate Magic © 2011, Paizo Publishing, LLC; Authors: Jason Bulmahn, Tim Hitchcock, Colin McComb, Rob McCreary, Jason Nelson, Stephen Radney-MacFarland, Sean K Reynolds, Owen K.C. Stephens, and Russ Taylor.
+
+Pathfinder Roleplaying Game Ultimate Combat © 2011, Paizo Publishing, LLC; Authors: Jason Bulmahn, Tim Hitchcock, Colin McComb, Rob McCreary, Jason Nelson, Stephen Radney-MacFarland, Sean K Reynolds, Owen K.C. Stephens, and Russ Taylor.
+
+The Grand OGL Wiki, http://grandwiki.wikidot.com Copyright 2008-2009 Purple Duck Creations; Authors: Mark Gedak, Alex Schroeder, Joel Arellano, George Fields, Yair Rezek, Mike Whalen, Shane O’Connor, Mike Rickard, John Whamond, Bill Browne, Eric Williamson, Slatz Grubnik, Charles R. Wenzler Jr.
+
+The Book of the Righteous, Copyright 2002, 2017, Aaron Loeb
+
+Genies for Fifth Edition 1.0 published by Tribality.com (Innovaworks Inc.); Copyright 2016 Colin McLaughlin.
+
+Pirate Adventurers for Fifth Edition 1.0 published by Tribality.com (Innovaworks Inc.); Copyright 2016 Shawn Ellsworth
+
+Steampunk Adventurers for Fifth Edition 1.0 published by Tribality.com (Innovaworks Inc.); Copyright 2016 Shawn Ellsworth.
+
+Underworld Races and Classes Copyright 2017 AAW Games, LLC; Thilo Graf, Mike Myler, and Jonathan G. Nelson Occult Secrets of the Underworld Copyright 2018, AAW Games, LLC; Thilo Graf and Jonathan G. Nelson.
+
+Aaralyn’s Stolen Notes to Velea Copyright 2018 Anne Gregersen Author Anne Gregersen
+
+ 
+
+Ponyfinder: Campaign Setting Dawn of the Fifth Age © 2015, Silver Games, LLC; Authors: David Silver.
+
+Ponyfinder: 5th Edition Gods, Feats, and Expanded Races © 2015, Silver Games, LLC; Authors: David Silver.
+
+Player’s Advantage – Barbarian. © 2016, Samurai Sheepdog; Author: Kevin Glusing
+
+The Book of Lost Spells Copyright 2015 Frog God Games LLC.
+
+Fifth Edition Foes, Copyright 2014, Frog God Games, LLC.
+
+In the Company of Giants (5e) Copyright 2016 Steven D. Russell; Author Steven D. Russell.
+
+Book of Heroic Races: Player Races 1. © 2015, Jon Brazer Enterprises.
+
+5e Options: Rogue Archetypes Shadow Warrior ©2015, Rogue Genius Games. Designers: Owen K.C. Stephens and Rich E. Howard.
+
+The Eliminator Copyright 2016 by RJ Grady. Published by Tripod Machine.
+
+Tome of Beasts. Copyright 2016, Open Design; Authors Chris Harris, Dan Dillon, Rodrigo Garcia Carmona, and Wolfgang Baur.
+
+Advanced Races: Aasimar. © 2014 Open Design; Author: Adam Roy. KoboldPress.com
+
+Advanced Races: Centaurs. © 2014 Open Design; Author: Karen McDonald. KoboldPress.com.
+
+Advanced Races: Dragonkin © 2013 Open Design; Authors: Amanda Hamon Kunz.
+
+Advanced Races: Gearforged. © 2013 Open Design; Authors: Thomas Benton.
+
+Advanced Races: Gnolls. © 2015 Open Design; Authors: Ben McFarland and Brian Suskind.
+
+Advanced Races: Kobolds © 2013 Open Design; Authors: Nicholas Milasich, Matt Blackie.
+
+Advanced Races: Lizardfolk. © 2015 Open Design; Authors: Steven T.Helt, Stephen Rowe, and Dan Dillon.
+
+Advanced Races: Ravenfolk © 2014 Open Design; Authors: Wade Rockett.
+
+Advanced Races: Shadow Fey. © 2014 Open Design; Authors: Carlos and Holly Ovalle.
+
+Advanced Races: Trollkin. © 2015 Open Design; Authors: Steven T.Helt, Stephen Rowe, and Dan Dillon.
+
+Advanced Races: Werelions. © 2015 Open Design; Authors: Ben McFarland and Brian Suskind.
+
+Midgard Heroes © 2015 Open Design; Author: Dan Dillon.
+
+Southlands Heroes © 2015 Open Design; Author: Rich Howard.
+
+Dungeon Archetypes. Copyright 2016 Mike Myler, published under license by Legendary Games; Authors Mike Myler.
+
+Fighter Folio © 2018 Total Party Kill Games; Authors: Brian Berg, Mark A. Hart.
+
+Fifth Edition Feats. Copyright, 2016 Total Party Kill Games. Author(s): Brian Berg.
+
+5th Edition Horror. © 2018, Fat Goblin Games; Author: Ismael Alvarez
+
+Simple Settings: Savage Lands. © 2018, Fat Goblin Games; Author: Rick Hershey, Ismael Alvarez
+
+Amazing Weapons, Armor and Equipment © 2016, Fat Goblin Games; Author: Ismael Alvarez
+
+5th Edition Races – Aasimar by Fat Goblin Games. Copyright 2015. Author Troy Daniels, Artist Rick Hershey, Layout Troy Daniels and Rick Hershey.
+
+Ritual Magic Expanded © 2015, Fat Goblin Games; Author: Ismael Alvarez
