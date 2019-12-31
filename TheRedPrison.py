@@ -43,8 +43,8 @@ VIEW_HEIGHT = 70
 
 MINIMAP_OFFSET = 4
 MINIMAP_FLAG = False #lets me turn off minimap for local testing
-STARTING_EXPLORED = True #again for testing, allows for fully explored maps
-SHOW_ALL_OBJECTS = True #for testing, shows every object on map
+STARTING_EXPLORED = False #again for testing, allows for fully explored maps
+SHOW_ALL_OBJECTS = False #for testing, shows every object on map
  
 ANIMATION_FRAMES = 25
  
@@ -207,7 +207,7 @@ STANDARD_TURN_LENGTH = 300
 
 FLAVOUR_TEXT_RATE = 50
 
-RANDOM_MONSTER_GEN_CHANCE = 1
+RANDOM_MONSTER_GEN_CHANCE = 10
 RANDOM_MONSTERS_PER_VAULT = 3
 CHANCE_OF_NPC = 10
 
@@ -4319,11 +4319,11 @@ def place_objects(room):
 	
 	else: #this is the default monster generation including all types of monsters and encounters
 	
-		if dungeon_level > 1 and libtcod.random_get_int(0, 1, 5) == 5: #1 in 5 chance of placing a mob instead of individuals on levels beyond the first
+		if libtcod.random_get_int(0, 1, 5) == 5: #1 in 5 chance of placing a mob instead of individuals on levels beyond the first
 			count = 0
 			while True:
 				count += 1
-				encounter = random.choice()
+				encounter = random.choice(encounters)
 				if encounter.cr <= dungeon_level * 2 or count > 10: break
 			make_encounter(encounter, room)
 		else:
