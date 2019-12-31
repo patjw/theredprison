@@ -11067,7 +11067,9 @@ def create_nubnag(x, y):
 	monster = create_kobold(x, y)
 	monster.name = 'Nubnag'
 	monster.proper_noun = True
+	monster.colour = 'red'
 	monster.char = 'K'
+	monster.fighter.max_hp = 50
 	monster.fighter.hp = 50
 	monster.fighter.strength = 18
 	monster.fighter.constitution = 18
