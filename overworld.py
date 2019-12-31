@@ -3,7 +3,7 @@ actors = None
 items = None
 
 exits = {
-'1': ('warrens', 3, 'cave'),
+'1': ('warrens', 1, 'cave'),
 '2': ('ancient_shrine', 1, 'castle'),
 '3': ('bandit_keep', 1, 'castle'),
 '4': ('sanctum', 1, 'castle'),
