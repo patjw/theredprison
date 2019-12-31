@@ -1186,3 +1186,7 @@ Added kobold mobs spawning to warrens:2; added kobold horde as a guaranteed mob 
 Added Nubnag, a powerful kobold boss with the savage, relentless and extra attack traits.
 
 Varied the monster generation routines so there is always a chance of a random monster turning up on any dungeon level.
+
+31/12/19
+
+Made all potions stackable to save inventory room.

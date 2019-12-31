@@ -2815,15 +2815,19 @@ class Item:
 		if self.use_function is None:
 			message(self.owner.name_for_printing() + ' cannot be used.')
 		else:
-			if self.charges is None: #this item doesn't need to worry about charges
+			if self.charges is None and self.owner.quantity is None: #this item doesn't need to worry about charges and can only be a single item
 				if self.use_function(monster, self.owner) != 'cancelled':
 					player.inventory.remove(self.owner)  #destroy after use, unless it was cancelled for some reason
-			else:
+			elif self.charges is not None:
 				if self.charges >= 1:
 					if self.use_function(monster, self.owner) != 'cancelled':
 						self.charges -= 1
 				else:
 					message(self.owner.name_for_printing() + ' is out of charges.')
+			elif self.owner.quantity is not None:
+				if self.use_function(monster, self.owner) != 'cancelled':
+					self.owner.use_quantity(monster)
+				
 class Equipment:
 	#an object that can be equipped, yielding bonuses. automatically adds the Item component.
 	def __init__(self, slot, num_dmg_die, dmg_die, ac, weight, properties, adds_trait=None, adds_proficiency=None):
@@ -4377,7 +4381,7 @@ def place_objects(room):
 		func = random.choice(common_magic_func_list)
 	elif choice <= 51:
 		func = random.choice(rare_magic_func_list)
-
+		
 	#choose random spot for this item
 	while True:
 		x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
@@ -11537,9 +11541,10 @@ def create_needles(quantity=None):
 ### MAGIC ITEMS
 ###
 	
-def create_potion_of_healing():
+def create_potion_of_healing(quantity=None):
+	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_potion_of_healing)
-	item = Object(0, 0, '!', 'potion of healing', MISC_COLOUR, item=item_component)
+	item = Object(0, 0, '!', 'potion of healing', MISC_COLOUR, item=item_component, quantity=quantity)
 	item.always_visible = False
 	item.big_char = int("0xE357", 16)
 	item.small_char = int("0xE857", 16)
@@ -11548,9 +11553,10 @@ def create_potion_of_healing():
 	item.item.conditions.append(condition)
 	return item
 	
-def create_vial_of_acid():
+def create_vial_of_acid(quantity=None):
+	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_vial_of_acid)
-	item = Object(0, 0, '!', 'vial of acid', MISC_COLOUR, item=item_component)
+	item = Object(0, 0, '!', 'vial of acid', MISC_COLOUR, item=item_component, quantity=quantity)
 	item.always_visible = False
 	item.big_char = int("0xE359", 16)
 	item.small_char = int("0xE859", 16)
@@ -11559,9 +11565,10 @@ def create_vial_of_acid():
 	item.item.conditions.append(condition)
 	return item
 	
-def create_oil_of_sharpness():
+def create_oil_of_sharpness(quantity=None):
+	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_oil_of_sharpness)
-	item = Object(0, 0, '!', 'oil of sharpness', MISC_COLOUR, item=item_component)
+	item = Object(0, 0, '!', 'oil of sharpness', MISC_COLOUR, item=item_component, quantity=quantity)
 	item.always_visible = False
 	item.big_char = int("0xE358", 16)
 	item.small_char = int("0xE858", 16)
@@ -11570,13 +11577,14 @@ def create_oil_of_sharpness():
 	item.item.conditions.append(condition)
 	return item
 	
-def create_potion_of_giant_strength(type=None):
+def create_potion_of_giant_strength(type=None, quantity=None):
+	if quantity is None: quantity = 1
 	if type is None:
 		types = (('hill giant', 21), ('hill giant', 21), ('hill giant', 21), ('frost giant', 23), ('stone giant', 23), ('frost giant', 23), ('stone giant', 23), ('fire giant', 25), ('cloud giant', 27), ('storm giant', 29)) #duplicate values to make less powerful types more common
 		type = random.choice(types)
 	item_component = Item(use_function=use_potion_of_giant_strength)
 	item_component.special = type[1]
-	item = Object(0, 0, '!', 'potion of ' + type[0] + ' strength', MISC_COLOUR, item=item_component)
+	item = Object(0, 0, '!', 'potion of ' + type[0] + ' strength', MISC_COLOUR, item=item_component, quantity=quantity)
 	item.always_visible = False
 	item.big_char = int("0xE360", 16)
 	item.small_char = int("0xE860", 16)
@@ -11585,9 +11593,10 @@ def create_potion_of_giant_strength(type=None):
 	item.item.conditions.append(condition)
 	return item
 	
-def create_potion_of_heroism():
+def create_potion_of_heroism(quantity=None):
+	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_potion_of_heroism)
-	item = Object(0, 0, '!', 'potion of heroism', MISC_COLOUR, item=item_component)
+	item = Object(0, 0, '!', 'potion of heroism', MISC_COLOUR, item=item_component, quantity=quantity)
 	item.always_visible = False
 	item.big_char = int("0xE361", 16)
 	item.small_char = int("0xE861", 16)
