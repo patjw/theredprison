@@ -2939,10 +2939,12 @@ class Equipment:
 		self.is_equipped = None
 		if self.adds_trait is not None:
 			for trait in self.adds_trait:
-				monster.fighter.traits.remove(trait)
+				if monster.fighter:
+					monster.fighter.traits.remove(trait)
 		if self.adds_proficiency is not None:
 			for proficiency in self.adds_proficiency:
-				monster.fighter.proficiencies.remove(proficiency)
+				if monster.fighter:
+					monster.fighter.proficiencies.remove(proficiency)
 				
 		
 		### special case for flammable items like torches
