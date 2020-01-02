@@ -4330,7 +4330,9 @@ def place_objects(room):
 			while True:
 				count += 1
 				encounter = random.choice(encounters)
-				if encounter.cr <= dungeon_level * 2 or count > 10: break
+				if not encounter.special_encounter:
+					if encounter.cr <= dungeon_level * 2 or count > 10: 
+						break
 			make_encounter(encounter, room)
 		else:
 			for i in range(libtcod.random_get_int(0, 1, RANDOM_MONSTERS_PER_VAULT)): 
@@ -4370,18 +4372,18 @@ def place_objects(room):
 ### ITEM GENERATION 
 
 	#one item per vault 
-	choice = libtcod.random_get_int(0, 1, 51)
+	choice = libtcod.random_get_int(0, 1, 48)
 	if choice <= 15:
 		func = random.choice(weapon_func_list)
 	elif choice <= 30:
 		func = random.choice(armour_func_list)
 	elif choice <= 40:
 		func = random.choice(misc_func_list)
-	elif choice <= 45:
+	elif choice <= 43:
 		func = random.choice(common_func_list)
-	elif choice <= 50:
+	elif choice <= 47:
 		func = random.choice(common_magic_func_list)
-	elif choice <= 51:
+	elif choice <= 48:
 		func = random.choice(rare_magic_func_list)
 		
 	#choose random spot for this item
@@ -4425,6 +4427,9 @@ def make_encounter(encounter, room):
 			mon = eval(func_name)(x, y)
 			mon.ai.focus = (x, y)
 			if monster.name is not None: mon.name = monster.name
+			if monster.hp is not None: 
+				mon.fighter.max_hp = monster.hp
+				mon.fighter.hp = monster.hp
 			if monster.str is not None: mon.fighter.strength = monster.str
 			if monster.dex is not None: mon.fighter.dexterity = monster.dex
 			if monster.con is not None: mon.fighter.constitution = monster.con
@@ -10685,7 +10690,7 @@ def create_sea_horse(x, y):
 	return monster
 	
 def create_skeleton(x, y):
-	fighter_component = Fighter(hp=13, strength=10, dexterity=14, constitution=15, intelligence=6, wisdom=8, charisma=5, clevel=1, proficiencies=[], traits=['poison immune', 'undead'], spells=[], xp=50, death_function=monster_death, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.25)	
+	fighter_component = Fighter(hp=13, strength=10, dexterity=14, constitution=15, intelligence=6, wisdom=8, charisma=5, clevel=1, proficiencies=[], traits=['poison immune', 'undead'], spells=[], xp=50, death_function=monster_death, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, ranged_num_dmg_die=1, ranged_dmg_die=6, ranged_dmg_bonus=2, ranged_dmg_type='piercing', ranged_to_hit=4, challenge_rating=0.25)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, 'Z', 'skeleton', 'white', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.big_char = int("0xE234", 16)
@@ -11073,6 +11078,7 @@ def create_nubnag(x, y):
 	monster = create_kobold(x, y)
 	monster.name = 'Nubnag'
 	monster.proper_noun = True
+	monster.chatty = True
 	monster.colour = 'red'
 	monster.char = 'K'
 	monster.fighter.max_hp = 50
@@ -11083,6 +11089,18 @@ def create_nubnag(x, y):
 	monster.fighter.traits.append('relentless')
 	monster.fighter.traits.append('extra attack')
 	monster.fighter.traits.append('savage')
+	monster.flavour_text = ["Si geou sone dout yobolat ghoros nomeno kear ui ekik!", "Nomenoi re Nubnag ui ulph waereic vur shio intruders zklaen loreat!", "Wux tepoha authot vin phlita sin ini confnir ekess nomeno goawy!", "Nubnag rules this goawy!"]
+	return monster
+	
+def create_saint_cormag(x, y):
+	monster = create_priest(x, y)
+	monster.big_char = int("0xE275", 16) #make him look like a mage
+	monster.small_char = int("0xE775", 16)
+	monster.name = 'Saint Cormag'
+	monster.proper_noun = True
+	monster.fighter.can_join = False
+	monster.chatty = True
+	monster.flavour_text = ["Necromancy is not what you think, it is only the short-sighted that can not understand what I do.", "You have the chance to stand by my side forever; what greater boon could there be.", "There are many who desire everlasting life, and it is my plan to give it to those who desire it.", "It would be wise to submit without a fight; you will carry these ugly wounds for all eternity.", "I follow the word of Saint Peregrine; it is only through necromancy that you can be healed without harming others.", "I know that you think my path is an evil one but this is the only way to stay true to Saint Peregrine.", "Those fools in the Order of Saint Peregrine know the truth but lack the courage to follow me."]
 	return monster
 	
 ###

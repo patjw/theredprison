@@ -1190,3 +1190,19 @@ Varied the monster generation routines so there is always a chance of a random m
 31/12/19
 
 Made all potions stackable to save inventory room.
+
+2/1/20
+
+Fixed bug with NPCs dropping some items on death.
+
+Slightly reduced food generation rate.
+
+Added ranged attack stats for skeletons.
+
+Created necromancer horde with skeleton archers and zombie brutes.
+
+Added Saint Cormag the necromancer as a boss for the ancient shrine.
+
+Added flavour text for Nubnag.
+
+Designated certain encounters as special so that they don't randomly spawn.

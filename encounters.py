@@ -2,12 +2,13 @@
 
 class Encounter: #container class for list of monsters container class
 
-	def __init__(self, name, faction, cr):
+	def __init__(self, name, faction, cr, special_encounter=False):
 		self.name = name
 		self.monsters = [] #this will be a list of monsters objects
 		self.count = 0
 		self.faction = faction
 		self.cr = cr
+		self.special_encounter = special_encounter
 		
 	def add_group(self, group):
 		self.monsters.append(group)
@@ -22,11 +23,12 @@ class Encounter: #container class for list of monsters container class
 			
 class Monsters: #container class for instructions to build each monster type in encounter
 
-	def __init__(self, type, name=None, min=2, max=5, str=None, dex=None, con=None, int=None, wis=None, cha=None, clvl=None, magic=False, spells=None, ranged=False, illumination_chance=0):
+	def __init__(self, type, name=None, min=2, max=5, hp=None, str=None, dex=None, con=None, int=None, wis=None, cha=None, clvl=None, magic=False, spells=None, ranged=False, illumination_chance=0):
 		self.type = type
 		self.name = name
 		self.min = min
 		self.max = max
+		self.hp = hp
 		self.str = str
 		self.dex = dex
 		self.con = con
@@ -110,13 +112,23 @@ enc.add_group(Monsters(type='ogre', name='ogre mage', min=1, max=1, int=14, clvl
 encounters.append(enc)
 
 #kobold horde
-enc = Encounter('kobold horde', 'kobold', 1)
+enc = Encounter('kobold horde', 'kobold', 3, special_encounter=True)
 enc.add_group(Monsters(type='kobold', min=3, max=5))
 enc.add_group(Monsters(type='kobold', name='kobold slinger', min=1, max=3, ranged=True))
 enc.add_group(Monsters(type='kobold', name='kobold mage', min=1, max=2, int=12, clvl=4, magic=True, spells=['fire bolt', 'magic missile']))
 enc.add_group(Monsters(type='kobold', name='kobold shaman', min=1, max=2, wis=14, clvl=4, magic=True, spells=['sacred flame', 'cure wounds']))
 enc.add_group(Monsters(type='nubnag', min=1, max=1))
 for mon in enc.monsters: mon.illumination_chance = 25
+encounters.append(enc)
+
+#necromancer horde
+enc = Encounter('necromancer horde', 'undead', 3, special_encounter=True)
+enc.add_group(Monsters(type='skeleton', min=2, max=5))
+enc.add_group(Monsters(type='skeleton', name='skeleton archer', min=1, max=2, ranged=True))
+enc.add_group(Monsters(type='zombie', min=2, max=5))
+enc.add_group(Monsters(type='zombie', name='zombie brute', min=1, max=2, str=18, con=18, hp=44))
+enc.add_group(Monsters(type='ghoul', min=1, max=4))
+enc.add_group(Monsters(type='saint_cormag', min=1, max=1, illumination_chance=100))
 encounters.append(enc)
 
 

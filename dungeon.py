@@ -60,11 +60,11 @@ branch.monsters = [{'skeleton':10, 'zombie':5}, #level 1
 {'skeleton':5, 'zombie':10, 'ghoul':5}, #level 2
 {'skeleton':3, 'zombie':3, 'ghoul':3, 'ghost':3}] #level 3
 branch.encounters = [{}, #level 1
-{'cultists':5}, #level 2
+{'cultists':5, 'basic undead':1}, #level 2
 {'basic undead':3, 'cultists':3}] #level 3
 #branch.items = []
 #branch.must_generate_monster = {}
-#branch.must_generate_encounter = {}
+branch.must_generate_encounter = {3:['necromancer horde']}
 branch.must_generate_item = {3:['rare_magic']}
 dungeon.append(branch)
 
