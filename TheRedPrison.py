@@ -449,6 +449,7 @@ class Object:
 					if self.fighter: #if still alive after attacks of opportunity 
 						self.x += dx
 						self.y += dy
+						update_lookup_map()
 			
 	def move_towards(self, target_x, target_y):
 		#move towards and open doors if necessary
@@ -1714,9 +1715,12 @@ class MagicMonster:
 			map[next_step_x][next_step_y].open()
 			return
 		
-		for actor in actors:
-			if actor.x == next_step_x and actor.y == next_step_y:
-				test_object = actor
+		#for actor in actors:
+		#	if actor.x == next_step_x and actor.y == next_step_y:
+		#		test_object = actor
+		
+		test_object = lookup_map.get((next_step_x, next_step_y))
+				
 		if test_object is not None:
 			if test_object.fighter:
 				if test_object.fighter.faction == self.owner.fighter.faction and test_object != self.owner and not test_object.has_swapped:
@@ -1944,9 +1948,12 @@ class RangedMonster:
 			map[next_step_x][next_step_y].open()
 			return
 		
-		for actor in actors:
-			if actor.x == next_step_x and actor.y == next_step_y:
-				test_object = actor
+		#for actor in actors:
+		#	if actor.x == next_step_x and actor.y == next_step_y:
+		#		test_object = actor
+		
+		test_object = lookup_map.get((next_step_x, next_step_y))
+		
 		if test_object is not None:
 			if test_object.fighter:
 				if test_object.fighter.faction == self.owner.fighter.faction and test_object != self.owner and not test_object.has_swapped:
@@ -2142,9 +2149,12 @@ class CompanionMonster:
 			map[next_step_x][next_step_y].open()
 			return
 		
-		for actor in actors:
-			if actor.x == next_step_x and actor.y == next_step_y:
-				test_object = actor
+		#for actor in actors:
+		#	if actor.x == next_step_x and actor.y == next_step_y:
+		#		test_object = actor
+		
+		test_object = lookup_map.get((next_step_x, next_step_y))
+		
 		if test_object is not None:
 			if test_object.fighter:
 				if test_object.fighter.faction == self.owner.fighter.faction and test_object != self.owner and not test_object.has_swapped:
@@ -2325,9 +2335,12 @@ class CompanionRangedMonster:
 			map[next_step_x][next_step_y].open()
 			return
 		
-		for actor in actors:
-			if actor.x == next_step_x and actor.y == next_step_y:
-				test_object = actor
+		#for actor in actors:
+		#	if actor.x == next_step_x and actor.y == next_step_y:
+		#		test_object = actor
+		
+		test_object = lookup_map.get((next_step_x, next_step_y))
+		
 		if test_object is not None:
 			if test_object.fighter:
 				if test_object.fighter.faction == self.owner.fighter.faction and test_object != self.owner and not test_object.has_swapped:
@@ -2509,9 +2522,12 @@ class CompanionMagicMonster:
 			map[next_step_x][next_step_y].open()
 			return
 		
-		for actor in actors:
-			if actor.x == next_step_x and actor.y == next_step_y:
-				test_object = actor
+		#for actor in actors:
+		#	if actor.x == next_step_x and actor.y == next_step_y:
+		#		test_object = actor
+		
+		test_object = lookup_map.get((next_step_x, next_step_y))
+		
 		if test_object is not None:
 			if test_object.fighter:
 				if test_object.fighter.faction == self.owner.fighter.faction and test_object != self.owner and not test_object.has_swapped:
@@ -3240,8 +3256,10 @@ def is_blocked(x, y):
 		return True
  
 	#now check for any blocking objects
-	for actor in actors:
-		if actor.blocks and actor.x == x and actor.y == y:
+	#for actor in actors:
+	if (x, y) in lookup_map:
+		if lookup_map[(x, y)].blocks:
+		#if actor.blocks and actor.x == x and actor.y == y:
 			return True
 	
 	for effect in effects:
@@ -3261,9 +3279,10 @@ def blocks_sight(x, y):
 	return test
 	
 def is_occupied(x, y):
-	for actor in actors:
-		if actor.x == x and actor.y == y:
-			return True
+	#for actor in actors:
+		#if actor.x == x and actor.y == y:
+	if (x, y) in lookup_map:
+		return True
 	for item in items:
 		if item.x == x and item.y == y:
 			return True
@@ -3274,8 +3293,11 @@ def is_occupied(x, y):
 	
 def is_occupied_by_ally(x, y):
 	if is_occupied(x, y):
-		for actor in actors:
-			if actor.x == x and actor.y == y and actor != player:
+		#for actor in actors:
+		#	if actor.x == x and actor.y == y and actor != player:
+		if (x, y) in lookup_map:
+			actor = lookup_map[(x, y)]
+			if actor != player:
 				if actor.fighter:
 					if actor.fighter.faction == player.fighter.faction:
 						return True
@@ -3313,6 +3335,7 @@ def knock_back(target, source, power): #function to knock back a target away fro
 	if not is_blocked(dest_x, dest_y): 
 		target.x = dest_x
 		target.y = dest_y
+	update_lookup_map()
 	
 def path_func(x1, y1, x2, y2, data):
 	global map
@@ -5130,9 +5153,11 @@ def render_map_graphics(tiles_to_redraw=None): #tiles_to_redraw is a list of ele
 					for item in items:
 						if item.x == x and item.y == y:
 							draw(item, colour)
-					for actor in actors:
-						if actor.x == x and actor.y == y:
-							draw(actor, colour)
+					#for actor in actors:
+					#	if actor.x == x and actor.y == y:
+					#		draw(actor, colour)
+					if lookup_map[(x, y)]:
+						draw(lookup_map[(x, y)], colour)
 					blt.bkcolor('black')
 
 def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of elements with the format (x, y, colour)
@@ -5250,9 +5275,11 @@ def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of el
 					for item in items:
 						if item.x == x and item.y == y:
 							draw(item, colour)
-					for actor in actors:
-						if actor.x == x and actor.y == y:
-							draw(actor, colour)
+					#for actor in actors:
+					#	if actor.x == x and actor.y == y:
+					#		draw(actor, colour)
+					if lookup_map[(x, y)]:
+						draw(lookup_map[(x, y)], colour)
 					blt.bkcolor('black')
 			blt.composition(False)
 
@@ -5369,10 +5396,19 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 					for item in items:
 						if item.x == x and item.y == y:
 							draw(item, colour)
-					for actor in actors:
-						if actor.x == x and actor.y == y:
-							draw(actor, colour)
+					#for actor in actors:
+					#	if actor.x == x and actor.y == y:
+					#		draw(actor, colour)
+					if lookup_map[(x, y)]:
+						draw(lookup_map[(x, y)], colour)
 					blt.bkcolor('black')
+					
+def update_lookup_map():
+	global map, lookup_map
+	
+	lookup_map = {}
+	for actor in actors:
+		lookup_map[(actor.x, actor.y)] = actor
 					
 def update_minimap():
 	global minimap
@@ -6146,10 +6182,15 @@ def player_move_or_attack(dx, dy):
 	
 	#try to find an attackable object there
 	target = None
-	for actor in actors:
-		if actor.fighter and actor.x == x and actor.y == y:
-			target = actor
-			break
+	
+	#for actor in actors:
+	#	if actor.fighter and actor.x == x and actor.y == y:
+	#		target = actor
+	#		break
+	
+	if (x, y) in lookup_map:
+		if lookup_map[(x, y)].fighter:
+			target = lookup_map[(x, y)]
 	
 	#attack if target found, move otherwise
 	if target is not None:
@@ -6213,6 +6254,7 @@ def move_followers(monster):
 						actor.x = a
 						actor.y = b
 						break
+	update_lookup_map()
 		
 def menu(header, options, width, can_exit_without_option=True, return_option=False, y_adjust=0, header_colour=None, magic_menu=False):
 	global game_state
@@ -7303,6 +7345,7 @@ def wild_shape_death(monster, attacker):
 		actors.append(player)
 		for follower in player.followers:
 			follower.ai.master = player
+		update_lookup_map()
 	else:
 		x = monster.x
 		y = monster.y
@@ -7314,6 +7357,7 @@ def wild_shape_death(monster, attacker):
 		actors.append(monster.true_self)
 		for follower in monster.followers:
 			follower.ai.master = monster
+		update_lookup_map()
 	
 def player_ko(player, attacker):
 	#the game ended!
@@ -8095,6 +8139,7 @@ def use_wild_shape(user):
 		actors.append(player)
 		for follower in player.followers:
 			follower.ai.master = player
+		update_lookup_map()
 	else:
 		for condition in user.fighter.conditions:
 			if condition.name == 'used wild shape':
@@ -8131,6 +8176,7 @@ def use_wild_shape(user):
 				actors.append(player)
 				for follower in player.followers:
 					follower.ai.master = player
+				update_lookup_map()
 		else:
 			message(user.name_for_printing() + ' needs to rest before using that ability again.', 'white')
 
@@ -8855,6 +8901,7 @@ def cast_misty_step(caster, x=None, y=None, level=None):
 	if x is not None:
 		caster.x = x
 		caster.y = y
+		update_lookup_map()
 		if player_can_see: message('Mists appear around ' + caster.name_for_printing() + ' and they reappear nearby.', 'white')
 
 def cast_shatter(caster, x=None, y=None, level=None):
@@ -13063,9 +13110,10 @@ def generate_character():
 	#move_followers(player)
 
 def reset_globals():
-	global rest_counter, light_map, autoexplore_target, finished_exploring, last_target, last_spell
+	global rest_counter, light_map, autoexplore_target, finished_exploring, last_target, last_spell, lookup_map
 	
 	light_map = [[0 for i in range(MAP_HEIGHT)] for j in range(MAP_WIDTH)]
+	update_lookup_map()
 	rest_counter = 0
 	autoexplore_target = None
 	finished_exploring = False
@@ -13198,6 +13246,7 @@ def play_game():
 	while key != blt.TK_CLOSE:
 		initialize_fov()
 		calc_light_map()
+		update_lookup_map()
 		#render the screen
 		blt.clear()
 		render_all()
