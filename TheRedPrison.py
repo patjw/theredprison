@@ -1568,18 +1568,19 @@ class Fighter:
 		
 		first_list = []
 		second_list = []
+		
 		for actor in actors:
 			if actor != self.owner:
 				if actor.fighter:
-					if not is_incapacitated(actor):
-						if actor.fighter.opportunity_attack is False:
-							if actor.fighter.faction != self.faction and actor.fighter.faction != 'neutral' and self.faction != 'neutral':
+					if actor.fighter.opportunity_attack is False:
+						if actor.fighter.faction != self.faction and actor.fighter.faction != 'neutral' and self.faction != 'neutral':
+							if not is_incapacitated(actor):
 								if actor.can_see_object(self.owner):
 									if actor.distance_to(self.owner) < 2:
 										first_list.append(actor)
 									if actor.distance(self.owner.x + dx, self.owner.y + dy) < 2:
 										second_list.append(actor)
-					
+							
 		for actor in first_list:
 			if actor not in second_list:
 				if actor.fighter:
@@ -5156,7 +5157,7 @@ def render_map_graphics(tiles_to_redraw=None): #tiles_to_redraw is a list of ele
 					#for actor in actors:
 					#	if actor.x == x and actor.y == y:
 					#		draw(actor, colour)
-					if lookup_map[(x, y)]:
+					if (x, y) in lookup_map:
 						draw(lookup_map[(x, y)], colour)
 					blt.bkcolor('black')
 
@@ -5278,7 +5279,7 @@ def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of el
 					#for actor in actors:
 					#	if actor.x == x and actor.y == y:
 					#		draw(actor, colour)
-					if lookup_map[(x, y)]:
+					if (x, y) in lookup_map:
 						draw(lookup_map[(x, y)], colour)
 					blt.bkcolor('black')
 			blt.composition(False)
@@ -5399,7 +5400,7 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 					#for actor in actors:
 					#	if actor.x == x and actor.y == y:
 					#		draw(actor, colour)
-					if lookup_map[(x, y)]:
+					if (x, y) in lookup_map:
 						draw(lookup_map[(x, y)], colour)
 					blt.bkcolor('black')
 					

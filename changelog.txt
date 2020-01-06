@@ -1206,3 +1206,7 @@ Added Saint Cormag the necromancer as a boss for the ancient shrine.
 Added flavour text for Nubnag.
 
 Designated certain encounters as special so that they don't randomly spawn.
+
+4/1/20
+
+Added dictionary for actor positions to try and optimise the AI functions somewhat. Should cut down on a lot of looping through lists looking for actors in certain spots.
