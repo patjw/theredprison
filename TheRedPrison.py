@@ -22,8 +22,8 @@ import beggars_hole
 import black_hollow
 import cindemere
 import overworld
+import quests
 import encounters
-from quests import Quest
 import dbhash
 import anydbm
 import sys
@@ -124,7 +124,7 @@ PROFICIENCY_BONUS = {1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8:3, 9: 4, 10: 4,
 
 XP_TO_LEVEL = {1: 0, 2: 300, 3: 900, 4: 2700, 5: 6500, 6: 14000, 7: 23000, 8: 34000, 9: 48000, 10: 64000, 11: 85000, 12: 100000, 13: 120000, 14: 140000, 15: 165000, 16: 195000, 17: 225000, 18: 265000, 19: 305000, 20: 355000}
 
-PLAYER_STARTING_XP = 0
+PLAYER_STARTING_XP = 10000
 PLAYER_XP_MODIFER = 0.5
 STARTING_DUNGEON_LEVEL = 1
 STARTING_DUNGEON_BRANCH = 'overworld'
@@ -216,6 +216,7 @@ caves = caves.vault_layouts
 quest_vaults = quest_vaults.vault_layouts
 stair_vaults = stair_vaults.vault_layouts
 special_vaults = special_vaults.vault_layouts
+quests = quests.quests
 encounters = encounters.encounters
 dungeon = dungeon.dungeon
 
@@ -363,12 +364,15 @@ class Object:
 			
 		self.true_self = None #this is where we store the object during polymorphs
 		
-		self.quest = False #this indicates whether this object is relevant to any quest
-		
 		self.unique = unique #this indicates whether we want to show a visible sign to the player of a unique actor or something else
 		
 		self.flavour_text = None
 		self.chatty = False #used to note NPCs that we want to talk without being spoken to
+		
+		self.wants = None
+		self.wants_text = None
+		self.reward = None
+		self.reward_text = None
 		
 		self.links_to = None #used to store links to other branches and levels for stairs and other portals
 		
@@ -3783,62 +3787,9 @@ def create_v_tunnel(y1, y2, x):
 	for y in range(min(y1, y2), max(y1, y2) + 1):
 		map[x][y].blocked = False
 		map[x][y].block_sight = False
-
-def make_quests():
-	global quests
-	
-	list_of_npcs = []
-	list_of_levels = []
-	for i in range(1, 20):
-		list_of_levels.append(i)
-	func_list = (create_mage, create_noble, create_veteran, create_archmage, create_priest, create_cult_fanatic, create_knight)
-	name_types_list = ('human', 'dwarf', 'elf', 'halfling', 'orc', 'infernal', 'kobold')
-	for i in range(20):
-		func = random.choice(func_list)
-		name = libtcod.namegen_generate(random.choice(name_types_list))
-		npc = func(0, 0)
-		npc.name = name
-		npc.proper_noun = True
-		npc.fighter.faction = 'neutral'
-		npc.fighter.true_faction = 'neutral'
-		npc.quest = True
-		list_of_npcs.append(npc)
-	
-	#create 5 random quests on random levels between 1 and 20 - only a single quest per level
-	
-	for i in range(5):
-		
-		quest_lvl = random.choice(list_of_levels)
-		list_of_levels.remove(quest_lvl)
-			
-		quest_giver = random.choice(list_of_npcs)
-		list_of_npcs.remove(quest_giver)
-		quest_target = random.choice(list_of_npcs)
-		list_of_npcs.remove(quest_target)
-		
-		quest = Quest('kill', quest_giver, quest_target, None, quest_lvl)
-		quests.append(quest)
-		quest = Quest('kill', quest_target, quest_giver, None, quest_lvl)
-		quests.append(quest)
 		
 def make_map(old_branch=None, old_level=None):
 	global player, map, light_map, actors, items, effects, rooms, monster_func_list, weapon_func_list, armour_func_list, misc_func_list, common_magic_func_list, rare_magic_func_list, common_func_list, npc_func_list, mob_func_list, dungeon_level, dungeon_branch, quests
- 
-	monster_func_list = [create_adult_red_dragon, create_air_elemental, create_allosaurus, create_allosaurus, create_ankylosaurus, create_ape, create_axe_beak, create_baboon, create_badger, create_banshee, create_bat, create_basilisk, create_black_bear, create_blink_dog, create_blood_hawk, create_boar, create_brown_bear, create_bugbear, create_cat, create_centaur, create_chimera, create_cockatrice, create_constrictor_snake, create_crab, create_crocodile, create_cyclops, create_death_dog, create_deer, create_dire_wolf, create_doppelganger, create_draft_horse, create_eagle, create_earth_elemental, create_elephant, create_elk, create_fire_elemental, create_fire_giant, create_flameskull, create_flesh_golem, create_flying_snake, create_flying_sword, create_frog, create_frost_giant, create_gargoyle, create_ghost, create_ghoul, create_giant_ape, create_giant_badger, create_giant_bat, create_giant_boar, create_giant_centipede, create_giant_constrictor_snake, create_giant_crab, create_giant_crocodile, create_giant_eagle, create_giant_elk, create_giant_fire_beetle, create_giant_frog, create_giant_goat, create_giant_hyena, create_giant_lizard, create_giant_octopus, create_giant_owl, create_giant_poisonous_snake, create_giant_rat, create_giant_scorpion, create_giant_sea_horse, create_giant_shark, create_giant_spider, create_giant_toad, create_giant_vulture, create_giant_wasp, create_giant_weasel, create_giant_wolf_spider, create_gnoll, create_goat, create_goblin, create_grick, create_griffon, create_harpy, create_hawk, create_hell_hound, create_hill_giant, create_hippogriff, create_hobgoblin, create_hunter_shark, create_hydra, create_hyena, create_jackal, create_killer_whale, create_kobold, create_lion, create_lizard, create_lizardfolk, create_mammoth, create_manticore, create_mastiff, create_medusa, create_merfolk, create_minotaur, create_mule, create_mummy, create_nothic, create_ochre_jelly, create_octopus, create_ogre, create_orc, create_owl, create_owlbear, create_panther, create_pegasus, create_phase_spider, create_plesiosaurus, create_poisonous_snake, create_polar_bear, create_pony, create_pteranodon, create_quipper, create_rat, create_raven, create_reef_shark, create_rhinoceros, create_riding_horse, create_sabre_toothed_tiger, create_satyr, create_scorpion, create_sea_horse, create_skeleton, create_spectator, create_spider, create_stirge, create_zombie]
-	
-	npc_func_list = [create_acolyte, create_archmage, create_assassin, create_bandit, create_bandit_captain, create_berserker, create_commoner, create_cultist, create_cult_fanatic, create_gladiator, create_guard, create_knight, create_mage, create_noble, create_priest, create_scout, create_spy, create_thug, create_tribal_warrior, create_veteran]
-	
-	weapon_func_list = [create_club, create_dagger, create_great_club, create_handaxe, create_javelin, create_light_hammer, create_mace, create_quarterstaff, create_sickle, create_spear, create_light_crossbow, create_dart, create_shortbow, create_sling, create_battleaxe, create_flail, create_glaive, create_greataxe, create_greatsword, create_halberd, create_longsword, create_maul, create_morningstar, create_pike, create_rapier, create_scimitar, create_shortsword, create_trident, create_war_pick, create_warhammer, create_whip, create_blowgun, create_hand_crossbow, create_heavy_crossbow, create_longbow]
-	
-	armour_func_list = [create_shield, create_padded_armour, create_leather_armour, create_studded_leather_armour, create_hide_armour, create_chain_shirt_armour, create_scale_mail_armour, create_breastplate_armour, create_half_plate_armour, create_ring_mail_armour, create_chain_mail_armour, create_splint_armour, create_plate_armour]
-	
-	misc_func_list = [create_torch, create_arrows, create_bolts, create_bullets, create_needles]
-	
-	common_func_list = [create_food_rations]
-	
-	common_magic_func_list = [create_potion_of_healing, create_vial_of_acid, create_oil_of_sharpness, create_potion_of_giant_strength]
-	
-	rare_magic_func_list = [create_ring_of_protection, create_ring_of_invisibility, create_ring_of_poison_resistance, create_wand_of_web, create_wand_of_magic_missiles, create_wand_of_lightning_bolts, create_wand_of_fireballs, create_dwarven_plate_armour, create_dragon_scale_mail, create_elven_chain_mail_armour, create_mithral_armour]
  
 	light_map = [[0 for i in range(MAP_HEIGHT)] for j in range(MAP_WIDTH)]
 	
@@ -4236,78 +4187,6 @@ def dice_roll(number_of_die=1, type_of_die=6):
 	for i in range(number_of_die):
 		total += libtcod.random_get_int(0, 1, type_of_die)
 	return total
- 
-def place_endgame_objects(xy):
-	(x, y) = random_unblocked_spot_near((xy[0] * VAULT_SIZE) + (VAULT_SIZE/2), (xy[1] * VAULT_SIZE) + (VAULT_SIZE/2))
-	monster = create_adult_red_dragon(x, y)
-	actors.append(monster)
- 
-def place_quest_objects(quest, quest_giver_xy, quest_target_xy, quest_item_xy):
-	
-	### important note: these xy's don't refer to the map but rather the vault we are working with
-	
-	ally_func_list = (create_guard, create_acolyte, create_cultist, create_noble, create_spy, create_thug, create_knight, create_veteran)
-	
-	### check if we need to place a quest object
-	if quest.quest_giver:
-		(x, y) = random_unblocked_spot_near((quest_giver_xy[0] * VAULT_SIZE) + (VAULT_SIZE/2), (quest_giver_xy[1] * VAULT_SIZE) + (VAULT_SIZE/2))
-		quest.quest_giver.x = x
-		quest.quest_giver.y = y
-		quest.quest_giver.ai.focus = (quest_giver_xy[0] * VAULT_SIZE) + (VAULT_SIZE/2), (quest_giver_xy[1] * VAULT_SIZE) + (VAULT_SIZE/2)
-		actors.append(quest.quest_giver)
-		for i in range(libtcod.random_get_int(0, 1, 3)): #randomly choose between 1 and 3 allies
-			(x, y) = random_unblocked_spot_near(quest.quest_giver.x, quest.quest_giver.y) 
-			func_name = random.choice(ally_func_list)
-			ally = func_name(x, y)
-			ally.old_ai = ally.ai 
-			if 'magic' in ally.fighter.proficiencies:
-				companion_ai_component = CompanionMagicMonster(quest.quest_giver, 5)
-			elif 'ranged' in ally.fighter.traits:
-				companion_ai_component = CompanionRangedMonster(quest.quest_giver, 5)
-			else:
-				companion_ai_component = CompanionMonster(quest.quest_giver, 5)
-			companion_ai_component.can_talk = False
-			companion_ai_component.can_revive = False
-			companion_ai_component.can_path_find = True
-			companion_ai_component.path_finding_chance = 5
-			ally.ai = companion_ai_component
-			companion_ai_component.owner = ally
-			quest.quest_giver.followers.append(ally)
-			ally.fighter.faction = 'neutral'
-			ally.fighter.true_faction = 'neutral'
-			actors.append(ally)
-	if quest.quest_target:
-		(x, y) = random_unblocked_spot_near((quest_target_xy[0] * VAULT_SIZE) + (VAULT_SIZE/2), (quest_target_xy[1] * VAULT_SIZE) + (VAULT_SIZE/2))
-		quest.quest_target.x = x
-		quest.quest_target.y = y
-		quest.quest_target.ai.focus = (quest_target_xy[0] * VAULT_SIZE) + (VAULT_SIZE/2), (quest_target_xy[1] * VAULT_SIZE) + (VAULT_SIZE/2)
-		actors.append(quest.quest_target)
-		for i in range(libtcod.random_get_int(0, 1, 3)): #randomly choose between 1 and 3 allies
-			(x, y) = random_unblocked_spot_near(quest.quest_target.x, quest.quest_target.y) 
-			func_name = random.choice(ally_func_list)
-			ally = func_name(x, y)
-			ally.old_ai = ally.ai
-			if 'magic' in ally.fighter.proficiencies:
-				companion_ai_component = CompanionMagicMonster(quest.quest_target, 5)
-			elif 'ranged' in ally.fighter.traits:
-				companion_ai_component = CompanionRangedMonster(quest.quest_target, 5)
-			else:
-				companion_ai_component = CompanionMonster(quest.quest_target, 5)
-			companion_ai_component.can_talk = False
-			companion_ai_component.can_revive = False
-			companion_ai_component.can_path_find = True
-			companion_ai_component.path_finding_chance = 5
-			ally.ai = companion_ai_component
-			companion_ai_component.owner = ally
-			quest.quest_target.followers.append(ally)
-			ally.fighter.faction = 'neutral'
-			ally.fighter.true_faction = 'neutral'
-			actors.append(ally)
-	if quest.quest_item:
-		(x, y) = random_unblocked_spot_near((quest_item_xy[0] * VAULT_SIZE) + (VAULT_SIZE/2), (quest_item_xy[1] * VAULT_SIZE) + (VAULT_SIZE/2))
-		quest.quest_item.x = x
-		quest.quest_item.y = y
-		items.append(quest.quest_item)
 
 def place_objects(room):
 	#this is where we decide the chance of each monster or item appearing.
@@ -4419,8 +4298,8 @@ def place_objects(room):
 		
 	#choose random spot for this item
 	while True:
-		x = libtcod.random_get_int(0, room.x1+1, room.x2-1)
-		y = libtcod.random_get_int(0, room.y1+1, room.y2-1)
+		x = libtcod.random_get_int(0, room.x1+2, room.x2-2)
+		y = libtcod.random_get_int(0, room.y1+2, room.y2-2)
 		#only place it if the tile is not blocked
 		if map[x][y].char == '.': break
 	item = func()
@@ -4509,6 +4388,19 @@ def make_encounter(encounter, room):
 		if not dungeon_branch.can_recruit:
 			mon.fighter.can_join = False
 		actors.append(mon)
+		
+def create_reward(reward):
+	if reward[-4:] == 'gold':
+		item = create_gold(quantity=int(reward.strip(' gold')))
+	elif reward in ['weapon', 'armour', 'misc', 'common', 'common_magic', 'rare_magic']:
+		func_name = random.choice(eval(reward + '_func_list'))
+		item = func_name()
+	else:
+		func_name = eval('create_' + reward)
+		item = func_name()
+	item.x = player.x
+	item.y = player.y
+	items.append(item)
 	
 def get_player_attack_stats():
 
@@ -6017,26 +5909,8 @@ def player_close_door(dx, dy):
 	if not is_occupied(player.x + dx, player.y + dy):
 		map[player.x + dx][player.y + dy].close()
 	
-def quest_interaction(actor):
-	global quests
-	
-	for quest in quests:
-		if quest.quest_giver is actor:
-			if quest.accepted is False:
-				longmsgbox(actor.name_for_printing(definite_article=False) + ' says: ' + quest.request_dialogue) 
-				quest.accepted = True
-			else:
-				if quest.quest_type == 'kill':
-					if quest.quest_target.fighter is not None:
-						longmsgbox(actor.name_for_printing(definite_article=False) + ' says: ' + quest.remind_dialogue) 
-					else:
-						longmsgbox(actor.name_for_printing(definite_article=False) + ' says: ' + quest.reward_dialogue)
-						actor.quest = False
-						quest.quest_target.quest = False
-						quests.remove(quest)
-	
 def player_talk(dx, dy):
-	global quests
+	global quests, journal
 
 	player.record_last_action('talk')
 	if is_incapacitated(player): return
@@ -6044,11 +5918,15 @@ def player_talk(dx, dy):
 		if actor.x == dx and actor.y == dy:
 			if actor.fighter is not None:
 				if not is_incapacitated(actor):
-					if actor.fighter.faction == player.fighter.faction:
-						give_order(actor)
+					quest_test = None
+					for quest in quests:
+						if actor.name == quest.quest_giver:
+							quest_test = actor
+					if quest_test is not None:
+						quest_talk(actor)
 						return
-					elif actor.quest:
-						quest_interaction(actor)
+					elif actor.fighter.faction == player.fighter.faction:
+						give_order(actor)
 						return
 					elif actor.fighter.can_join:
 						if hasattr(actor.ai, 'master'): #ie, they already follow someone else
@@ -6089,6 +5967,40 @@ def player_talk(dx, dy):
 						return
 	message('There is no one there to talk to.', 'white')
 
+def quest_talk(actor):
+	global quests, journal
+	
+	### find the quest with this quest giver and with the lowest priority number
+	
+	active_quest = None
+	for quest in quests:
+		if actor.name == quest.quest_giver:
+			if active_quest == None or active_quest.priority > quest.priority:
+				active_quest = quest
+				
+	if active_quest is None: return #this should never happen but probably safe to check
+	
+	### check to see if the quest has been completed, if so, give the completed quest text, give reward, remove quest from list, and then add completed quest name to the journal 
+	
+	if quest.finish_condition in journal:
+		message(actor.name_for_printing() + ' says: ' + quest.complete_text)
+		create_reward(quest.reward)
+		journal.append(quest.name)
+		quests.remove(quest)
+		return
+	
+	### if not completed, check if there are any prereqs for the quest and if so, check the journal to see if they have been completed, if prereqs are fulfilled then give the quest text 
+	
+	else:
+		for prereq in quest.prereqs:
+			if prereq not in journal:
+				if actor.flavour_text:
+					message(actor.name_for_printing() + ' says: ' + random.choice(actor.flavour_text)) #just use this dummy text rather than discuss the quest
+				return
+				
+		message(actor.name_for_printing() + ' says: ' + quest.incomplete_text)
+		
+	
 def give_order(actor, order_all=False):
 	player.record_last_action('talk')
 	if is_incapacitated(player): return
@@ -7414,6 +7326,7 @@ def monster_death(monster, attacker):
 		list_of_items.append(item)
 	for item in list_of_items:
 		item.item.drop(monster)
+	journal.append('killed ' + monster.name)
 	
 def monster_ko_to_death(monster, attacker):
 	monster.char = '%'
@@ -11564,6 +11477,16 @@ def create_plate_armour():
 	
 ### MISC ITEMS
 
+def create_gold(quantity=None):
+	if quantity is None: quantity = libtcod.random_get_int(0, 5, 20)
+	item = Object(0, 0, '$', 'gold coins', 'yellow', quantity=quantity)
+	item.always_visible = False
+	item.item = Item() 
+	item.item.owner = item
+	item.big_char = int("0xE378", 16)
+	item.small_char = int("0xE878", 16)
+	return item
+
 def create_torch():
 	equipment_component = Equipment(slot='off hand', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=['flammable'])
 	item = Object(0, 0, '(', 'torch', OTHER_WEAPON_COLOUR, equipment=equipment_component)
@@ -12094,11 +12017,6 @@ def save_level():
 	if not dungeon_branch.overworld:
 		for actor in player.followers:
 			actors.remove(actor)
-	# for quest in quests:
-		# if quest.quest_giver in actors:
-			# actors.remove(quest.quest_giver)
-		# if quest.quest_target in actors:
-			# actors.remove(quest.quest_target)
 	file['actors'] = actors
 	file['items'] = items
 	file['effects'] = effects
@@ -12117,15 +12035,11 @@ def load_level():
 	if not dungeon_branch.overworld:
 		for actor in player.followers:
 			actors.append(actor)
-	# for quest in quests:
-		# if quest.quest_lvl == dungeon_level:
-			# if quest.quest_giver is not None: actors.append(quest.quest_giver)
-			# if quest.quest_target is not None: actors.append(quest.quest_target)
 	file.close()
 
 def save_game():
 	#open a new empty shelve (possibly overwriting an old one) to write the game data
-	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown
+	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal
 	
 	if not os.path.isdir('save'): os.mkdir('save')
 	file = shelve.open('save/savegame', 'n')
@@ -12141,12 +12055,13 @@ def save_game():
 	file['display_mode'] = display_mode
 	file['macros'] = macros
 	file['quests'] = quests
+	file['journal'] = journal
 	file['global_cooldown'] = global_cooldown
 	file.close()
  
 def load_game():
 	#open the previously saved shelve and load the game data
-	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown
+	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal
  
 	reset_globals()
 	file = shelve.open('save/savegame', 'r')
@@ -12162,6 +12077,7 @@ def load_game():
 	display_mode = file['display_mode']
 	macros = file['macros']
 	quests = file['quests']
+	journal = file['journal']
 	global_cooldown = file['global_cooldown']
 	file.close() 
 	initialize_fov()
@@ -12990,16 +12906,11 @@ def generate_character():
 	obj = create_food_rations(5)
 	player.inventory.append(obj)
 	
-	### ITEM TESTING
-	#obj = create_plate_armour()
-	#player.inventory.append(obj)
-	
 	#generate map (at this point it's not drawn to the screen)
 	dungeon_level = STARTING_DUNGEON_LEVEL
 	for branch in dungeon:
 		if branch.name == STARTING_DUNGEON_BRANCH:
 			dungeon_branch = branch
-	#make_quests()
 	make_map()
 	initialize_fov()
 	blt.clear()
@@ -13144,7 +13055,7 @@ def reset_globals():
 	last_spell = None
 	
 def new_game():
-	global player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, rest_counter, autoexplore_target, finished_exploring, display_mode, last_target, last_spell, macros, quests, global_cooldown
+	global player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, rest_counter, autoexplore_target, finished_exploring, display_mode, last_target, last_spell, macros, quests, global_cooldown, journal
 	
 	global_cooldown = STANDARD_TURN_LENGTH
 	autoexplore_target = None
@@ -13152,7 +13063,7 @@ def new_game():
 	last_target = None
 	last_spell = None
 	macros = [None, None, None, None, None, None, None, None, None, None]
-	quests = []
+	journal = []
 	#clear save directory to avoid overlap
 	if not os.path.isdir('save'): os.mkdir('save')
 	folder = 'save/'
@@ -13360,12 +13271,30 @@ def play_game():
 				game_state = 'playing'
  
 def main_menu():
-	global game_state, display_mode, player, minimap
+	global game_state, display_mode, player, minimap, monster_func_list, npc_func_list, weapon_func_list, armour_func_list, misc_func_list, common_func_list, common_magic_func_list, rare_magic_func_list
+	
 	display_mode = None
 	
 	minimap = Image.new("RGB", (MAP_WIDTH*2 + MINIMAP_OFFSET, MAP_HEIGHT*2 + MINIMAP_OFFSET), 0x000000)
 	if not os.path.isdir('save'): os.mkdir('save')
 	minimap.save('save/minimap.png')
+	
+	monster_func_list = [create_adult_red_dragon, create_air_elemental, create_allosaurus, create_allosaurus, create_ankylosaurus, create_ape, create_axe_beak, create_baboon, create_badger, create_banshee, create_bat, create_basilisk, create_black_bear, create_blink_dog, create_blood_hawk, create_boar, create_brown_bear, create_bugbear, create_cat, create_centaur, create_chimera, create_cockatrice, create_constrictor_snake, create_crab, create_crocodile, create_cyclops, create_death_dog, create_deer, create_dire_wolf, create_doppelganger, create_draft_horse, create_eagle, create_earth_elemental, create_elephant, create_elk, create_fire_elemental, create_fire_giant, create_flameskull, create_flesh_golem, create_flying_snake, create_flying_sword, create_frog, create_frost_giant, create_gargoyle, create_ghost, create_ghoul, create_giant_ape, create_giant_badger, create_giant_bat, create_giant_boar, create_giant_centipede, create_giant_constrictor_snake, create_giant_crab, create_giant_crocodile, create_giant_eagle, create_giant_elk, create_giant_fire_beetle, create_giant_frog, create_giant_goat, create_giant_hyena, create_giant_lizard, create_giant_octopus, create_giant_owl, create_giant_poisonous_snake, create_giant_rat, create_giant_scorpion, create_giant_sea_horse, create_giant_shark, create_giant_spider, create_giant_toad, create_giant_vulture, create_giant_wasp, create_giant_weasel, create_giant_wolf_spider, create_gnoll, create_goat, create_goblin, create_grick, create_griffon, create_harpy, create_hawk, create_hell_hound, create_hill_giant, create_hippogriff, create_hobgoblin, create_hunter_shark, create_hydra, create_hyena, create_jackal, create_killer_whale, create_kobold, create_lion, create_lizard, create_lizardfolk, create_mammoth, create_manticore, create_mastiff, create_medusa, create_merfolk, create_minotaur, create_mule, create_mummy, create_nothic, create_ochre_jelly, create_octopus, create_ogre, create_orc, create_owl, create_owlbear, create_panther, create_pegasus, create_phase_spider, create_plesiosaurus, create_poisonous_snake, create_polar_bear, create_pony, create_pteranodon, create_quipper, create_rat, create_raven, create_reef_shark, create_rhinoceros, create_riding_horse, create_sabre_toothed_tiger, create_satyr, create_scorpion, create_sea_horse, create_skeleton, create_spectator, create_spider, create_stirge, create_zombie]
+
+	npc_func_list = [create_acolyte, create_archmage, create_assassin, create_bandit, create_bandit_captain, create_berserker, create_commoner, create_cultist, create_cult_fanatic, create_gladiator, create_guard, create_knight, create_mage, create_noble, create_priest, create_scout, create_spy, create_thug, create_tribal_warrior, create_veteran]
+
+	weapon_func_list = [create_club, create_dagger, create_great_club, create_handaxe, create_javelin, create_light_hammer, create_mace, create_quarterstaff, create_sickle, create_spear, create_light_crossbow, create_dart, create_shortbow, create_sling, create_battleaxe, create_flail, create_glaive, create_greataxe, create_greatsword, create_halberd, create_longsword, create_maul, create_morningstar, create_pike, create_rapier, create_scimitar, create_shortsword, create_trident, create_war_pick, create_warhammer, create_whip, create_blowgun, create_hand_crossbow, create_heavy_crossbow, create_longbow]
+
+	armour_func_list = [create_shield, create_padded_armour, create_leather_armour, create_studded_leather_armour, create_hide_armour, create_chain_shirt_armour, create_scale_mail_armour, create_breastplate_armour, create_half_plate_armour, create_ring_mail_armour, create_chain_mail_armour, create_splint_armour, create_plate_armour]
+
+	misc_func_list = [create_torch, create_arrows, create_bolts, create_bullets, create_needles]
+
+	common_func_list = [create_food_rations, create_gold]
+
+	common_magic_func_list = [create_potion_of_healing, create_vial_of_acid, create_oil_of_sharpness, create_potion_of_giant_strength]
+
+	rare_magic_func_list = [create_ring_of_protection, create_ring_of_invisibility, create_ring_of_poison_resistance, create_wand_of_web, create_wand_of_magic_missiles, create_wand_of_lightning_bolts, create_wand_of_fireballs, create_dwarven_plate_armour, create_dragon_scale_mail, create_elven_chain_mail_armour, create_mithral_armour]
+
 	
 	while True:
 
@@ -13995,6 +13924,8 @@ blt.set("0xE374: data/tiles/ring3.png, resize=24x24, transparent=black")
 blt.set("0xE375: data/tiles/ring4.png, resize=24x24, transparent=black")
 blt.set("0xE376: data/tiles/ring5.png, resize=24x24, transparent=black")
 blt.set("0xE377: data/tiles/scroll.png, resize=24x24, transparent=black")
+blt.set("0xE378: data/tiles/gold.png, resize=24x24, transparent=black")
+
 
 #SMALL ITEMS
 
@@ -14076,6 +14007,7 @@ blt.set("0xE874: data/tiles/ring3.png, resize=12x12, transparent=black")
 blt.set("0xE875: data/tiles/ring4.png, resize=12x12, transparent=black")
 blt.set("0xE876: data/tiles/ring5.png, resize=12x12, transparent=black")
 blt.set("0xE877: data/tiles/scroll.png, resize=12x12, transparent=black")
+blt.set("0xE878: data/tiles/gold.png, resize=12x12, transparent=black")
 
 # we need composition to be able to draw tiles on top of other tiles
 blt.composition(True)

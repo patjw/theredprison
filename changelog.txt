@@ -1218,3 +1218,13 @@ Fixed bug with targeting system and lookup table.
 7/1/20
 
 Added visual indicator of when a unique NPC is seen.
+
+Implemented basic journal to record all player actions.
+
+Implemented basic quests and reward system.
+
+Added gold and made it spawn as a common item in amounts between 5 and 20 pieces.
+
+Implemented new quest system with ability to create multiple quests per quest giver with different priorities, rewards and prerequisites.
+
+Fixed bug with items spawning in walls around the exterior of the map.
