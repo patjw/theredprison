@@ -310,7 +310,7 @@ class Rect:
 class Object:
 	#this is a generic object: the player, a monster, an item, the stairs...
 	#it's always represented by a character on screen.
-	def __init__(self, x, y, char, name, colour, big_char=None, small_char=None, blocks=False, always_visible=False, fighter=None, ai=None, item=None, equipment=None, effect=None, quantity=None):
+	def __init__(self, x, y, char, name, colour, big_char=None, small_char=None, blocks=False, always_visible=False, fighter=None, ai=None, item=None, equipment=None, effect=None, quantity=None, unique=False):
 		self.x = x
 		self.y = y
 		self.cooldown = 0
@@ -364,6 +364,8 @@ class Object:
 		self.true_self = None #this is where we store the object during polymorphs
 		
 		self.quest = False #this indicates whether this object is relevant to any quest
+		
+		self.unique = unique #this indicates whether we want to show a visible sign to the player of a unique actor or something else
 		
 		self.flavour_text = None
 		self.chatty = False #used to note NPCs that we want to talk without being spoken to
@@ -3429,6 +3431,11 @@ def draw(object, colour=None):
 				blt.put(vx*3+1, vy*3+2, object.char)
 				blt.put(vx*3+2, vy*3+2, object.char)
 			#display a small token on the upper left of the char for allies and upper left for magic/ranged 
+			if object.unique:
+				blt.layer(2)
+				blt.color('pink')
+				blt.put(vx*3, vy*3, chr(249))
+				blt.layer(0)
 			if object.fighter:
 				if object != player and object.fighter.faction == player.fighter.faction:
 					blt.layer(2)
@@ -3438,12 +3445,12 @@ def draw(object, colour=None):
 				if object.fighter.ranged:
 					blt.layer(2)
 					blt.color('yellow')
-					blt.put(vx*3, vy*3, chr(4))
+					blt.put(vx*3, vy*3+2, chr(4))
 					blt.layer(0)
 				if object.fighter.magic:
 					blt.layer(2)
 					blt.color('purple')
-					blt.put(vx*3, vy*3, chr(4))
+					blt.put(vx*3, vy*3+2, chr(4))
 					blt.layer(0)
 		elif display_mode == 'ascii big':
 			if object.char == '[':
@@ -5615,7 +5622,7 @@ def render_game_info():
 				if actor in player.followers:
 					blt.color('green')
 					blt.puts(5, count, ("[font=log]" + actor.name_for_printing(definite_article=False, capitalise=True) + ' (' + str(actor.fighter.hp + player.fighter.temp_hp) + '/' + str(actor.fighter.max_hp) + ')')[:32])
-				elif actor.quest and actor.fighter.faction == 'neutral':
+				elif actor.unique and actor.fighter.faction == 'neutral':
 					blt.color('purple')
 					blt.puts(5, count, ("[font=log]" + actor.name_for_printing(definite_article=False, capitalise=True) + ' (' + str(actor.fighter.max_hp) + ')')[:32])
 				elif actor.fighter.faction == 'neutral':
@@ -11000,7 +11007,10 @@ def create_veteran(x, y):
 
 def create_odette(x, y):
 	monster = create_priest(x, y)
+	monster.big_char = int("0xE263", 16)
+	monster.small_char = int("0xE763", 16)
 	monster.name = 'Odette'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11012,6 +11022,7 @@ def create_odette(x, y):
 def create_sunny(x, y):
 	monster = create_mastiff(x, y)
 	monster.name = 'Sunny'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11022,6 +11033,7 @@ def create_sunny(x, y):
 def create_susie(x, y):
 	monster = create_mastiff(x, y)
 	monster.name = 'Susie'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11032,6 +11044,7 @@ def create_susie(x, y):
 def create_momo(x, y):
 	monster = create_cat(x, y)
 	monster.name = 'Momo'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11042,6 +11055,7 @@ def create_momo(x, y):
 def create_lord_wesley(x, y):
 	monster = create_noble(x, y)
 	monster.name = 'Lord Wesley'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11053,6 +11067,7 @@ def create_lord_wesley(x, y):
 def create_lady_cindemere(x, y):
 	monster = create_archmage(x, y)
 	monster.name = 'Lady Cindemere'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11066,6 +11081,7 @@ def create_saint_barnabas(x, y):
 	monster.big_char = int("0xE277", 16) #make him look like a priest
 	monster.small_char = int("0xE777", 16)
 	monster.name = 'Saint Barnabas'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11079,6 +11095,7 @@ def create_saint_othmar(x, y):
 	monster.big_char = int("0xE277", 16) #make him look like a priest
 	monster.small_char = int("0xE777", 16)
 	monster.name = 'Saint Othmar'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11092,6 +11109,7 @@ def create_saint_hedwig(x, y):
 	monster.big_char = int("0xE277", 16) #make him look like a priest
 	monster.small_char = int("0xE777", 16)
 	monster.name = 'Saint Hedwig'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.can_join = False
@@ -11105,6 +11123,7 @@ def create_cardinal_florian(x, y):
 	monster.big_char = int("0xE264", 16)
 	monster.small_char = int("0xE764", 16) #make him look like an archmage
 	monster.name = 'Cardinal Florian'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11116,6 +11135,7 @@ def create_cardinal_florian(x, y):
 def create_aoife(x, y):
 	monster = create_archmage(x, y)
 	monster.name = 'Aoife'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.can_join = False
 	monster.chatty = True
@@ -11125,6 +11145,7 @@ def create_aoife(x, y):
 def create_nubnag(x, y):
 	monster = create_kobold(x, y)
 	monster.name = 'Nubnag'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.chatty = True
 	monster.colour = 'red'
@@ -11145,6 +11166,7 @@ def create_saint_cormag(x, y):
 	monster.big_char = int("0xE275", 16) #make him look like a mage
 	monster.small_char = int("0xE775", 16)
 	monster.name = 'Saint Cormag'
+	monster.unique = True
 	monster.proper_noun = True
 	monster.fighter.can_join = False
 	monster.chatty = True

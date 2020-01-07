@@ -1210,3 +1210,11 @@ Designated certain encounters as special so that they don't randomly spawn.
 4/1/20
 
 Added dictionary for actor positions to try and optimise the AI functions somewhat. Should cut down on a lot of looping through lists looking for actors in certain spots.
+
+6/1/20
+
+Fixed bug with targeting system and lookup table.
+
+7/1/20
+
+Added visual indicator of when a unique NPC is seen.
