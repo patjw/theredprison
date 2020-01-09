@@ -216,7 +216,6 @@ caves = caves.vault_layouts
 quest_vaults = quest_vaults.vault_layouts
 stair_vaults = stair_vaults.vault_layouts
 special_vaults = special_vaults.vault_layouts
-quests = quests.quests
 encounters = encounters.encounters
 dungeon = dungeon.dungeon
 
@@ -13064,6 +13063,7 @@ def new_game():
 	last_spell = None
 	macros = [None, None, None, None, None, None, None, None, None, None]
 	journal = []
+	quests = quests.quests
 	#clear save directory to avoid overlap
 	if not os.path.isdir('save'): os.mkdir('save')
 	folder = 'save/'
