@@ -18,7 +18,7 @@ quest = Quest('kill nubnag')
 quest.quest_giver = 'Odette'
 quest.finish_condition = 'killed nubnag'
 quest.incomplete_text = "For all of our sakes, you must kill Nubnag. He rules the warrens to the south-west, but beware; he is a dangerous foe. We have suffered at his hands for too long."
-quest.complete_text = "Can it really true? Nubnag has perished? I can scarcely believe what you tell me. North Warren will be forever in your debt. Please take this as a token of our appreciation."
+quest.complete_text = "Can it really be true? Nubnag has perished? I can scarcely believe what you tell me. North Warren will be forever in your debt. Please take this as a token of our appreciation."
 quest.reward = '50 gold'
 quests.append(quest)
 
