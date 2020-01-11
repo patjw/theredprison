@@ -1232,3 +1232,9 @@ Fixed bug with items spawning in walls around the exterior of the map.
 9/1/20
 
 Added quest given by Cardinal Florian to kill Saint Cormag.
+
+10/1/19
+
+Finished work on quests so that they work properly and quest givers can have multiple quests to give with different prerequisites and competing priorities as well as properly giving rewards.
+
+Reduced how often the screen is updated to hopefully give a big boost to speed.

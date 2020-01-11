@@ -42,9 +42,9 @@ VIEW_WIDTH = 105
 VIEW_HEIGHT = 70
 
 MINIMAP_OFFSET = 4
-MINIMAP_FLAG = False #lets me turn off minimap for local testing
-STARTING_EXPLORED = False #again for testing, allows for fully explored maps
-SHOW_ALL_OBJECTS = False #for testing, shows every object on map
+MINIMAP_FLAG = True #lets me turn off minimap for local testing - should be True for release
+STARTING_EXPLORED = False #again for testing, allows for fully explored maps - should be False for release
+SHOW_ALL_OBJECTS = False #for testing, shows every object on map - should be False for release
  
 ANIMATION_FRAMES = 25
  
@@ -124,7 +124,7 @@ PROFICIENCY_BONUS = {1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8:3, 9: 4, 10: 4,
 
 XP_TO_LEVEL = {1: 0, 2: 300, 3: 900, 4: 2700, 5: 6500, 6: 14000, 7: 23000, 8: 34000, 9: 48000, 10: 64000, 11: 85000, 12: 100000, 13: 120000, 14: 140000, 15: 165000, 16: 195000, 17: 225000, 18: 265000, 19: 305000, 20: 355000}
 
-PLAYER_STARTING_XP = 10000
+PLAYER_STARTING_XP = 0
 PLAYER_XP_MODIFER = 0.5
 STARTING_DUNGEON_LEVEL = 1
 STARTING_DUNGEON_BRANCH = 'overworld'
@@ -5973,7 +5973,7 @@ def quest_talk(actor):
 	
 	active_quest = None
 	for quest in quests:
-		if actor.name == quest.quest_giver:
+		if actor.name.lower() == quest.quest_giver.lower():
 			if active_quest == None or active_quest.priority > quest.priority:
 				active_quest = quest
 				
@@ -5981,23 +5981,23 @@ def quest_talk(actor):
 	
 	### check to see if the quest has been completed, if so, give the completed quest text, give reward, remove quest from list, and then add completed quest name to the journal 
 	
-	if quest.finish_condition in journal:
-		message(actor.name_for_printing() + ' says: ' + quest.complete_text)
-		create_reward(quest.reward)
-		journal.append(quest.name)
-		quests.remove(quest)
-		return
+	for entry in journal:
+		if entry.lower() == active_quest.finish_condition.lower():
+			longmsgbox(actor.name_for_printing() + ' says: ' + active_quest.complete_text)
+			create_reward(active_quest.reward)
+			journal.append(active_quest.name)
+			quests.remove(active_quest)
+			return
 	
 	### if not completed, check if there are any prereqs for the quest and if so, check the journal to see if they have been completed, if prereqs are fulfilled then give the quest text 
 	
-	else:
-		for prereq in quest.prereqs:
-			if prereq not in journal:
-				if actor.flavour_text:
-					message(actor.name_for_printing() + ' says: ' + random.choice(actor.flavour_text)) #just use this dummy text rather than discuss the quest
-				return
+	for prereq in active_quest.prereqs:
+		if prereq not in journal:
+			if actor.flavour_text:
+				message(actor.name_for_printing() + ' says: ' + random.choice(actor.flavour_text)) #just use this dummy text rather than discuss the quest
+			return
 				
-		message(actor.name_for_printing() + ' says: ' + quest.incomplete_text)
+	longmsgbox(actor.name_for_printing() + ' says: ' + active_quest.incomplete_text)
 		
 	
 def give_order(actor, order_all=False):
@@ -10939,6 +10939,7 @@ def create_sunny(x, y):
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
 	monster.chatty = True
+	monster.fighter.xp = -250
 	monster.flavour_text = ['Woof!', 'Awooo!']
 	return monster
 	
@@ -10950,6 +10951,7 @@ def create_susie(x, y):
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
 	monster.chatty = True
+	monster.fighter.xp = -250
 	monster.flavour_text = ['Woof!', 'Awooo!']
 	return monster
 	
@@ -10961,6 +10963,7 @@ def create_momo(x, y):
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
 	monster.chatty = True
+	monster.fighter.xp = -250
 	monster.flavour_text = ['Meow.']
 	return monster
 	
@@ -11062,6 +11065,7 @@ def create_nubnag(x, y):
 	monster.chatty = True
 	monster.colour = 'red'
 	monster.char = 'K'
+	monster.fighter.xp = 100
 	monster.fighter.max_hp = 50
 	monster.fighter.hp = 50
 	monster.fighter.strength = 18
@@ -12062,7 +12066,6 @@ def load_game():
 	#open the previously saved shelve and load the game data
 	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal
  
-	reset_globals()
 	file = shelve.open('save/savegame', 'r')
 	map = file['map']
 	actors = file['actors']
@@ -12080,6 +12083,7 @@ def load_game():
 	global_cooldown = file['global_cooldown']
 	file.close() 
 	initialize_fov()
+	reset_globals()
 	
 def delete_saved_game():
 	#used to clear old saved game files upon player death
@@ -13182,9 +13186,9 @@ def play_game():
 		calc_light_map()
 		update_lookup_map()
 		#render the screen
-		blt.clear()
-		render_all()
-		blt.refresh()
+		#blt.clear()
+		#render_all()
+		#blt.refresh()
  
 		#level up if needed
 		check_level_up()
@@ -13214,6 +13218,10 @@ def play_game():
 				break
 				
 		if player.cooldown <= 0:
+			#render the screen only on player's turn
+			blt.clear()
+			render_all()
+			blt.refresh()
 			if game_state == 'playing':
 				player.has_swapped = False
 				player_action = handle_keys()
@@ -13314,11 +13322,11 @@ def main_menu():
 			new_game()
 			if player is not None: play_game()
 		if choice == 1:	 #load last game
-			try:
-				load_game()
-			except:
-				simplemsgbox('No saved game to load',)
-				continue
+			#try:
+			load_game()
+			#except:
+			#	simplemsgbox('No saved game to load',)
+			#	continue
 			play_game()
 		elif choice == 2:  #quit
 			break
