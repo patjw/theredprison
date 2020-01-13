@@ -1242,3 +1242,7 @@ Reduced how often the screen is updated to hopefully give a big boost to speed.
 13/1/19
 
 Fixed vi-keys not working for target selection.
+
+Fixed issues with shrubs background not being transparent.
+
+Fixed issues with shrubs and trees interrupting autoexplore.

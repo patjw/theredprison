@@ -3534,6 +3534,7 @@ def create_full_map_vault(room, vault_list, vault_actors=None, vault_items=None,
 				tree = Object(x, y, chr(5), 'shrub', 'green', blocks=True, always_visible=True,effect=tree_effect)
 				tree.big_char = random.choice(shrub_char)
 				tree.small_char = int("0xE610", 16)
+				tree.has_been_seen = True
 				effects.append(tree)
 				map[x][y].blocked = True
 				map[x][y].block_sight = False
@@ -3543,6 +3544,7 @@ def create_full_map_vault(room, vault_list, vault_actors=None, vault_items=None,
 				tree = Object(x, y, chr(6), 'tree', 'green', blocks=True, always_visible=True, effect = tree_effect)
 				tree.big_char = random.choice(tree_char)
 				tree.small_char = int("0xE611", 16)
+				tree.has_been_seen = True
 				effects.append(tree)
 				map[x][y].blocked = True
 				map[x][y].block_sight = True
@@ -3674,6 +3676,7 @@ def create_vault(room, vault_list, make_down_stairs=False, make_up_stairs=False,
 				tree = Object(room.x1 + x, room.y1 + y, chr(6), 'shrub', 'green', blocks=True, always_visible=True, effect=tree_effect)
 				tree.big_char = random.choice(shrub_char)
 				tree.small_char = int("0xE610", 16)
+				tree.has_been_seen = True
 				effects.append(tree)
 				map[room.x1 + x][room.y1 + y].blocked = True
 				map[room.x1 + x][room.y1 + y].block_sight = False
@@ -3683,6 +3686,7 @@ def create_vault(room, vault_list, make_down_stairs=False, make_up_stairs=False,
 				tree = Object(room.x1 + x, room.y1 + y, chr(5), 'tree', 'green', blocks=True, always_visible=True, effect = tree_effect)
 				tree.big_char = random.choice(tree_char)
 				tree.small_char = int("0xE611", 16)
+				tree.has_been_seen = True
 				effects.append(tree)
 				map[room.x1 + x][room.y1 + y].blocked = True
 				map[room.x1 + x][room.y1 + y].block_sight = True
