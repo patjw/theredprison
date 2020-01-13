@@ -1238,3 +1238,7 @@ Added quest given by Cardinal Florian to kill Saint Cormag.
 Finished work on quests so that they work properly and quest givers can have multiple quests to give with different prerequisites and competing priorities as well as properly giving rewards.
 
 Reduced how often the screen is updated to hopefully give a big boost to speed.
+
+13/1/19
+
+Fixed vi-keys not working for target selection.
