@@ -7488,22 +7488,22 @@ def target_tile(max_range=None, target_radius=None, projectile=False, can_target
 			x=x-1
 			redraw = True
  
-		elif key == blt.TK_KP_7:
+		elif key == blt.TK_KP_7 or key_char == 'y':
 			x=x+1
 			y=y+1
 			redraw = True
  
-		elif key == blt.TK_KP_9:
+		elif key == blt.TK_KP_9 or key_char == 'u':
 			x=x-1
 			y=y+1
 			redraw = True
  
-		elif key == blt.TK_KP_1:
+		elif key == blt.TK_KP_1 or key_char == 'b':
 			x=x+1
 			y=y-1
 			redraw = True
  
-		elif key == blt.TK_KP_3:
+		elif key == blt.TK_KP_3 or key_char == 'n':
 			x=x-1
 			y=y-1
 			redraw = True
