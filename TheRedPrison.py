@@ -22,7 +22,7 @@ import beggars_hole
 import black_hollow
 import cindemere
 import overworld
-import quests
+import quests as master_quests
 import encounters
 import dbhash
 import anydbm
@@ -124,7 +124,7 @@ PROFICIENCY_BONUS = {1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8:3, 9: 4, 10: 4,
 
 XP_TO_LEVEL = {1: 0, 2: 300, 3: 900, 4: 2700, 5: 6500, 6: 14000, 7: 23000, 8: 34000, 9: 48000, 10: 64000, 11: 85000, 12: 100000, 13: 120000, 14: 140000, 15: 165000, 16: 195000, 17: 225000, 18: 265000, 19: 305000, 20: 355000}
 
-PLAYER_STARTING_XP = 0
+PLAYER_STARTING_XP = 900
 PLAYER_XP_MODIFER = 0.5
 STARTING_DUNGEON_LEVEL = 1
 STARTING_DUNGEON_BRANCH = 'overworld'
@@ -176,7 +176,7 @@ DRUID_8 = {'animal shapes', 'antipathy/sympathy', 'control weather', 'earthquake
 DRUID_9 = {'foresight', 'shapechange', 'storm of vengeance', 'true resurrection'}
 
 WARLOCK_CANTRIP = {'chill touch', 'eldritch blast', 'mage hand', 'minor illusion', 'poison spray', 'presdigitation', 'true strike'}
-WARLOCK_1 = {'charm person', 'comprehend languages', 'expeditious retreat', 'hellish rebuke', 'illusory script', 'protection from evil and good', 'unseen servant'}
+WARLOCK_1 = {'charm person', 'comprehend languages', 'expeditious retreat', 'hellish rebuke', 'illusory script', 'protection from evil and good', 'unseen servant', 'find familiar'}
 WARLOCK_2 = {'darkness', 'enthrall', 'hold person', 'invisibility', 'mirror image', 'misty step', 'ray of enfeeblement', 'shatter', 'spider climb', 'suggestion'}
 WARLOCK_3 = {'counterspell', 'dispel magic', 'fear', 'fly', 'gaseous form', 'hypnotic pattern', 'magic circle', 'major image', 'remove curse', 'tongues', 'vampiric touch'}
 WARLOCK_4 = {'banishment', 'blight', 'dimension door', 'hallucinatory terrain'}
@@ -261,15 +261,16 @@ class Tile:
 			self.blocked = False
 			self.block_sight = False
 			self.char = '='
-			initialize_fov()
-			initialize_fov()
+			fov_map = initialize_fov()
+			if familiar: fov_map_fam = initialize_fov()
 			
 	def close(self):
 		if self.openable:
 			self.blocked = True
 			self.block_sight = True
 			self.char = '+'
-			initialize_fov()
+			fov_map = initialize_fov()
+			if familiar: fov_map_fam = initialize_fov()
 			
 	def make_wall(self):
 		self.blocked = True
@@ -362,6 +363,8 @@ class Object:
 			self.effect.owner = self
 			
 		self.true_self = None #this is where we store the object during polymorphs
+		
+		self.familiar = None #used to distinguish whether this is a familiar and if so, the identity of it
 		
 		self.unique = unique #this indicates whether we want to show a visible sign to the player of a unique actor or something else
 		
@@ -656,6 +659,10 @@ class Object:
 		if libtcod.map_is_in_fov(fov_map, x, y): #the target is in field of view
 			if darkvision or blindsight or close_enough_to_see or light_map[x][y] == 2: #the square is lit or we have darkvision or we are within 2 squares so close enough to see in the dark
 				return True #so we can see that square
+		for actor in actors:
+			if self.familiar == actor:
+				if actor.can_see(x, y):
+					return True #this means we have a familiar and it can see that location
 		return False
 		
 	def can_see_object(self, target):
@@ -683,6 +690,10 @@ class Object:
 			if libtcod.map_is_in_fov(fov_map, target.x, target.y): #the target is in field of view
 				if darkvision or blindsight or close_enough_to_see or light_map[target.x][target.y] == 2: #the square is lit or we have darkvision or we are within 2 squares so close enough to see in the dark
 					return True #so we can see that square
+		for actor in actors:
+			if self.familiar == actor:
+				if actor.can_see_object(target):
+					return True #this means we have a familiar and it can see that object
 		return False
 		
 	def name_for_printing(self, definite_article=True, capitalise=False, display_inventory=False):
@@ -3369,10 +3380,10 @@ def send_to_back(object):
 		items.insert(0, object)
 		 
 def draw(object, colour=None):
-	global game_state
+	global game_state, familiar, fov_map_fam, fov_map
 	#only show if it's visible to the player; or it's set to "always visible" and on an explored tile
 	
-	if object.fighter and object != player:
+	if object.fighter and object != player and object != familiar:
 		for condition in object.fighter.conditions:
 			if condition.name == 'invisibility': 
 				if 'blindsight' not in player.fighter.traits:
@@ -3384,6 +3395,9 @@ def draw(object, colour=None):
 		visible = True
 	else:
 		visible = (libtcod.map_is_in_fov(fov_map, object.x, object.y) and light_map[object.x][object.y] > 0)
+		if not visible:
+			if familiar is not None:
+				visible = (libtcod.map_is_in_fov(fov_map_fam, object.x, object.y) and light_map[object.x][object.y] > 0)
 	always_visible = (object.always_visible and map[object.x][object.y].explored)
 	if visible or always_visible:
 		if object.has_been_seen == False:
@@ -4727,12 +4741,32 @@ def calc_light_map():
 			
 		illumination_range = 6
 		
+		if familiar:
+		
+			if 'darkvision' in familiar.fighter.traits or 'blindsight' in familiar.fighter.traits: 
+				fam_darkvision = True
+			else: 
+				fam_darkvision = False
+				
+			if fam_darkvision: 
+				fam_sight_range = 4
+			else:
+				fam_sight_range = 2
+		
 		#do area around player first 
 		for x in range(player.x - sight_range - 2, player.x + sight_range + 2):
 			for y in range(player.y - sight_range - 2, player.y + sight_range + 2):
 				if x >= 0 and y >= 0 and x < MAP_WIDTH and y < MAP_HEIGHT:
 					if player.distance(x, y) <= sight_range:
 						light_map[x][y] = 1 #this value means player can see but not lit
+						
+		#do area around familiar if there is one
+		if familiar:
+			for x in range(familiar.x - fam_sight_range - 2, familiar.x + fam_sight_range + 2):
+				for y in range(familiar.y - fam_sight_range - 2, familiar.y + fam_sight_range + 2):
+					if x >= 0 and y >= 0 and x < MAP_WIDTH and y < MAP_HEIGHT:
+						if familiar.distance(x, y) <= fam_sight_range:
+							light_map[x][y] = 1 #this value means player can see but not lit
 						
 		list_of_lit_objects = []
 		list_of_dark_objects = [] #special case for darkness effect
@@ -4782,9 +4816,14 @@ def calc_light_map():
 						if object.distance(x, y) <= illumination_range:
 							if libtcod.map_is_in_fov(fov_map, x, y):
 								light_map[x][y] = 2 #this value means that it is lit
+							if familiar:
+								if libtcod.map_is_in_fov(fov_map_fam, x, y):
+									light_map[x][y] = 2 #this value means that it is lit
 								
 		for object in list_of_dark_objects:
 			if player.distance(object.x, object.y) <= sight_range:
+				light_map[object.x][object.y] = 1 #this value means player can see but not lit
+			elif familiar and familiar.distance(object.x, object.y) <= sight_range:
 				light_map[object.x][object.y] = 1 #this value means player can see but not lit
 			else:
 				light_map[object.x][object.y] = 0
@@ -5190,6 +5229,7 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 	global fov_map, colour_dark_wall, colour_light_wall
 	global colour_dark_ground, colour_light_ground
 	global fov_recompute, light_map, display_mode
+	global fov_map_fam, familiar
 	
 	if 'darkvision' in player.fighter.traits or 'blindsight' in player.fighter.traits:
 		player_darkvision_range = 4
@@ -5205,6 +5245,8 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 		#recompute FOV if needed (the player moved or something)
 		fov_recompute = True
 		libtcod.map_compute_fov(fov_map, player.x, player.y, SIGHT_RANGE, FOV_LIGHT_WALLS, FOV_ALGO)
+		if familiar:
+			libtcod.map_compute_fov(fov_map_fam, familiar.x, familiar.y, SIGHT_RANGE, FOV_LIGHT_WALLS, FOV_ALGO)
  
 		low_view_x = player.x - (VIEW_WIDTH/2)
 		if low_view_x < 0: low_view_x = 0
@@ -5221,6 +5263,9 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 				vx = player.x - x + (VIEW_WIDTH / 2) + BAR_WIDTH
 				vy = player.y - y + (VIEW_HEIGHT / 2)
 				visible = libtcod.map_is_in_fov(fov_map, x, y)
+				if not visible:
+					if familiar:
+						visible = libtcod.map_is_in_fov(fov_map_fam, x, y)
 				wall = map[x][y].block_sight and (map[x][y].char == '#' or map[x][y].char == '+')
 				if vx in range(BAR_WIDTH, SCREEN_WIDTH-1) and vy in range(1, VIEW_HEIGHT):
 					if not visible:
@@ -5277,6 +5322,7 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 			vy = player.y - actor.y + (VIEW_HEIGHT / 2)
 			if vx in range(BAR_WIDTH, SCREEN_WIDTH-1) and vy in range(1, VIEW_HEIGHT):
 				draw(actor)			
+	if familiar: draw(familiar)
 	draw(player)
  
 	if tiles_to_redraw is not None:
@@ -6453,7 +6499,7 @@ def ability_menu(header):
 	player.record_last_action('action')
 	if is_incapacitated(player): return
 	
-	possible_abilities = ['arcane recovery', 'turn undead', 'preserve life', 'destroy undead', 'divine intervention', 'divine strike', 'second wind', 'action surge', 'uncanny dodge', 'healing hands', 'wild shape', 'use invisibility', 'hellish rebuke', 'darkness']
+	possible_abilities = ['arcane recovery', 'turn undead', 'preserve life', 'destroy undead', 'divine intervention', 'divine strike', 'second wind', 'action surge', 'uncanny dodge', 'healing hands', 'wild shape', 'use invisibility', 'hellish rebuke', 'darkness', 'pact of the chain']
 	
 	abilities = []
 	for trait in player.fighter.traits:
@@ -7151,16 +7197,21 @@ def check_level_up():
 						spell_choice = menu('As a Warlock, choose 1 spell on level up:', spell_list, 40, return_option=True, can_exit_without_option=False)
 						player.fighter.spells.append(spell_choice)
 				if new_level == 3: 
-					simplemsgbox('You gain the ability: pact of the tome!')
-					player.fighter.traits.append('pact of the tome')
-					spell_list = ['acid splash', 'chill touch', 'fire bolt', 'light', 'poison spray', 'ray of frost', 'shocking grasp', 'resistance', 'sacred flame', 'eldritch blast'] #all possible cantrips - needs to be constantly updated
-					for _ in range(3):
-						for spell in player.fighter.spells:
-							if spell in spell_list:
-								spell_list.remove(spell)
-						if len(spell_list) > 0:
-							spell_choice = menu('As a Warlock with Pact of the Tome, choose 3 cantrips:', spell_list, 51, return_option=True, can_exit_without_option=False)
-							player.fighter.spells.append(spell_choice)
+					pact_choice = menu('As a Warlock, enter into a pact:', ['pact of the tome', 'pact of the chain'], 41, return_option=True, can_exit_without_option=False)
+					if pact_choice == 'pact of the tome':
+						simplemsgbox('You gain the ability: pact of the tome!')
+						player.fighter.traits.append('pact of the tome')
+						spell_list = ['acid splash', 'chill touch', 'fire bolt', 'light', 'poison spray', 'ray of frost', 'shocking grasp', 'resistance', 'sacred flame', 'eldritch blast'] #all possible cantrips - needs to be constantly updated
+						for _ in range(3):
+							for spell in player.fighter.spells:
+								if spell in spell_list:
+									spell_list.remove(spell)
+							if len(spell_list) > 0:
+								spell_choice = menu('As a Warlock with Pact of the Tome, choose 3 cantrips:', spell_list, 51, return_option=True, can_exit_without_option=False)
+								player.fighter.spells.append(spell_choice)
+					if pact_choice == 'pact of the chain':
+						simplemsgbox('You gain the ability: pact of the chain!')
+						player.fighter.traits.append('pact of the chain')
 				elif new_level == 4: ability_score_improvement()
 				elif new_level == 8: ability_score_improvement()
 				elif new_level == 12: ability_score_improvement()
@@ -7302,6 +7353,8 @@ def player_death():
 	player.colour = 'red'
  
 def monster_death(monster, attacker):
+	global familiar
+	
 	#transform it into a nasty corpse! it doesn't block, can't be
 	#attacked and doesn't move
 	if (attacker == player or attacker in player.followers) and monster != player and monster not in player.followers: #yield experience to the player but not if the player knocks themselves out or their followers
@@ -7311,6 +7364,10 @@ def monster_death(monster, attacker):
 	else:
 		player_can_see = player.can_see_object(monster) #libtcod.map_is_in_fov(fov_map, monster.x, monster.y) and light_map[monster.x][monster.y] > 0
 		if player_can_see: message(monster.name_for_printing() + ' is dead!', 'red')
+	summoned = False
+	for condition in monster.fighter.conditions:
+		if condition.name == 'summoned':
+			summoned = True
 	monster.char = '%'
 	monster.small_char = int("0xE510", 16)
 	monster.big_char = int("0xE010", 16)
@@ -7318,12 +7375,17 @@ def monster_death(monster, attacker):
 	monster.blocks = False
 	monster.fighter = None
 	monster.ai = None
-	if monster in actors: actors.remove(monster)
+	if monster in actors: 
+		actors.remove(monster)
 	for actor in actors: #test to see if we need to tidy up any followers lists
 		if monster in actor.followers:
 			actor.followers.remove(monster)
-	items.append(monster)
-	send_to_back(monster)
+		if actor.familiar == monster:
+			actor.familiar = None
+			familiar = None
+	if not summoned:
+		items.append(monster)
+		send_to_back(monster)
 	list_of_items = [] #we need to create a second list because we lose track of item indexes when trying to drop them all at once
 	for item in monster.inventory:
 		list_of_items.append(item)
@@ -7810,6 +7872,7 @@ def use_ability(ability):
 	if ability == 'use invisibility': use_invisibility(player)
 	if ability == 'hellish rebuke': use_hellish_rebuke(player)
 	if ability == 'darkness': use_darkness(player)
+	if ability == 'pact of the chain': use_pact_of_the_chain(player)
 	
 def use_arcane_recovery(user):
 	test = False
@@ -8136,6 +8199,19 @@ def use_darkness(user):
 	else:
 		message(user.name_for_printing() + ' needs to rest before using that ability again.', 'white')
 			
+def use_pact_of_the_chain(user):
+	test = False
+	for condition in user.fighter.conditions:
+		if condition.name == 'used pact of the chain':
+			test = True
+	if test is not True:
+		obj = Condition(name='used pact of the chain', permanent=True, visible=False, remove_on_rest=True) #this object prevents us from using it twice without rest
+		obj.owner = user 
+		user.fighter.conditions.append(obj)
+		cast_find_familiar(user)
+	else:
+		message(user.name_for_printing() + ' needs to rest before using that ability again.', 'white')
+			
 ###
 ### MAGIC FUNCTIONS
 ###
@@ -8191,6 +8267,8 @@ def cast(spell, target=None, increased_spell_slot=0): #function to turn keyboard
 	### CROSSOVER SPELLS
 	#CANTRIP
 	if spell == 'light': cast_light(player, level=level)
+	#LEVEL 1
+	if spell == 'find familiar': cast_find_familiar(player, level=level)
 	#LEVEL 2
 	if spell == 'hold person': cast_hold_person(player, target=target, level=level)
 	
@@ -8277,6 +8355,30 @@ def cast_light(caster, level=None):
 		obj.owner = caster
 		if player_can_see: message(caster.name_for_printing() + ' casts light and the nearby area is illuminated.', 'white')
 		#explosion_effect(caster.x, caster.y, 2, [255,255,153])
+
+def cast_find_familiar(caster, level=None):
+	global familiar
+
+	general_spell_check(caster)
+	test = False
+	if caster == player:
+		player_can_see = True
+	else:
+		player_can_see = player.can_see_object(caster)
+	(x, y) = random_unblocked_spot_near(caster.x, caster.y)
+	monster = create_bat(x, y)
+	caster.familiar = monster
+	familiar = caster.familiar
+	monster.fighter.faction = caster.fighter.faction
+	monster.ai = CompanionMonster(caster, 5)
+	monster.ai.owner = monster
+	monster.ai.can_talk = False
+	monster.ai.can_revive = False
+	cond = Condition(name='summoned', visible=False, colour='white')
+	cond.apply_to_actor(monster)
+	caster.followers.append(monster)
+	actors.append(monster)
+	if player_can_see: message(caster.name_for_printing() + ' casts find familiar and a creature appears.', 'white')
 		
 def cast_hold_person(caster, target=None, level=None):
 	general_spell_check(caster)
@@ -11843,14 +11945,17 @@ def autoexplore():
 						return
 	if game_state == 'exploring' or game_state == 'autoplay': 
 		#open all nearby doors so they don't mess with the algorithm
-		if is_openable(player.x-1, player.y-1) and is_blocked(player.x-1, player.y-1): player_open_door(-1, -1)
-		if is_openable(player.x-1, player.y) and is_blocked(player.x-1, player.y): player_open_door(-1, 0)
-		if is_openable(player.x-1, player.y+1) and is_blocked(player.x-1, player.y+1): player_open_door(-1, 1)
-		if is_openable(player.x, player.y-1) and is_blocked(player.x, player.y-1): player_open_door(0, -1)
-		if is_openable(player.x, player.y+1) and is_blocked(player.x, player.y+1): player_open_door(0, 1)
-		if is_openable(player.x+1, player.y+1) and is_blocked(player.x+1, player.y+1): player_open_door(1, 1)
-		if is_openable(player.x+1, player.y) and is_blocked(player.x+1, player.y): player_open_door(1, 0)
-		if is_openable(player.x+1, player.y+1) and is_blocked(player.x+1, player.y+1): player_open_door(1, 1)
+		try:
+			if is_openable(player.x-1, player.y-1) and is_blocked(player.x-1, player.y-1): player_open_door(-1, -1)
+			if is_openable(player.x-1, player.y) and is_blocked(player.x-1, player.y): player_open_door(-1, 0)
+			if is_openable(player.x-1, player.y+1) and is_blocked(player.x-1, player.y+1): player_open_door(-1, 1)
+			if is_openable(player.x, player.y-1) and is_blocked(player.x, player.y-1): player_open_door(0, -1)
+			if is_openable(player.x, player.y+1) and is_blocked(player.x, player.y+1): player_open_door(0, 1)
+			if is_openable(player.x+1, player.y+1) and is_blocked(player.x+1, player.y+1): player_open_door(1, 1)
+			if is_openable(player.x+1, player.y) and is_blocked(player.x+1, player.y): player_open_door(1, 0)
+			if is_openable(player.x+1, player.y+1) and is_blocked(player.x+1, player.y+1): player_open_door(1, 1)
+		except:
+			print('Autoexplore going out of bounds.')
 		list_of_tiles = [] #this will be a list representing map x,y
 		finished_list = []
 		list_of_tiles.append((player.x, player.y)) #start with player location
@@ -12046,7 +12151,7 @@ def load_level():
 
 def save_game():
 	#open a new empty shelve (possibly overwriting an old one) to write the game data
-	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal
+	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal, familiar
 	
 	if not os.path.isdir('save'): os.mkdir('save')
 	file = shelve.open('save/savegame', 'n')
@@ -12064,11 +12169,15 @@ def save_game():
 	file['quests'] = quests
 	file['journal'] = journal
 	file['global_cooldown'] = global_cooldown
+	if familiar is not None:
+		file['familiar_index'] = actors.index(familiar)
+	else:
+		file['familiar_index'] = None
 	file.close()
  
 def load_game():
 	#open the previously saved shelve and load the game data
-	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal
+	global map, actors, items, effects, player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, display_mode, macros, quests, global_cooldown, journal, fov_map, fov_map_fam, familiar
  
 	file = shelve.open('save/savegame', 'r')
 	map = file['map']
@@ -12085,8 +12194,12 @@ def load_game():
 	quests = file['quests']
 	journal = file['journal']
 	global_cooldown = file['global_cooldown']
+	familiar_index = file['familiar_index']
+	if familiar_index is not None:
+		familiar = actors[familiar_index]
 	file.close() 
-	initialize_fov()
+	fov_map = initialize_fov()
+	fov_map_fam = initialize_fov()
 	reset_globals()
 	
 def delete_saved_game():
@@ -12210,8 +12323,9 @@ def select_avatar():
 	return list_of_chars[selector]
 
 def generate_character():
-	global player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch
+	global player, inventory, game_msgs, game_state, dungeon_level, dungeon_branch, fov_map, familiar
 	player = None
+	familiar = None
 	blt.clear()
 	blt.refresh()
 	template = None
@@ -12919,7 +13033,8 @@ def generate_character():
 		if branch.name == STARTING_DUNGEON_BRANCH:
 			dungeon_branch = branch
 	make_map()
-	initialize_fov()
+	fov_map = initialize_fov()
+	fov_map_fam = initialize_fov()
 	blt.clear()
 	blt.refresh()
 
@@ -13071,7 +13186,7 @@ def new_game():
 	last_spell = None
 	macros = [None, None, None, None, None, None, None, None, None, None]
 	journal = []
-	quests = quests.quests
+	quests = master_quests.quests
 	#clear save directory to avoid overlap
 	if not os.path.isdir('save'): os.mkdir('save')
 	folder = 'save/'
@@ -13101,7 +13216,7 @@ def new_game():
 	
 def change_level(links_to):
 	#advance to the next level
-	global dungeon_branch, dungeon_level, map, autoexplore_target, finished_exploring
+	global dungeon_branch, dungeon_level, map, autoexplore_target, finished_exploring, fov_map, familiar, fov_map_fam
 
 	target_branch = links_to[0]
 	target_level = links_to[1]
@@ -13135,21 +13250,23 @@ def change_level(links_to):
 			for actor in player.followers:
 				actors.append(actor)
 			move_followers(player)
-	initialize_fov()
+	fov_map = initialize_fov()
+	if familiar: fov_map_fam = initialize_fov()
  
 def initialize_fov():
-	global fov_recompute, fov_map
+	global fov_recompute
 	fov_recompute = True
  
 	#create the FOV map, according to the generated map
-	fov_map = libtcod.map_new(MAP_WIDTH, MAP_HEIGHT)
+	fov = libtcod.map_new(MAP_WIDTH, MAP_HEIGHT)
 	for y in range(MAP_HEIGHT):
 		for x in range(MAP_WIDTH):
-			libtcod.map_set_properties(fov_map, x, y, not map[x][y].block_sight, not map[x][y].blocked)
+			libtcod.map_set_properties(fov, x, y, not map[x][y].block_sight, not map[x][y].blocked)
 	for effect in effects:
 		if effect.effect:
 			if effect.effect.block_sight:
-				libtcod.map_set_properties(fov_map, effect.x, effect.y, False, not map[effect.x][effect.y].blocked)
+				libtcod.map_set_properties(fov, effect.x, effect.y, False, not map[effect.x][effect.y].blocked)
+	return fov
 	blt.clear()
 	
 def calculate_lowest_cooldown():
@@ -13176,7 +13293,7 @@ def process_cooldowns(time_delay):
 		#if actor.cooldown < 0: actor.cooldown = 0 #this is just a safeguard against weird bugs
 		
 def play_game():
-	global key, game_state, rest_counter, global_cooldown
+	global key, game_state, rest_counter, global_cooldown, fov_map, familiar, fov_map_fam
  
 	player_action = None
  
@@ -13186,7 +13303,8 @@ def play_game():
 	key = blt.peek()
 	#main loop
 	while key != blt.TK_CLOSE:
-		initialize_fov()
+		fov_map = initialize_fov()
+		if familiar: fov_map_fam = initialize_fov()
 		calc_light_map()
 		update_lookup_map()
 		#render the screen
@@ -13283,7 +13401,7 @@ def play_game():
 				game_state = 'playing'
  
 def main_menu():
-	global game_state, display_mode, player, minimap, monster_func_list, npc_func_list, weapon_func_list, armour_func_list, misc_func_list, common_func_list, common_magic_func_list, rare_magic_func_list
+	global game_state, display_mode, player, minimap, monster_func_list, npc_func_list, weapon_func_list, armour_func_list, misc_func_list, common_func_list, common_magic_func_list, rare_magic_func_list, fov_map
 	
 	display_mode = None
 	

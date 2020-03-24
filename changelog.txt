@@ -1246,3 +1246,15 @@ Fixed vi-keys not working for target selection.
 Fixed issues with shrubs background not being transparent.
 
 Fixed issues with shrubs and trees interrupting autoexplore.
+
+10/2/20%
+
+Added ability for warlocks to select pact of the chain.
+
+Changed monster death functions to account for summoned creatures not leaving corpses.
+
+Fixed bug with quest generation when starting multiple new games.
+
+Allowed for warlocks to create bats as familiars for testing purposes.
+
+Partially implemented ability for warlocks to share view of familiars.
