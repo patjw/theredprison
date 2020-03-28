@@ -87,6 +87,8 @@ encounters.append(enc)
 ### CR 2 ENCOUNTERS
 ###
 
+#goblins w/ worgs
+
 #orc mob w/ mages, shamans and chuckers
 enc = Encounter('basic orc', 'orc', 2)
 enc.add_group(Monsters(type='orc', min=1, max=3))
@@ -95,6 +97,8 @@ enc.add_group(Monsters(type='orc', name='orc mage', min=0, max=1, int=14, clvl=5
 enc.add_group(Monsters(type='orc', name='orc shaman', min=0, max=1, wis=16, clvl=5, magic=True, spells=['sacred flame', 'cure wounds']))
 for mon in enc.monsters: mon.illumination_chance = 25
 encounters.append(enc)
+
+#wights w/ zombies
 
 ###
 ### CR 3 ENCOUNTERS
@@ -130,5 +134,7 @@ enc.add_group(Monsters(type='zombie', name='zombie brute', min=1, max=2, str=18,
 enc.add_group(Monsters(type='ghoul', min=1, max=4))
 enc.add_group(Monsters(type='saint_cormag', min=1, max=1, illumination_chance=100))
 encounters.append(enc)
+
+#frost giant w/ winter wolves
 
 

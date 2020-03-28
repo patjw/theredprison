@@ -1247,7 +1247,7 @@ Fixed issues with shrubs background not being transparent.
 
 Fixed issues with shrubs and trees interrupting autoexplore.
 
-10/2/20%
+10/2/20
 
 Added ability for warlocks to select pact of the chain.
 
@@ -1258,3 +1258,14 @@ Fixed bug with quest generation when starting multiple new games.
 Allowed for warlocks to create bats as familiars for testing purposes.
 
 Partially implemented ability for warlocks to share view of familiars.
+
+26/3/20
+
+Finished work on shared field of view with familiars. Still only allows for bats for the moment.
+
+Added monsters: stone golem, swarm of bats, swarm of insects, swarm of poisonous snakes, swarm of quippers, swarm of rats, swarm of ravens, tiger,
+triceratops, troll, twig blight, tyrannosaurus rex, vulture, warhorse, water elemental, weasel, werewolf, wight, winter wolf, wolf, worg, wyvern, yeti, young green dragon.
+
+Finished implementing find familiar spell so that you have a choice of a range of monsters.
+
+Made it so that familiar vision now works properly in all graphical modes.

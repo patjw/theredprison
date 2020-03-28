@@ -124,7 +124,7 @@ PROFICIENCY_BONUS = {1: 2, 2: 2, 3: 2, 4: 2, 5: 3, 6: 3, 7: 3, 8:3, 9: 4, 10: 4,
 
 XP_TO_LEVEL = {1: 0, 2: 300, 3: 900, 4: 2700, 5: 6500, 6: 14000, 7: 23000, 8: 34000, 9: 48000, 10: 64000, 11: 85000, 12: 100000, 13: 120000, 14: 140000, 15: 165000, 16: 195000, 17: 225000, 18: 265000, 19: 305000, 20: 355000}
 
-PLAYER_STARTING_XP = 900
+PLAYER_STARTING_XP = 0
 PLAYER_XP_MODIFER = 0.5
 STARTING_DUNGEON_LEVEL = 1
 STARTING_DUNGEON_BRANCH = 'overworld'
@@ -4889,6 +4889,7 @@ def render_map_graphics(tiles_to_redraw=None): #tiles_to_redraw is a list of ele
 	global fov_map, colour_dark_wall, colour_light_wall
 	global colour_dark_ground, colour_light_ground
 	global fov_recompute, light_map, display_mode
+	global fov_map_fam, familiar
 	
 	if 'darkvision' in player.fighter.traits or 'blindsight' in player.fighter.traits:
 		player_darkvision_range = 4
@@ -4904,6 +4905,8 @@ def render_map_graphics(tiles_to_redraw=None): #tiles_to_redraw is a list of ele
 		#recompute FOV if needed (the player moved or something)
 		fov_recompute = True
 		libtcod.map_compute_fov(fov_map, player.x, player.y, SIGHT_RANGE, FOV_LIGHT_WALLS, FOV_ALGO)
+		if familiar:
+			libtcod.map_compute_fov(fov_map_fam, familiar.x, familiar.y, SIGHT_RANGE, FOV_LIGHT_WALLS, FOV_ALGO)
  
 		low_view_x = player.x - (VIEW_WIDTH/2)
 		if low_view_x < 0: low_view_x = 0
@@ -4920,6 +4923,9 @@ def render_map_graphics(tiles_to_redraw=None): #tiles_to_redraw is a list of ele
 				vx = player.x - x + (VIEW_WIDTH / 6) + BAR_WIDTH/3
 				vy = player.y - y + (VIEW_HEIGHT / 6)
 				visible = libtcod.map_is_in_fov(fov_map, x, y)
+				if not visible:
+					if familiar:
+						visible = libtcod.map_is_in_fov(fov_map_fam, x, y)
 				wall = map[x][y].block_sight and (map[x][y].char == '#' or map[x][y].char == '+')
 				if vx in range(BAR_WIDTH/3, SCREEN_WIDTH/3-1) and vy in range(1, VIEW_HEIGHT/3):
 					if not visible:
@@ -5057,6 +5063,11 @@ def render_map_graphics(tiles_to_redraw=None): #tiles_to_redraw is a list of ele
 			vy = player.y - actor.y + (VIEW_HEIGHT / 6)
 			if vx in range(BAR_WIDTH/3, SCREEN_WIDTH/3-1) and vy in range(1, VIEW_HEIGHT/3):
 				draw(actor)			
+	if familiar: 
+		vx = player.x - familiar.x + (VIEW_WIDTH / 6) + BAR_WIDTH/3
+		vy = player.y - familiar.y + (VIEW_HEIGHT / 6)
+		if vx in range(BAR_WIDTH/3, SCREEN_WIDTH/3-1) and vy in range(1, VIEW_HEIGHT/3):
+			draw(familiar)
 	draw(player)
  
 	if tiles_to_redraw is not None:
@@ -5106,6 +5117,7 @@ def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of el
 	global fov_map, colour_dark_wall, colour_light_wall
 	global colour_dark_ground, colour_light_ground
 	global fov_recompute, light_map, display_mode
+	global fov_map_fam, familiar
 	
 	if 'darkvision' in player.fighter.traits or 'blindsight' in player.fighter.traits:
 		player_darkvision_range = 4
@@ -5121,6 +5133,8 @@ def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of el
 		#recompute FOV if needed (the player moved or something)
 		fov_recompute = True
 		libtcod.map_compute_fov(fov_map, player.x, player.y, SIGHT_RANGE, FOV_LIGHT_WALLS, FOV_ALGO)
+		if familiar:
+			libtcod.map_compute_fov(fov_map_fam, familiar.x, familiar.y, SIGHT_RANGE, FOV_LIGHT_WALLS, FOV_ALGO)
  
 		low_view_x = player.x - (VIEW_WIDTH/2)
 		if low_view_x < 0: low_view_x = 0
@@ -5137,6 +5151,9 @@ def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of el
 				vx = player.x - x + (VIEW_WIDTH / 4) + BAR_WIDTH/2
 				vy = player.y - y + (VIEW_HEIGHT / 4)
 				visible = libtcod.map_is_in_fov(fov_map, x, y)
+				if not visible:
+					if familiar:
+						visible = libtcod.map_is_in_fov(fov_map_fam, x, y)
 				wall = map[x][y].block_sight and (map[x][y].char == '#' or map[x][y].char == '+')
 				if vx in range(BAR_WIDTH/2, SCREEN_WIDTH/2-1) and vy in range(1, VIEW_HEIGHT/2):
 					if not visible:
@@ -5192,7 +5209,12 @@ def render_map_ascii_big(tiles_to_redraw=None): #tiles_to_redraw is a list of el
 			vx = player.x - actor.x + (VIEW_WIDTH / 4) + BAR_WIDTH/2
 			vy = player.y - actor.y + (VIEW_HEIGHT / 4)
 			if vx in range(BAR_WIDTH/2, SCREEN_WIDTH/2-1) and vy in range(1, VIEW_HEIGHT/2):
-				draw(actor)			
+				draw(actor)
+	if familiar: 
+		vx = player.x - familiar.x + (VIEW_WIDTH / 4) + BAR_WIDTH/2
+		vy = player.y - familiar.y + (VIEW_HEIGHT / 4)
+		if vx in range(BAR_WIDTH/2, SCREEN_WIDTH/2-1) and vy in range(1, VIEW_HEIGHT/2):
+			draw(familiar)
 	draw(player)
  
 	if tiles_to_redraw is not None:
@@ -5322,7 +5344,11 @@ def render_map_ascii_small(tiles_to_redraw=None): #tiles_to_redraw is a list of 
 			vy = player.y - actor.y + (VIEW_HEIGHT / 2)
 			if vx in range(BAR_WIDTH, SCREEN_WIDTH-1) and vy in range(1, VIEW_HEIGHT):
 				draw(actor)			
-	if familiar: draw(familiar)
+	if familiar: 
+		vx = player.x - familiar.x + (VIEW_WIDTH / 2) + BAR_WIDTH
+		vy = player.y - familiar.y + (VIEW_HEIGHT / 2)
+		if vx in range(BAR_WIDTH, SCREEN_WIDTH-1) and vy in range(1, VIEW_HEIGHT):
+			draw(familiar)
 	draw(player)
  
 	if tiles_to_redraw is not None:
@@ -8133,8 +8159,8 @@ def use_wild_shape(user):
 				test += 1
 		if test < 2:
 			possible_shapes = []
-			if user.fighter.clevel >= 2: possible_shapes = possible_shapes + ['axe beak', 'boar', 'giant bat', 'giant frog', 'giant lizard', 'giant poisonous snake', 'giant wolf spider', 'panther'] #'wolf'
-			if user.fighter.clevel >= 4: possible_shapes = possible_shapes + ['ape', 'black bear', 'crocodile', 'giant wasp'] #'worg'
+			if user.fighter.clevel >= 2: possible_shapes = possible_shapes + ['axe beak', 'boar', 'giant bat', 'giant frog', 'giant lizard', 'giant poisonous snake', 'giant wolf spider', 'panther', 'wolf']
+			if user.fighter.clevel >= 4: possible_shapes = possible_shapes + ['ape', 'black bear', 'crocodile', 'giant wasp', 'worg'] 
 			if user.fighter.clevel >= 8: possible_shapes = possible_shapes + ['brown bear', 'dire wolf', 'giant spider', 'lion', 'tiger']
 			choice = menu('Choose a shape to transform  into:', possible_shapes, 40)
 			if choice is not None:
@@ -8365,8 +8391,13 @@ def cast_find_familiar(caster, level=None):
 		player_can_see = True
 	else:
 		player_can_see = player.can_see_object(caster)
+	possible_familiars = ['bat', 'cat', 'crab', 'frog', 'hawk', 'lizard', 'owl', 'poisonous snake', 'rat', 'raven', 'spider', 'weasel']
+	choice = menu('Choose a familiar to summon:', possible_familiars, 40)
+	text = possible_familiars[choice]
+	text = text.replace(' ', '_')
+	func_name = 'create_' + text
 	(x, y) = random_unblocked_spot_near(caster.x, caster.y)
-	monster = create_bat(x, y)
+	monster = eval(func_name)(x, y)
 	caster.familiar = monster
 	familiar = caster.familiar
 	monster.fighter.faction = caster.fighter.faction
@@ -10024,7 +10055,7 @@ def create_giant_badger(x, y):
 	return monster
 	
 def create_giant_bat(x, y):
-	fighter_component = Fighter(hp=22, strength=15, dexterity=16, constitution=11, intelligence=2, wisdom=12, charisma=6, clevel=1, proficiencies=[], traits=['flying', 'blindsight'], spells=[], xp=50, death_function=monster_death, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.25)	 
+	fighter_component = Fighter(hp=22, strength=15, dexterity=16, constitution=11, intelligence=2, wisdom=12, charisma=6, clevel=1, proficiencies=['perception'], traits=['flying', 'blindsight'], spells=[], xp=50, death_function=monster_death, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.25)	 
 	ai_component = BasicMonster()
 	monster = Object(x, y, 'B', 'giant bat', 'dark orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.big_char = int("0xE155", 16)
@@ -10800,7 +10831,226 @@ def create_stirge(x, y):
 	monster.small_char = int("0xE737", 16)
 	monster.move_cost = 75
 	return monster
-
+	
+def create_stone_golem(x, y):
+	fighter_component = Fighter(hp=178, strength=22, dexterity=9, constitution=20, intelligence=3, wisdom=11, charisma=1, clevel=1, proficiencies=[], traits=['darkvision', 'poison immune', 'extra attack', 'construct'], spells=[], xp=5900, death_function=monster_death, ac=17, num_dmg_die=3, dmg_die=8, dmg_bonus=6, dmg_type = 'bludgeoning', to_hit=10, challenge_rating=10)  
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'H', 'stone golem', 'white', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE238", 16)
+	monster.small_char = int("0xE738", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_swarm_of_bats(x, y):
+	fighter_component = Fighter(hp=22, strength=5, dexterity=15, constitution=10, intelligence=2, wisdom=12, charisma=4, clevel=1, proficiencies=['perception'], traits=['flying', 'blindsight'], spells=[], xp=50, death_function=monster_death, ac=12, num_dmg_die=2, dmg_die=4, dmg_bonus=0, dmg_type = 'piercing', to_hit=4, challenge_rating=0.25)
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'B', 'swarm of bats', 'dark orange', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE239", 16)
+	monster.small_char = int("0xE739", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_swarm_of_insects(x, y):
+	fighter_component = Fighter(hp=22, strength=3, dexterity=13, constitution=10, intelligence=1, wisdom=7, charisma=1, clevel=1, proficiencies=[], traits=['blindsight'], spells=[], xp=100, death_function=monster_death, ac=12, num_dmg_die=4, dmg_die=4, dmg_bonus=0, dmg_type = 'piercing', to_hit=3, challenge_rating=0.5)
+	ai_component = BasicMonster()
+	monster = Object(x, y, 's', 'swarm of insects', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE240", 16)
+	monster.small_char = int("0xE740", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_swarm_of_poisonous_snakes(x, y):
+	fighter_component = Fighter(hp=36, strength=8, dexterity=18, constitution=11, intelligence=1, wisdom=10, charisma=3, clevel=1, proficiencies=[], traits=['blindsight', 'poisonous'], spells=[], xp=450, death_function=monster_death, ac=14, num_dmg_die=2, dmg_die=6, dmg_bonus=0, dmg_type = 'piercing', to_hit=6, challenge_rating=2)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'S', 'swarm of poisonous snakes', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	condition = Condition(name='venom', damage_on_hit=True, damage_on_hit_save_type='constitution', damage_on_hit_save_dc=10, damage_on_hit_save_dmg_modifer=0.5, num_dmg_die=4, dmg_die=6, dmg_type='poison')
+	condition.owner = monster
+	fighter_component.conditions.append(condition)
+	monster.big_char = int("0xE241", 16)
+	monster.small_char = int("0xE741", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_swarm_of_quippers(x, y):
+	fighter_component = Fighter(hp=28, strength=13, dexterity=16, constitution=9, intelligence=1, wisdom=7, charisma=2, clevel=1, proficiencies=[], traits=['water'], spells=[], xp=200, death_function=monster_death, ac=13, num_dmg_die=4, dmg_die=6, dmg_bonus=0, dmg_type = 'piercing', to_hit=5, challenge_rating=1)	 
+	ai_component = BasicMonster()
+	monster = Object(x, y, ';', 'swarm of quippers', 'light blue', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE242", 16)
+	monster.small_char = int("0xE742", 16)
+	monster.move_cost = 75
+	return monster
+	
+def create_swarm_of_rats(x, y):
+	fighter_component = Fighter(hp=24, strength=9, dexterity=11, constitution=9, intelligence=2, wisdom=10, charisma=3, clevel=1, proficiencies=['perception'], traits=[], spells=[], xp=50, death_function=monster_death, ac=10, num_dmg_die=2, dmg_die=6, dmg_bonus=0, dmg_type = 'piercing', to_hit=2, challenge_rating=0.25)	 
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'r', 'swarm of rats', 'brown', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE243", 16)
+	monster.small_char = int("0xE743", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_swarm_of_ravens(x, y):
+	fighter_component = Fighter(hp=24, strength=6, dexterity=14, constitution=8, intelligence=3, wisdom=12, charisma=6, clevel=1, proficiencies=[], traits=['flying'], spells=[], xp=50, death_function=monster_death, ac=12, num_dmg_die=2, dmg_die=6, dmg_bonus=0, dmg_type = 'piercing', to_hit=4, challenge_rating=0.25)  
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'B', 'swarm of ravens', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE244", 16)
+	monster.small_char = int("0xE744", 16)
+	monster.move_cost = 60
+	return monster
+	
+def create_tiger(x, y):
+	fighter_component = Fighter(hp=37, strength=17, dexterity=15, constitution=14, intelligence=3, wisdom=12, charisma=8, clevel=1, proficiencies=['perception'], traits=[], spells=[], xp=200, death_function=monster_death, ac=12, num_dmg_die=1, dmg_die=10, dmg_bonus=3, dmg_type = 'piercing', to_hit=5, challenge_rating=1)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'c', 'tiger', 'dark orange', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE245", 16)
+	monster.small_char = int("0xE745", 16)
+	monster.move_cost = 75
+	return monster
+	
+def create_triceratops(x, y):
+	fighter_component = Fighter(hp=95, strength=22, dexterity=9, constitution=17, intelligence=2, wisdom=11, charisma=5, clevel=1, proficiencies=[], traits=[], spells=[], xp=1800, death_function=monster_death, ac=13, num_dmg_die=4, dmg_die=8, dmg_bonus=6, dmg_type = 'piercing', to_hit=9, challenge_rating=5)	 
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'D', 'triceratops', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE246", 16)
+	monster.small_char = int("0xE746", 16)
+	monster.move_cost = 60
+	return monster
+	
+def create_troll(x, y):
+	fighter_component = Fighter(hp=84, strength=18, dexterity=13, constitution=20, intelligence=7, wisdom=9, charisma=7, clevel=1, proficiencies=['perception'], traits=['darkvision'], spells=[], xp=1800, death_function=monster_death, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=5)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'T', 'troll', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE247", 16)
+	monster.small_char = int("0xE747", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_twig_blight(x, y):
+	fighter_component = Fighter(hp=4, strength=6, dexterity=13, constitution=12, intelligence=4, wisdom=8, charisma=3, clevel=1, proficiencies=[], traits=['blindsight'], spells=[], xp=25, death_function=monster_death, ac=13, num_dmg_die=1, dmg_die=4, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 't', 'twig blight', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE248", 16)
+	monster.small_char = int("0xE748", 16)
+	monster.move_cost = 150
+	return monster
+	
+def create_tyrannosaurus_rex(x, y):
+	fighter_component = Fighter(hp=136, strength=25, dexterity=10, constitution=19, intelligence=2, wisdom=12, charisma=9, clevel=1, proficiencies=[], traits=['extra attack'], spells=[], xp=3900, death_function=monster_death, ac=13, num_dmg_die=4, dmg_die=12, dmg_bonus=7, dmg_type = 'piercing', to_hit=10, challenge_rating=8)	 
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'D', 'tyrannosaurus rex', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE249", 16)
+	monster.small_char = int("0xE749", 16)
+	monster.move_cost = 60
+	return monster
+	
+def create_vulture(x, y):
+	fighter_component = Fighter(hp=5, strength=7, dexterity=10, constitution=13, intelligence=2, wisdom=12, charisma=4, clevel=1, proficiencies=['perception'], traits=['flying', 'pack tactics'], spells=[], xp=10, death_function=monster_death, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'piercing', to_hit=2, challenge_rating=0)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'B', 'vulture', 'darker red', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE250", 16)
+	monster.small_char = int("0xE750", 16)
+	monster.move_cost = 60
+	return monster
+	
+def create_warhorse(x, y):
+	fighter_component = Fighter(hp=19, strength=18, dexterity=12, constitution=13, intelligence=2, wisdom=12, charisma=7, clevel=1, proficiencies=[], traits=[], spells=[], xp=100, death_function=monster_death, ac=11, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'bludgeoning', to_hit=6, challenge_rating=0.5)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'q', 'warhorse', 'brass', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE251", 16)
+	monster.small_char = int("0xE751", 16)
+	monster.move_cost = 50
+	return monster
+	
+def create_water_elemental(x, y):
+	fighter_component = Fighter(hp=114, strength=18, dexterity=14, constitution=18, intelligence=5, wisdom=10, charisma=8, clevel=1, proficiencies=[], traits=['poison immune', 'extra attack'], spells=[], xp=1800, death_function=monster_death, ac=14, num_dmg_die=2, dmg_die=8, dmg_bonus=4, dmg_type = 'bludgeoning', to_hit=7, challenge_rating=5)	 
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'E', 'water elemental', 'blue', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE252", 16)
+	monster.small_char = int("0xE752", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_weasel(x, y):
+	fighter_component = Fighter(hp=1, strength=3, dexterity=16, constitution=8, intelligence=2, wisdom=12, charisma=3, clevel=1, proficiencies=['perception'], traits=[], spells=[], xp=10, death_function=monster_death, ac=13, num_dmg_die=1, dmg_die=1, dmg_bonus=0, dmg_type = 'piercing', to_hit=5, challenge_rating=0)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'r', 'weasel', 'darker amber', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE253", 16)
+	monster.small_char = int("0xE753", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_werewolf(x, y):
+	fighter_component = Fighter(hp=58, strength=15, dexterity=13, constitution=14, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['perception'], traits=['extra attack'], spells=[], xp=700, death_function=monster_death, ac=12, num_dmg_die=1, dmg_die=8, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=3)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'd', 'werewolf', 'dark red', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE254", 16)
+	monster.small_char = int("0xE754", 16)
+	monster.move_cost = 75
+	return monster
+	
+def create_wight(x, y):
+	fighter_component = Fighter(hp=45, strength=15, dexterity=14, constitution=16, intelligence=10, wisdom=13, charisma=15, clevel=1, proficiencies=[], traits=['extra attack', 'darkvision', 'poison immune', 'undead'], spells=[], xp=700, death_function=monster_death, ac=14, num_dmg_die=1, dmg_die=8, dmg_bonus=2, dmg_type = 'slashing', to_hit=4, challenge_rating=3) 
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'W', 'wight', 'white', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE255", 16)
+	monster.small_char = int("0xE755", 16)
+	monster.move_cost = 100
+	return monster
+	
+def create_winter_wolf(x, y):
+	fighter_component = Fighter(hp=75, strength=18, dexterity=13, constitution=14, intelligence=7, wisdom=12, charisma=8, clevel=1, proficiencies=['perception'], traits=['cold immune', 'pack tactics'], spells=[], xp=700, death_function=monster_death, ac=13, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=6, challenge_rating=3)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'd', 'winter wolf', 'white', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE256", 16)
+	monster.small_char = int("0xE756", 16)
+	monster.move_cost = 60
+	return monster
+	
+def create_wolf(x, y):
+	fighter_component = Fighter(hp=11, strength=12, dexterity=15, constitution=12, intelligence=3, wisdom=12, charisma=6, clevel=1, proficiencies=['perception'], traits=['pack tactics'], spells=[], xp=50, death_function=monster_death, ac=13, num_dmg_die=2, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.25)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'd', 'wolf', 'brown', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE257", 16)
+	monster.small_char = int("0xE757", 16)
+	monster.move_cost = 75
+	return monster
+	
+def create_worg(x, y):
+	fighter_component = Fighter(hp=26, strength=16, dexterity=13, constitution=13, intelligence=7, wisdom=11, charisma=8, clevel=1, proficiencies=['perception'], traits=[], spells=[], xp=100, death_function=monster_death, ac=13, num_dmg_die=2, dmg_die=6, dmg_bonus=3, dmg_type = 'piercing', to_hit=5, challenge_rating=0.5)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'd', 'worg', 'dark red', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE258", 16)
+	monster.small_char = int("0xE758", 16)
+	monster.move_cost = 60
+	return monster
+	
+def create_wyvern(x, y):
+	fighter_component = Fighter(hp=110, strength=19, dexterity=10, constitution=16, intelligence=5, wisdom=12, charisma=6, clevel=1, proficiencies=[], traits=['darkvision', 'extra attack'], spells=[], xp=2300, death_function=monster_death, ac=13, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=6)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'D', 'wyvern', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE259", 16)
+	monster.small_char = int("0xE759", 16)
+	monster.move_cost = 150
+	return monster
+	
+def create_yeti(x, y):
+	fighter_component = Fighter(hp=51, strength=18, dexterity=13, constitution=16, intelligence=8, wisdom=12, charisma=7, clevel=1, proficiencies=['perception'], traits=['cold immune', 'extra attack'], spells=[], xp=700, death_function=monster_death, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=4, dmg_type = 'slashing', to_hit=6, challenge_rating=3)  
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'H', 'yeti', 'white', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE260", 16)
+	monster.small_char = int("0xE760", 16)
+	monster.move_cost = 75
+	return monster
+	
+def create_young_green_dragon(x, y):
+	fighter_component = Fighter(hp=136, strength=19, dexterity=12, constitution=17, intelligence=16, wisdom=13, charisma=15, clevel=1, proficiencies=[], traits=['darkvision', 'extra attack', 'poison immune'], spells=[], xp=3900, death_function=monster_death, ac=18, num_dmg_die=2, dmg_die=10, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=8)	
+	ai_component = BasicMonster()
+	monster = Object(x, y, 'D', 'young green dragon', 'green', blocks=True, fighter=fighter_component, ai=ai_component)
+	monster.big_char = int("0xE261", 16)
+	monster.small_char = int("0xE761", 16)
+	monster.move_cost = 75
+	return monster
+	
 def create_zombie(x, y):
 	fighter_component = Fighter(hp=22, strength=13, dexterity=6, constitution=16, intelligence=3, wisdom=6, charisma=5, clevel=1, proficiencies=[], traits=['fortitude', 'poison immune', 'undead'], spells=[], xp=50, death_function=monster_death, ac=8, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'bludgeoning', to_hit=3, challenge_rating=0.25) 
 	ai_component = BasicMonster()
@@ -12197,6 +12447,8 @@ def load_game():
 	familiar_index = file['familiar_index']
 	if familiar_index is not None:
 		familiar = actors[familiar_index]
+	else:
+		familiar = None
 	file.close() 
 	fov_map = initialize_fov()
 	fov_map_fam = initialize_fov()
@@ -13409,7 +13661,7 @@ def main_menu():
 	if not os.path.isdir('save'): os.mkdir('save')
 	minimap.save('save/minimap.png')
 	
-	monster_func_list = [create_adult_red_dragon, create_air_elemental, create_allosaurus, create_allosaurus, create_ankylosaurus, create_ape, create_axe_beak, create_baboon, create_badger, create_banshee, create_bat, create_basilisk, create_black_bear, create_blink_dog, create_blood_hawk, create_boar, create_brown_bear, create_bugbear, create_cat, create_centaur, create_chimera, create_cockatrice, create_constrictor_snake, create_crab, create_crocodile, create_cyclops, create_death_dog, create_deer, create_dire_wolf, create_doppelganger, create_draft_horse, create_eagle, create_earth_elemental, create_elephant, create_elk, create_fire_elemental, create_fire_giant, create_flameskull, create_flesh_golem, create_flying_snake, create_flying_sword, create_frog, create_frost_giant, create_gargoyle, create_ghost, create_ghoul, create_giant_ape, create_giant_badger, create_giant_bat, create_giant_boar, create_giant_centipede, create_giant_constrictor_snake, create_giant_crab, create_giant_crocodile, create_giant_eagle, create_giant_elk, create_giant_fire_beetle, create_giant_frog, create_giant_goat, create_giant_hyena, create_giant_lizard, create_giant_octopus, create_giant_owl, create_giant_poisonous_snake, create_giant_rat, create_giant_scorpion, create_giant_sea_horse, create_giant_shark, create_giant_spider, create_giant_toad, create_giant_vulture, create_giant_wasp, create_giant_weasel, create_giant_wolf_spider, create_gnoll, create_goat, create_goblin, create_grick, create_griffon, create_harpy, create_hawk, create_hell_hound, create_hill_giant, create_hippogriff, create_hobgoblin, create_hunter_shark, create_hydra, create_hyena, create_jackal, create_killer_whale, create_kobold, create_lion, create_lizard, create_lizardfolk, create_mammoth, create_manticore, create_mastiff, create_medusa, create_merfolk, create_minotaur, create_mule, create_mummy, create_nothic, create_ochre_jelly, create_octopus, create_ogre, create_orc, create_owl, create_owlbear, create_panther, create_pegasus, create_phase_spider, create_plesiosaurus, create_poisonous_snake, create_polar_bear, create_pony, create_pteranodon, create_quipper, create_rat, create_raven, create_reef_shark, create_rhinoceros, create_riding_horse, create_sabre_toothed_tiger, create_satyr, create_scorpion, create_sea_horse, create_skeleton, create_spectator, create_spider, create_stirge, create_zombie]
+	monster_func_list = [create_adult_red_dragon, create_air_elemental, create_allosaurus, create_allosaurus, create_ankylosaurus, create_ape, create_axe_beak, create_baboon, create_badger, create_banshee, create_bat, create_basilisk, create_black_bear, create_blink_dog, create_blood_hawk, create_boar, create_brown_bear, create_bugbear, create_cat, create_centaur, create_chimera, create_cockatrice, create_constrictor_snake, create_crab, create_crocodile, create_cyclops, create_death_dog, create_deer, create_dire_wolf, create_doppelganger, create_draft_horse, create_eagle, create_earth_elemental, create_elephant, create_elk, create_fire_elemental, create_fire_giant, create_flameskull, create_flesh_golem, create_flying_snake, create_flying_sword, create_frog, create_frost_giant, create_gargoyle, create_ghost, create_ghoul, create_giant_ape, create_giant_badger, create_giant_bat, create_giant_boar, create_giant_centipede, create_giant_constrictor_snake, create_giant_crab, create_giant_crocodile, create_giant_eagle, create_giant_elk, create_giant_fire_beetle, create_giant_frog, create_giant_goat, create_giant_hyena, create_giant_lizard, create_giant_octopus, create_giant_owl, create_giant_poisonous_snake, create_giant_rat, create_giant_scorpion, create_giant_sea_horse, create_giant_shark, create_giant_spider, create_giant_toad, create_giant_vulture, create_giant_wasp, create_giant_weasel, create_giant_wolf_spider, create_gnoll, create_goat, create_goblin, create_grick, create_griffon, create_harpy, create_hawk, create_hell_hound, create_hill_giant, create_hippogriff, create_hobgoblin, create_hunter_shark, create_hydra, create_hyena, create_jackal, create_killer_whale, create_kobold, create_lion, create_lizard, create_lizardfolk, create_mammoth, create_manticore, create_mastiff, create_medusa, create_merfolk, create_minotaur, create_mule, create_mummy, create_nothic, create_ochre_jelly, create_octopus, create_ogre, create_orc, create_owl, create_owlbear, create_panther, create_pegasus, create_phase_spider, create_plesiosaurus, create_poisonous_snake, create_polar_bear, create_pony, create_pteranodon, create_quipper, create_rat, create_raven, create_reef_shark, create_rhinoceros, create_riding_horse, create_sabre_toothed_tiger, create_satyr, create_scorpion, create_sea_horse, create_skeleton, create_spectator, create_spider, create_stirge, create_stone_golem, create_swarm_of_bats, create_swarm_of_insects, create_swarm_of_poisonous_snakes, create_swarm_of_quippers, create_swarm_of_rats, create_swarm_of_ravens, create_tiger, create_triceratops, create_troll, create_twig_blight, create_tyrannosaurus_rex, create_vulture, create_warhorse, create_water_elemental, create_weasel, create_werewolf, create_wight, create_winter_wolf, create_wolf, create_worg, create_wyvern, create_yeti, create_young_green_dragon, create_zombie]
 
 	npc_func_list = [create_acolyte, create_archmage, create_assassin, create_bandit, create_bandit_captain, create_berserker, create_commoner, create_cultist, create_cult_fanatic, create_gladiator, create_guard, create_knight, create_mage, create_noble, create_priest, create_scout, create_spy, create_thug, create_tribal_warrior, create_veteran]
 
