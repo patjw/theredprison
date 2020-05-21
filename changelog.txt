@@ -1263,9 +1263,14 @@ Partially implemented ability for warlocks to share view of familiars.
 
 Finished work on shared field of view with familiars. Still only allows for bats for the moment.
 
-Added monsters: stone golem, swarm of bats, swarm of insects, swarm of poisonous snakes, swarm of quippers, swarm of rats, swarm of ravens, tiger,
-triceratops, troll, twig blight, tyrannosaurus rex, vulture, warhorse, water elemental, weasel, werewolf, wight, winter wolf, wolf, worg, wyvern, yeti, young green dragon.
+Added monsters: stone golem, swarm of bats, swarm of insects, swarm of poisonous snakes, swarm of quippers, swarm of rats, swarm of ravens, tiger, triceratops, troll, twig blight, tyrannosaurus rex, vulture, warhorse, water elemental, weasel, werewolf, wight, winter wolf, wolf, worg, wyvern, yeti, young green dragon.
 
 Finished implementing find familiar spell so that you have a choice of a range of monsters.
 
 Made it so that familiar vision now works properly in all graphical modes.
+
+21/5/20
+
+Added ability for allies to describe their traits and proficiencies when asked.
+
+Removed bypass of proficiencies for NPC's and added specific proficiencies for all NPC types.

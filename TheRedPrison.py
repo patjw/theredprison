@@ -888,16 +888,16 @@ class Fighter:
 								quiver = item
 							if item.equipment.is_equipped == 'body':
 								if 'light armour' in item.equipment.properties:
-									if 'light armour' not in self.proficiencies and not self.can_join:
+									if 'light armour' not in self.proficiencies:
 										disadvantage = True
-								if 'medium armour' in item.equipment.properties and not self.can_join:
+								if 'medium armour' in item.equipment.properties:
 									if 'medium armour' not in self.proficiencies:
 										disadvantage = True
-								if 'heavy armour' in item.equipment.properties and not self.can_join:
+								if 'heavy armour' in item.equipment.properties:
 									if 'heavy armour' not in self.proficiencies:
 										disadvantage = True
 							if item.equipment.is_equipped == 'off hand':
-								if 'shield' in item.equipment.properties and not self.can_join:
+								if 'shield' in item.equipment.properties:
 									if 'shields' not in self.proficiencies:
 										disadvantage = True
 				
@@ -949,8 +949,6 @@ class Fighter:
 				proficient = False
 				if weapon_to_use is not None:
 					if weapon_to_use.name in self.proficiencies:
-						proficient = True
-					if self.can_join:
 						proficient = True
 					else:
 						if 'simple weapon' in weapon_to_use.equipment.properties:
@@ -6079,10 +6077,10 @@ def quest_talk(actor):
 def give_order(actor, order_all=False):
 	player.record_last_action('talk')
 	if is_incapacitated(player): return
-	if order_all: #dont allow give new name for bulk orders
+	if order_all: #dont allow give new name for bulk orders - also applies to describe self
 		choice = menu('Choose an order to give:', ['Light torch', 'Put out torch', 'Defend only', 'Move to location', 'Clear previous orders'], 24)
 	else:
-		choice = menu('Choose an order to give:', ['Light torch', 'Put out torch', 'Defend only', 'Move to location', 'Clear previous orders', 'Inventory management', 'Give new name', 'Dismiss'], 24)
+		choice = menu('Choose an order to give:', ['Light torch', 'Put out torch', 'Defend only', 'Move to location', 'Clear previous orders', 'Inventory management', 'Give new name', 'Describe self', 'Dismiss'], 24)
 	followers = []
 	if actor is not None:
 		followers.append(actor)
@@ -6136,7 +6134,9 @@ def give_order(actor, order_all=False):
 		if len(name) > 0: 
 			actor.name = name
 			actor.custom_name = True
-	if choice == 7: #dismiss from party
+	if choice == 7: #display the ally's stats
+		character_menu(actor)
+	if choice == 8: #dismiss from party
 		actor.ai = actor.old_ai
 		actor.fighter.faction = 'neutral'
 		actor.fighter.true_faction = 'neutral'
@@ -6962,7 +6962,7 @@ def handle_keys():
 		elif key_char == '?':
 			help_menu()
 		elif key_char == '@': 
-			character_menu()
+			character_menu(player)
 		elif key == blt.TK_F1:
 			toggle_display_mode()
 		elif key == blt.TK_F2:
@@ -7007,17 +7007,17 @@ def help_menu():
 	message.append('F3 - set player avatar')
 	msgbox(message)
 
-def character_menu():
+def character_menu(target):
 	text = []
 	text.append('Traits:')
 	text.append('')
-	traits = set(player.fighter.traits)
+	traits = set(target.fighter.traits)
 	for trait in traits:
 		text.append('  ' + trait.capitalize())
 	text.append('')
 	text.append('Proficiencies:')
 	text.append('')
-	proficiencies = set(player.fighter.proficiencies)
+	proficiencies = set(target.fighter.proficiencies)
 	for proficiency in proficiencies:
 		text.append('  ' + proficiency.capitalize())
 	msgbox(text)
@@ -11065,7 +11065,7 @@ def create_zombie(x, y):
 ###
 	
 def create_acolyte(x, y):
-	fighter_component = Fighter(hp=9, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=14, charisma=11, clevel=1, proficiencies=['magic'], traits=[], spells=['sacred flame', 'bless', 'cure wounds'], xp=50, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0.25, casting_stat = 'wisdom')	
+	fighter_component = Fighter(hp=9, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=14, charisma=11, clevel=1, proficiencies=['magic', 'simple weapons', 'light armour'], traits=[], spells=['sacred flame', 'bless', 'cure wounds'], xp=50, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0.25, casting_stat = 'wisdom')	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'acolyte', 'red', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11076,7 +11076,7 @@ def create_acolyte(x, y):
 	return monster
 	
 def create_archmage(x, y):
-	fighter_component = Fighter(hp=99, strength=10, dexterity=14, constitution=12, intelligence=20, wisdom=15, charisma=16, clevel=18, proficiencies=['magic'], traits=['magic resistance', 'damage resistance'], spells=['fire bolt', 'shocking grasp', 'mage armour', 'magic missile', 'shield', 'lightning bolt', 'banishment', 'fire shield', 'stoneskin', 'cone of cold', 'teleport'], xp=8400, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=6, challenge_rating=12)	
+	fighter_component = Fighter(hp=99, strength=10, dexterity=14, constitution=12, intelligence=20, wisdom=15, charisma=16, clevel=18, proficiencies=['magic', 'simple weapons', 'light armour'], traits=['magic resistance', 'damage resistance'], spells=['fire bolt', 'shocking grasp', 'mage armour', 'magic missile', 'shield', 'lightning bolt', 'banishment', 'fire shield', 'stoneskin', 'cone of cold', 'teleport'], xp=8400, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=6, challenge_rating=12)	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'archmage', 'crimson', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11087,7 +11087,7 @@ def create_archmage(x, y):
 	return monster
 	
 def create_assassin(x, y):
-	fighter_component = Fighter(hp=78, strength=11, dexterity=16, constitution=14, intelligence=13, wisdom=11, charisma=10, clevel=1, proficiencies=[], traits=['sneak attack', 'assassinate', 'extra attack'], spells=[], xp=3900, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'piercing', to_hit=6, challenge_rating=8)	
+	fighter_component = Fighter(hp=78, strength=11, dexterity=16, constitution=14, intelligence=13, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=['sneak attack', 'assassinate', 'extra attack'], spells=[], xp=3900, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'piercing', to_hit=6, challenge_rating=8)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'assassin', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11097,7 +11097,7 @@ def create_assassin(x, y):
 	return monster
 	
 def create_bandit(x, y):
-	fighter_component = Fighter(hp=11, strength=11, dexterity=12, constitution=12, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=[], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, ranged_num_dmg_die=1, ranged_dmg_die=6, ranged_dmg_bonus=3, ranged_dmg_type='piercing', ranged_to_hit=5, challenge_rating=0.125)	
+	fighter_component = Fighter(hp=11, strength=11, dexterity=12, constitution=12, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, ranged_num_dmg_die=1, ranged_dmg_die=6, ranged_dmg_bonus=3, ranged_dmg_type='piercing', ranged_to_hit=5, challenge_rating=0.125)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'bandit', 'dark yellow', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11107,7 +11107,7 @@ def create_bandit(x, y):
 	return monster
 	
 def create_bandit_captain(x, y):
-	fighter_component = Fighter(hp=65, strength=15, dexterity=16, constitution=14, intelligence=14, wisdom=11, charisma=14, clevel=1, proficiencies=[], traits=['extra attack'], spells=[], xp=450, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2)	
+	fighter_component = Fighter(hp=65, strength=15, dexterity=16, constitution=14, intelligence=14, wisdom=11, charisma=14, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack'], spells=[], xp=450, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'bandit captain', 'gold', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11117,7 +11117,7 @@ def create_bandit_captain(x, y):
 	return monster
 	
 def create_berserker(x, y):
-	fighter_component = Fighter(hp=67, strength=16, dexterity=12, constitution=17, intelligence=9, wisdom=11, charisma=9, clevel=1, proficiencies=[], traits=['reckless'], spells=[], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=12, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2)	
+	fighter_component = Fighter(hp=67, strength=16, dexterity=12, constitution=17, intelligence=9, wisdom=11, charisma=9, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour'], traits=['reckless'], spells=[], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=12, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'berserker', 'orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11127,7 +11127,7 @@ def create_berserker(x, y):
 	return monster
 	
 def create_commoner(x, y):
-	fighter_component = Fighter(hp=4, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=[], traits=[], spells=[], xp=10, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0)	
+	fighter_component = Fighter(hp=4, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=['simple weapons'], traits=[], spells=[], xp=10, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'commoner', 'silver', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11137,7 +11137,7 @@ def create_commoner(x, y):
 	return monster
 	
 def create_cultist(x, y):
-	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=10, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=[], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, challenge_rating=0.125)	
+	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=10, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'light armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, challenge_rating=0.125)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'cultist', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11147,7 +11147,7 @@ def create_cultist(x, y):
 	return monster
 	
 def create_cult_fanatic(x, y):
-	fighter_component = Fighter(hp=33, strength=11, dexterity=14, constitution=12, intelligence=10, wisdom=13, charisma=14, clevel=4, proficiencies=['magic'], traits=['extra attack'], spells=['sacred flame', 'inflict wounds', 'shield of faith', 'hold person', 'spiritual weapon'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=2)	
+	fighter_component = Fighter(hp=33, strength=11, dexterity=14, constitution=12, intelligence=10, wisdom=13, charisma=14, clevel=4, proficiencies=['magic', 'simple weapons', 'light armour'], traits=['extra attack'], spells=['sacred flame', 'inflict wounds', 'shield of faith', 'hold person', 'spiritual weapon'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=2)	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'cult fanatic', 'darker orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11158,7 +11158,7 @@ def create_cult_fanatic(x, y):
 	return monster
 	
 def create_gladiator(x, y):
-	fighter_component = Fighter(hp=112, strength=18, dexterity=15, constitution=16, intelligence=10, wisdom=12, charisma=15, clevel=1, proficiencies=[], traits=['extra attack', 'extra attack', 'brave'], spells=[], xp=1800, death_function=monster_ko, ac=16, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=5)	
+	fighter_component = Fighter(hp=112, strength=18, dexterity=15, constitution=16, intelligence=10, wisdom=12, charisma=15, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack', 'extra attack', 'brave'], spells=[], xp=1800, death_function=monster_ko, ac=16, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=5)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'gladiator', 'dark orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11168,7 +11168,7 @@ def create_gladiator(x, y):
 	return monster	
 	
 def create_guard(x, y):
-	fighter_component = Fighter(hp=11, strength=13, dexterity=12, constitution=12, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['perception', 'protection without shield'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=16, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)	
+	fighter_component = Fighter(hp=11, strength=13, dexterity=12, constitution=12, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['perception', 'protection without shield', 'simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=16, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'guard', 'yellow', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11178,7 +11178,7 @@ def create_guard(x, y):
 	return monster
 	
 def create_knight(x, y):
-	fighter_component = Fighter(hp=52, strength=16, dexterity=11, constitution=14, intelligence=11, wisdom=11, charisma=15, clevel=1, proficiencies=[], traits=['brave'], spells=[], xp=700, death_function=monster_ko, ac=18, num_dmg_die=2, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3)	
+	fighter_component = Fighter(hp=52, strength=16, dexterity=11, constitution=14, intelligence=11, wisdom=11, charisma=15, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['brave'], spells=[], xp=700, death_function=monster_ko, ac=18, num_dmg_die=2, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'knight', 'sky', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11188,7 +11188,7 @@ def create_knight(x, y):
 	return monster
 	
 def create_mage(x, y):
-	fighter_component = Fighter(hp=40, strength=9, dexterity=14, constitution=11, intelligence=17, wisdom=12, charisma=11, clevel=9, proficiencies=['magic'], traits=[], spells=['fire bolt', 'magic missile', 'shield', 'fireball', 'ice storm', 'cone of cold'], xp=2300, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=6)	
+	fighter_component = Fighter(hp=40, strength=9, dexterity=14, constitution=11, intelligence=17, wisdom=12, charisma=11, clevel=9, proficiencies=['magic', 'simple weapons', 'light armour'], traits=[], spells=['fire bolt', 'magic missile', 'shield', 'fireball', 'ice storm', 'cone of cold'], xp=2300, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=6)	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'mage', 'fuchsia', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11199,7 +11199,7 @@ def create_mage(x, y):
 	return monster
 	
 def create_noble(x, y):
-	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=11, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=[], traits=[], spells=[], xp=25, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)
+	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=11, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=['simple weapons', 'light armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'noble', 'light green', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11209,7 +11209,7 @@ def create_noble(x, y):
 	return monster
 	
 def create_priest(x, y):
-	fighter_component = Fighter(hp=27, strength=10, dexterity=10, constitution=12, intelligence=13, wisdom=16, charisma=13, clevel=5, proficiencies=['magic'], traits=[], spells=['sacred flame', 'cure wounds', 'lesser restoration', 'spiritual weapon', 'dispel magic', 'spirit guardians'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=2)	
+	fighter_component = Fighter(hp=27, strength=10, dexterity=10, constitution=12, intelligence=13, wisdom=16, charisma=13, clevel=5, proficiencies=['magic', 'simple weapons', 'light armour', 'medium armour'], traits=[], spells=['sacred flame', 'cure wounds', 'lesser restoration', 'spiritual weapon', 'dispel magic', 'spirit guardians'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=2)	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'priest', 'blue', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11220,7 +11220,7 @@ def create_priest(x, y):
 	return monster
 	
 def create_scout(x, y):
-	fighter_component = Fighter(hp=16, strength=11, dexterity=14, constitution=12, intelligence=11, wisdom=13, charisma=11, clevel=1, proficiencies=['perception'], traits=['extra attack'], spells=[], xp=100, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.5)	
+	fighter_component = Fighter(hp=16, strength=11, dexterity=14, constitution=12, intelligence=11, wisdom=13, charisma=11, clevel=1, proficiencies=['perception', 'simple weapons', 'martial weapons', 'light armour'], traits=['extra attack'], spells=[], xp=100, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.5)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'scout', 'celadon', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11230,7 +11230,7 @@ def create_scout(x, y):
 	return monster
 	
 def create_spy(x, y):
-	fighter_component = Fighter(hp=27, strength=10, dexterity=15, constitution=10, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=[], traits=['sneak attack', 'extra attack'], spells=[], xp=200, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=1)	
+	fighter_component = Fighter(hp=27, strength=10, dexterity=15, constitution=10, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=['sneak attack', 'extra attack'], spells=[], xp=200, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=1)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'spy', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11240,7 +11240,7 @@ def create_spy(x, y):
 	return monster
 	
 def create_thug(x, y):
-	fighter_component = Fighter(hp=32, strength=15, dexterity=11, constitution=14, intelligence=10, wisdom=10, charisma=11, clevel=1, proficiencies=[], traits=['pack tactics', 'sneak attack'], spells=[], xp=100, death_function=monster_ko, ac=11, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'bludgeoning', to_hit=4, challenge_rating=0.5)	
+	fighter_component = Fighter(hp=32, strength=15, dexterity=11, constitution=14, intelligence=10, wisdom=10, charisma=11, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour'], traits=['pack tactics', 'sneak attack'], spells=[], xp=100, death_function=monster_ko, ac=11, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'bludgeoning', to_hit=4, challenge_rating=0.5)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'thug', 'dark red', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11250,17 +11250,17 @@ def create_thug(x, y):
 	return monster
 	
 def create_tribal_warrior(x, y):
-	fighter_component = Fighter(hp=11, strength=13, dexterity=11, constitution=12, intelligence=8, wisdom=11, charisma=8, clevel=1, proficiencies=[], traits=['pack tactics'], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.5)	
+	fighter_component = Fighter(hp=11, strength=13, dexterity=11, constitution=12, intelligence=8, wisdom=11, charisma=8, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['pack tactics'], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.5)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'tribal warrior', 'flame', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
 	monster.big_char = int("0xE281", 16)
 	monster.small_char = int("0xE781", 16)
-	monster.flavour_text = ["To battle alongside my tribe is the highest honour of all."]
+	monster.flavour_text = ["To battle and die alongside my tribe is the highest honour of all."]
 	return monster
 	
 def create_veteran(x, y):
-	fighter_component = Fighter(hp=58, strength=16, dexterity=13, constitution=14, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=[], traits=['extra attack'], spells=[], xp=700, death_function=monster_ko, ac=17, num_dmg_die=1, dmg_die=8, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3)	
+	fighter_component = Fighter(hp=58, strength=16, dexterity=13, constitution=14, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack'], spells=[], xp=700, death_function=monster_ko, ac=17, num_dmg_die=1, dmg_die=8, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3)	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'veteran', 'light blue', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
