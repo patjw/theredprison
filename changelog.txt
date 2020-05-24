@@ -1274,3 +1274,21 @@ Made it so that familiar vision now works properly in all graphical modes.
 Added ability for allies to describe their traits and proficiencies when asked.
 
 Removed bypass of proficiencies for NPC's and added specific proficiencies for all NPC types.
+
+Added metal property to every armour type so that druids can be restricted when they wear it.
+
+22/5/20
+
+Implemented ability for items to give temporary bonuses (or maluses) to ability scores.
+
+Implemented girdle of tenacity (+1 constitution), amulet of detection (adds perception), quickblade (dagger w/ 2 extra attacks per round)
+
+Made sure that scimitars of speed spawned properly.
+
+24/5/20
+
+Rewrote code for conditions and items temporarily boosting or overwriting ability scores. Fixed cases where temporary stat increases weren't handled properly and now items with longlasting effects work properly when mixed with temporary boosts.
+
+Added amulet of mystic insight (wisdom bonus), ring of the forge (fire resistance), boots of the winterlands (cold resistance), ring of the dancer (+1 dex), cloak of elvenkind (stealth bonus), boots of elvenkind (stealth bonus), periapt of proof against poisons (poison resistance), gauntlets of ogrekind (+2 str, +2 con, -2 int, -4 cha), helm of orcsblood (+1 str, +1 con, -1 cha, relentless), ring of the drow (-2 cha, darkvision), wand of humblesong's gift (21 charge wand of prayer of healing).
+
+Fixed issue with rings of poison resistance being wrongly named rings of protection (this was a longstanding issue that I could never figure out!!!).

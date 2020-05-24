@@ -2861,7 +2861,7 @@ class Item:
 				
 class Equipment:
 	#an object that can be equipped, yielding bonuses. automatically adds the Item component.
-	def __init__(self, slot, num_dmg_die, dmg_die, ac, weight, properties, adds_trait=None, adds_proficiency=None):
+	def __init__(self, slot, num_dmg_die, dmg_die, ac, weight, properties, adds_trait=None, adds_proficiency=None, str_bonus=None, dex_bonus=None, con_bonus=None, int_bonus=None, wis_bonus=None, cha_bonus=None):
 		self.num_dmg_die = num_dmg_die
 		self.dmg_die = dmg_die
 		self.ac = ac
@@ -2869,6 +2869,13 @@ class Equipment:
 		self.properties = properties
 		self.adds_trait = adds_trait #add this trait temporarily to the user when equipped - needs to be a list
 		self.adds_proficiency = adds_proficiency
+		
+		self.str_bonus = str_bonus
+		self.dex_bonus = dex_bonus
+		self.con_bonus = con_bonus
+		self.int_bonus = int_bonus
+		self.wis_bonus = wis_bonus
+		self.cha_bonus = cha_bonus
  
 		self.slot = slot
 		self.is_equipped = None
@@ -2933,6 +2940,8 @@ class Equipment:
 		if self.adds_proficiency is not None:
 			for proficiency in self.adds_proficiency:
 				monster.fighter.proficiencies.append(proficiency)
+		if monster.fighter:
+			recalc_stats(monster)
 		
 		# final check to make sure that two-weapon fighting hasn't been messed up due to all the weird permutations of options
 		main_hand = get_equipped_in_slot(monster, 'main hand')
@@ -2977,6 +2986,8 @@ class Equipment:
 				if monster.fighter:
 					monster.fighter.proficiencies.remove(proficiency)
 				
+		if monster.fighter:
+			recalc_stats(monster)
 		
 		### special case for flammable items like torches
 		if 'flammable' in self.properties:
@@ -2986,7 +2997,7 @@ class Equipment:
 				
 class Condition:
 	#an object to be attached to fighters or items to represent a wide range of temporary effects 
-	def __init__(self, name, duration=0, causes_damage=0, to_hit_bonus=0, damage_bonus=0, ac_bonus=0, saving_throw_bonus=0, variable_bonus=False, damage_on_hit=False, damage_on_hit_save_type=None, damage_on_hit_save_dc=None, damage_on_hit_save_dmg_modifer=None, num_dmg_die=0, dmg_die=0, dmg_type=None, permanent=False, colour='white', visible=True, remove_on_rest=False, name_prefix=None, name_suffix=None, name_tail=None, name_over_ride=None, colour_over_ride=None):
+	def __init__(self, name, duration=0, causes_damage=0, to_hit_bonus=0, damage_bonus=0, ac_bonus=0, saving_throw_bonus=0, variable_bonus=False, damage_on_hit=False, damage_on_hit_save_type=None, damage_on_hit_save_dc=None, damage_on_hit_save_dmg_modifer=None, num_dmg_die=0, dmg_die=0, dmg_type=None, permanent=False, colour='white', visible=True, remove_on_rest=False, name_prefix=None, name_suffix=None, name_tail=None, name_over_ride=None, colour_over_ride=None, str_bonus=None, dex_bonus=None, con_bonus=None, int_bonus=None, wis_bonus=None, cha_bonus=None):
 		self.name = name
 		self.name_prefix = name_prefix
 		self.name_suffix = name_suffix
@@ -3015,6 +3026,13 @@ class Condition:
 		
 		self.stat_to_override = None
 		
+		self.str_bonus = str_bonus
+		self.dex_bonus = dex_bonus
+		self.con_bonus = con_bonus
+		self.int_bonus = int_bonus
+		self.wis_bonus = wis_bonus
+		self.cha_bonus = cha_bonus
+		
 	def apply_to_actor(self, monster):
 		self.owner = monster
 		if monster.fighter:
@@ -3033,14 +3051,8 @@ class Condition:
 				actors.remove(monster)
 			if self.name == 'heroism':
 				monster.fighter.temp_hp = 0
-			if self.stat_to_override is not None:
-				if self.stat_to_override == 'strength': monster.fighter.strength = monster.fighter.base_strength
-				if self.stat_to_override == 'dexterity': monster.fighter.dexterity = monster.fighter.base_dexterity
-				if self.stat_to_override == 'constitution': monster.fighter.constitution = monster.fighter.base_constitution
-				if self.stat_to_override == 'intelligence': monster.fighter.intelligence = monster.fighter.base_intelligence
-				if self.stat_to_override == 'wisdom': monster.fighter.wisdom = monster.fighter.base_wisdom
-				if self.stat_to_override == 'charisma': monster.fighter.charisma = monster.fighter.base_charisma
 			monster.fighter.conditions.remove(self)
+			recalc_stats(monster)
 
 	def apply_to_item(self, item):
 		self.owner = item
@@ -3218,6 +3230,46 @@ class Effect:
 				effects.remove(self.owner)
 			else:
 				self.duration -= 1
+				
+def recalc_stats(monster):
+	if monster.fighter:
+		#first reset all stats to base value
+		
+		monster.fighter.strength = monster.fighter.base_strength
+		monster.fighter.dexterity = monster.fighter.base_dexterity
+		monster.fighter.constitution = monster.fighter.base_constitution
+		monster.fighter.intelligence = monster.fighter.base_intelligence
+		monster.fighter.wisdom = monster.fighter.base_wisdom
+		monster.fighter.charisma = monster.fighter.base_charisma
+		
+		#then go through all conditions looking for ones that override stats (such as potions of giant strength)
+		for condition in monster.fighter.conditions:
+			if condition.stat_to_override == 'strength': monster.fighter.strength = condition.special
+			if condition.stat_to_override == 'dexterity': monster.fighter.dexterity = condition.special
+			if condition.stat_to_override == 'constitution': monster.fighter.constitution = condition.special
+			if condition.stat_to_override == 'intelligence': monster.fighter.intelligence = condition.special
+			if condition.stat_to_override == 'wisdom': monster.fighter.wisdom = condition.special
+			if condition.stat_to_override == 'charisma': monster.fighter.charisma = condition.special
+			
+		#then go through all conditions which give stat bonuses
+		for condition in monster.fighter.conditions:
+			if condition.str_bonus: monster.fighter.strength += condition.str_bonus
+			if condition.dex_bonus: monster.fighter.dexterity += condition.dex_bonus
+			if condition.con_bonus: monster.fighter.constitution += condition.con_bonus
+			if condition.int_bonus: monster.fighter.intelligence += condition.int_bonus
+			if condition.wis_bonus: monster.fighter.wisdom += condition.wis_bonus
+			if condition.cha_bonus: monster.fighter.charisma += condition.cha_bonus 
+		
+		#and lastly go through all equipment looking for stat bonuses
+		for item in monster.inventory:
+			if item.equipment:
+				if item.equipment.is_equipped:
+					if item.equipment.str_bonus: monster.fighter.strength += item.equipment.str_bonus
+					if item.equipment.dex_bonus: monster.fighter.dexterity += item.equipment.dex_bonus
+					if item.equipment.con_bonus: monster.fighter.constitution += item.equipment.con_bonus
+					if item.equipment.int_bonus: monster.fighter.intelligence += item.equipment.int_bonus
+					if item.equipment.wis_bonus: monster.fighter.wisdom += item.equipment.wis_bonus
+					if item.equipment.cha_bonus: monster.fighter.charisma += item.equipment.cha_bonus
 				
 def is_unconscious(monster):
 	if monster.fighter:
@@ -9583,9 +9635,10 @@ def use_oil_of_sharpness(user, item):
 def use_potion_of_giant_strength(user, item):
 	condition = Condition(name='giant strength', duration=100)
 	condition.stat_to_override = 'strength'
-	user.fighter.strength = item.item.special
+	condition.special = item.item.special #this will be the strength value to change to
 	condition.owner = user
 	user.fighter.conditions.append(condition)
+	recalc_stats(user)
 	message(user.name_for_printing() + ' uses potion of giant strength and grows in power.', 'white')
 	
 def use_potion_of_heroism(user, item):
@@ -9609,6 +9662,9 @@ def use_wand_of_magic_missile(user, item):
 	
 def use_wand_of_web(user, item):
 	cast_web(user)
+	
+def use_wand_of_humblesongs_gift(user, item):
+	cast_prayer_of_healing(user)
 	
 ###
 ### MONSTER GENERATION FUNCTIONS
@@ -11771,7 +11827,7 @@ def create_hide_armour():
 	return item
 	
 def create_chain_shirt_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=13, weight=20, properties=['medium armour'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=13, weight=20, properties=['medium armour', 'metal'])
 	item = Object(0, 0, '[', 'chain shirt', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE307", 16)
@@ -11779,7 +11835,7 @@ def create_chain_shirt_armour():
 	return item
 	
 def create_scale_mail_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=45, properties=['medium armour', 'unstealthy'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=45, properties=['medium armour', 'unstealthy', 'metal'])
 	item = Object(0, 0, '[', 'scale mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE308", 16)
@@ -11787,7 +11843,7 @@ def create_scale_mail_armour():
 	return item
 	
 def create_breastplate_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=20, properties=['medium armour'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=20, properties=['medium armour', 'metal'])
 	item = Object(0, 0, '[', 'breastplate', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE309", 16)
@@ -11795,7 +11851,7 @@ def create_breastplate_armour():
 	return item
 	
 def create_half_plate_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=15, weight=40, properties=['medium armour', 'unstealthy'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=15, weight=40, properties=['medium armour', 'unstealthy', 'metal'])
 	item = Object(0, 0, '[', 'half plate armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE310", 16)
@@ -11803,7 +11859,7 @@ def create_half_plate_armour():
 	return item
 	
 def create_ring_mail_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=40, properties=['heavy armour', 'unstealthy'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=40, properties=['heavy armour', 'unstealthy', 'metal'])
 	item = Object(0, 0, '[', 'ring mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE311", 16)
@@ -11811,7 +11867,7 @@ def create_ring_mail_armour():
 	return item
 	
 def create_chain_mail_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=16, weight=55, properties=['heavy armour', 'unstealthy', 'str 13'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=16, weight=55, properties=['heavy armour', 'unstealthy', 'str 13', 'metal'])
 	item = Object(0, 0, '[', 'chain mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE312", 16)
@@ -11819,7 +11875,7 @@ def create_chain_mail_armour():
 	return item
 	
 def create_splint_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=17, weight=60, properties=['heavy armour', 'unstealthy', 'str 15'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=17, weight=60, properties=['heavy armour', 'unstealthy', 'str 15', 'metal'])
 	item = Object(0, 0, '[', 'splint armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE313", 16)
@@ -11827,7 +11883,7 @@ def create_splint_armour():
 	return item
 	
 def create_plate_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=18, weight=65, properties=['heavy armour', 'unstealthy', 'str 15'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=18, weight=65, properties=['heavy armour', 'unstealthy', 'str 15', 'metal'])
 	item = Object(0, 0, '[', 'plate armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE314", 16)
@@ -12001,7 +12057,7 @@ def create_ring_of_invisibility():
 	
 def create_ring_of_poison_resistance():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
-	item = Object(0, 0, '=', 'ring of protection', MISC_COLOUR, equipment=equipment_component)
+	item = Object(0, 0, '=', 'ring of poison resistance', MISC_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE374", 16)
 	item.small_char = int("0xE874", 16)
@@ -12011,6 +12067,45 @@ def create_ring_of_poison_resistance():
 	if item.equipment.adds_trait is None: 
 		item.equipment.adds_trait = []
 	item.equipment.adds_trait.append('poison resistance')
+	return item
+	
+def create_ring_of_the_forge():
+	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '=', 'ring of the forge', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE375", 16)
+	item.small_char = int("0xE875", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('fire resistance')
+	return item
+	
+def create_ring_of_the_dancer():
+	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], dex_bonus=1)
+	item = Object(0, 0, '=', 'ring of the dancer', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE376", 16)
+	item.small_char = int("0xE876", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_ring_of_the_drow():
+	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], cha_bonus=-2)
+	item = Object(0, 0, '=', 'ring of the drow', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE372", 16)
+	item.small_char = int("0xE872", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('darkvision')
 	return item
 	
 def create_wand_of_magic_missiles():
@@ -12057,6 +12152,17 @@ def create_wand_of_web():
 	item.item.conditions.append(condition)
 	return item
 	
+def create_wand_of_humblesongs_gift():
+	item_component = Item(use_function=use_wand_of_humblesongs_gift, max_charges=21)
+	item = Object(0, 0, '/', "wand of humblesong's gift", MISC_COLOUR, item=item_component)
+	item.always_visible = False
+	item.big_char = int("0xE316", 16)
+	item.small_char = int("0xE816", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
 def create_dwarven_plate_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=18, weight=65, properties=['heavy armour', 'unstealthy', 'str 15'])
 	item = Object(0, 0, '[', 'dwarven plate armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
@@ -12086,7 +12192,7 @@ def create_dragon_scale_mail(type=None):
 	return item
 	
 def create_elven_chain_mail_armour():
-	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=13, weight=20, properties=['medium armour'])
+	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=13, weight=20, properties=['medium armour', 'metal'])
 	item = Object(0, 0, '[', 'elven chain mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
 	item.always_visible = False
 	item.big_char = int("0xE307", 16)
@@ -12123,6 +12229,152 @@ def create_scimitar_of_speed():
 		item.equipment.adds_trait = []
 	item.equipment.adds_trait.append('extra attack')
 	condition = Condition(name='enchantment', to_hit_bonus=2, damage_bonus=2, name_suffix=' of speed', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+
+def create_quickblade():
+	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=1, properties=['piercing', 'finesse', 'light', 'thrown', 'simple weapon'])
+	item = Object(0, 0, ')', 'quickblade', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE317", 16)
+	item.small_char = int("0xE817", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('extra attack')
+	item.equipment.adds_trait.append('extra attack')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_girdle_of_tenacity():
+	equipment_component = Equipment(slot='belt', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], con_bonus=1)
+	item = Object(0, 0, '[', 'girdle of tenacity', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE379", 16)
+	item.small_char = int("0xE879", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_amulet_of_detection():
+	equipment_component = Equipment(slot='neck', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '"', 'amulet of detection', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE362", 16)
+	item.small_char = int("0xE862", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('perception')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_amulet_of_mystic_insight():
+	equipment_component = Equipment(slot='neck', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], wis_bonus=1)
+	item = Object(0, 0, '"', 'amulet of mystic insight', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE363", 16)
+	item.small_char = int("0xE863", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_boots_of_the_winterlands():
+	equipment_component = Equipment(slot='feet', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '[', 'boots of the winterlands', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE380", 16)
+	item.small_char = int("0xE880", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('cold resistance')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_mantle_of_magic_resistance():
+	equipment_component = Equipment(slot='cloak', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '[', 'mantle of magic resistance', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE382", 16)
+	item.small_char = int("0xE882", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('magic resistance')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_cloak_of_elvenkind():
+	equipment_component = Equipment(slot='cloak', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '[', 'cloak of elvenkind', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE382", 16)
+	item.small_char = int("0xE882", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('stealthy')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_boots_of_elvenkind():
+	equipment_component = Equipment(slot='feet', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '[', 'boots of elvenkind', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE380", 16)
+	item.small_char = int("0xE880", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('stealthy')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_periapt_of_proof_against_poisons():
+	equipment_component = Equipment(slot='neck', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
+	item = Object(0, 0, '"', 'periapt of proof against poisons', MISC_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE364", 16)
+	item.small_char = int("0xE884", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('poison resistance')
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_gauntlets_of_ogrekind():
+	equipment_component = Equipment(slot='hands', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=['metal'], str_bonus=2, con_bonus=2, int_bonus=-2, cha_bonus=-4)
+	item = Object(0, 0, '[', 'gauntlets of ogrekind', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE384", 16)
+	item.small_char = int("0xE884", 16)
+	condition = Condition(name='', colour_over_ride='light purple')
+	condition.owner = item
+	item.item.conditions.append(condition)
+	return item
+	
+def create_helm_of_orcsblood():
+	equipment_component = Equipment(slot='head', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=['metal'], str_bonus=1, con_bonus=1, cha_bonus=-2)
+	item = Object(0, 0, '[', 'helm of orcsblood', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.always_visible = False
+	item.big_char = int("0xE385", 16)
+	item.small_char = int("0xE885", 16)
+	if item.equipment.adds_trait is None: 
+		item.equipment.adds_trait = []
+	item.equipment.adds_trait.append('relentless')
+	condition = Condition(name='', colour_over_ride='light purple')
 	condition.owner = item
 	item.item.conditions.append(condition)
 	return item
@@ -13279,6 +13531,10 @@ def generate_character():
 	obj = create_food_rations(5)
 	player.inventory.append(obj)
 	
+	#items to be given for testing purposes
+	#obj = create_periapt_of_proof_against_poisons()
+	#player.inventory.append(obj)
+	
 	#generate map (at this point it's not drawn to the screen)
 	dungeon_level = STARTING_DUNGEON_LEVEL
 	for branch in dungeon:
@@ -13675,7 +13931,7 @@ def main_menu():
 
 	common_magic_func_list = [create_potion_of_healing, create_vial_of_acid, create_oil_of_sharpness, create_potion_of_giant_strength]
 
-	rare_magic_func_list = [create_ring_of_protection, create_ring_of_invisibility, create_ring_of_poison_resistance, create_wand_of_web, create_wand_of_magic_missiles, create_wand_of_lightning_bolts, create_wand_of_fireballs, create_dwarven_plate_armour, create_dragon_scale_mail, create_elven_chain_mail_armour, create_mithral_armour]
+	rare_magic_func_list = [create_ring_of_protection, create_ring_of_invisibility, create_ring_of_poison_resistance, create_wand_of_web, create_wand_of_magic_missiles, create_wand_of_lightning_bolts, create_wand_of_fireballs, create_dwarven_plate_armour, create_dragon_scale_mail, create_elven_chain_mail_armour, create_mithral_armour, create_scimitar_of_speed, create_girdle_of_tenacity, create_amulet_of_detection, create_quickblade, create_amulet_of_mystic_insight, create_ring_of_the_forge, create_boots_of_the_winterlands, create_ring_of_the_dancer, create_cloak_of_elvenkind, create_boots_of_elvenkind, create_periapt_of_proof_against_poisons, create_gauntlets_of_ogrekind, create_helm_of_orcsblood, create_ring_of_the_drow, create_wand_of_humblesongs_gift]
 
 	
 	while True:
@@ -14307,7 +14563,14 @@ blt.set("0xE375: data/tiles/ring4.png, resize=24x24, transparent=black")
 blt.set("0xE376: data/tiles/ring5.png, resize=24x24, transparent=black")
 blt.set("0xE377: data/tiles/scroll.png, resize=24x24, transparent=black")
 blt.set("0xE378: data/tiles/gold.png, resize=24x24, transparent=black")
-
+blt.set("0xE379: data/tiles/belt.png, resize=24x24, transparent=black")
+blt.set("0xE380: data/tiles/boots1.png, resize=24x24, transparent=black")
+blt.set("0xE381: data/tiles/boots2.png, resize=24x24, transparent=black")
+blt.set("0xE382: data/tiles/cloak.png, resize=24x24, transparent=black")
+blt.set("0xE383: data/tiles/gloves.png, resize=24x24, transparent=black")
+blt.set("0xE384: data/tiles/gauntlets.png, resize=24x24, transparent=black")
+blt.set("0xE385: data/tiles/helmet.png, resize=24x24, transparent=black")
+blt.set("0xE386: data/tiles/crown.png, resize=24x24, transparent=black")
 
 #SMALL ITEMS
 
@@ -14390,6 +14653,14 @@ blt.set("0xE875: data/tiles/ring4.png, resize=12x12, transparent=black")
 blt.set("0xE876: data/tiles/ring5.png, resize=12x12, transparent=black")
 blt.set("0xE877: data/tiles/scroll.png, resize=12x12, transparent=black")
 blt.set("0xE878: data/tiles/gold.png, resize=12x12, transparent=black")
+blt.set("0xE879: data/tiles/belt.png, resize=12x12, transparent=black")
+blt.set("0xE880: data/tiles/boots1.png, resize=12x12, transparent=black")
+blt.set("0xE881: data/tiles/boots2.png, resize=12x12, transparent=black")
+blt.set("0xE882: data/tiles/cloak.png, resize=12x12, transparent=black")
+blt.set("0xE883: data/tiles/gloves.png, resize=24x24, transparent=black")
+blt.set("0xE884: data/tiles/gauntlets.png, resize=24x24, transparent=black")
+blt.set("0xE885: data/tiles/helmet.png, resize=24x24, transparent=black")
+blt.set("0xE886: data/tiles/crown.png, resize=24x24, transparent=black")
 
 # we need composition to be able to draw tiles on top of other tiles
 blt.composition(True)
