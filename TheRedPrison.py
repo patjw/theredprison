@@ -775,7 +775,7 @@ class Object:
 		
 class Fighter:
 	#combat-related properties and methods (monster, player, NPC).
-	def __init__(self, hp, strength, dexterity, constitution, intelligence, wisdom, charisma, clevel, proficiencies, traits, spells, xp, race=None, role=None, death_function=None, ac=10, num_dmg_die=1, dmg_die=2, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=0, ranged_num_dmg_die=None, ranged_dmg_die=None, ranged_dmg_bonus=None, ranged_dmg_type=None, ranged_to_hit=None, challenge_rating=None, casting_stat='intelligence', faction='monster'):
+	def __init__(self, hp, strength, dexterity, constitution, intelligence, wisdom, charisma, clevel, proficiencies, traits, spells, xp, race=None, role=None, death_function=None, ac=10, num_dmg_die=1, dmg_die=2, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=0, ranged_num_dmg_die=None, ranged_dmg_die=None, ranged_dmg_bonus=None, ranged_dmg_type=None, ranged_to_hit=None, challenge_rating=None, casting_stat='intelligence', faction='monster', natural_weapon='Unarmed'):
 		self.max_hp = hp
 		self.base_max_hp = hp
 		self.hp = hp
@@ -824,6 +824,8 @@ class Fighter:
 		self.xp = xp
 		self.death_function = death_function
 		self.challenge_rating = challenge_rating
+		
+		self.natural_weapon = natural_weapon
 		
 		if 'magic' in self.proficiencies and self.role != 'Warlock':
 			self.spell_slots = list(SPELL_SLOTS_PER_LEVEL[self.clevel])
@@ -4469,7 +4471,7 @@ def create_reward(reward):
 	item.y = player.y
 	items.append(item)
 	
-def get_player_attack_stats():
+def get_attack_stats(target):
 
 	to_hit_bonus = 0
 	dmg_bonus = 0
@@ -4493,7 +4495,7 @@ def get_player_attack_stats():
 	off_dmg_bonus = 0
 	off_base_dmg_type = None
 	
-	for item in player.inventory:
+	for item in target.inventory:
 		if item.equipment:
 			if item.equipment.is_equipped:
 				if item.equipment.is_equipped == 'main hand':
@@ -4501,9 +4503,9 @@ def get_player_attack_stats():
 					break
 
 	two_weapon_fighting = False
-	if player.two_weapon_fighting:
+	if target.two_weapon_fighting:
 		two_weapon_fighting = True
-		for item in player.inventory:
+		for item in target.inventory:
 			if item.equipment:
 				if item.equipment.is_equipped:
 					if item.equipment.is_equipped == 'off hand':
@@ -4512,7 +4514,7 @@ def get_player_attack_stats():
 					
 	two_handed = False
 	if weapon_in_main_hand is not None:
-		if 'two-handed' in weapon_in_main_hand.equipment.properties or ('versatile' in weapon_in_main_hand.equipment.properties and player.versatile_weapon_with_two_hands):
+		if 'two-handed' in weapon_in_main_hand.equipment.properties or ('versatile' in weapon_in_main_hand.equipment.properties and target.versatile_weapon_with_two_hands):
 			two_handed = True
 			
 	ranged = False
@@ -4529,78 +4531,78 @@ def get_player_attack_stats():
 			
 	finesse = False
 	if weapon_in_main_hand is not None:
-		if 'finesse' in weapon_in_main_hand.equipment.properties and ABILITY_MODIFIER[player.fighter.dexterity] > ABILITY_MODIFIER[player.fighter.strength]:
+		if 'finesse' in weapon_in_main_hand.equipment.properties and ABILITY_MODIFIER[target.fighter.dexterity] > ABILITY_MODIFIER[target.fighter.strength]:
 			finesse = True
-			to_hit_bonus = ABILITY_MODIFIER[player.fighter.dexterity]
+			to_hit_bonus = ABILITY_MODIFIER[target.fighter.dexterity]
 		elif ranged:
-			to_hit_bonus = ABILITY_MODIFIER[player.fighter.dexterity]
+			to_hit_bonus = ABILITY_MODIFIER[target.fighter.dexterity]
 		else:
-			to_hit_bonus = ABILITY_MODIFIER[player.fighter.strength]
+			to_hit_bonus = ABILITY_MODIFIER[target.fighter.strength]
 	else:
-		to_hit_bonus = player.fighter.base_to_hit
+		to_hit_bonus = target.fighter.base_to_hit
 		
 	proficient = False
 	if weapon_in_main_hand is not None:
-		if weapon_in_main_hand.name in player.fighter.proficiencies:
+		if weapon_in_main_hand.name in target.fighter.proficiencies:
 			proficient = True
 		else:
 			if 'simple weapon' in weapon_in_main_hand.equipment.properties:
-				if 'simple weapons' in player.fighter.proficiencies:
+				if 'simple weapons' in target.fighter.proficiencies:
 					proficient = True
 			if 'martial weapon' in weapon_in_main_hand.equipment.properties:
-				if 'martial weapons' in player.fighter.proficiencies:
+				if 'martial weapons' in target.fighter.proficiencies:
 					proficient = True
-	if proficient: to_hit_bonus += PROFICIENCY_BONUS[player.fighter.clevel]
+	if proficient: to_hit_bonus += PROFICIENCY_BONUS[target.fighter.clevel]
 	
 	#off hand weapon
 	
 	off_finesse = False
 	if weapon_in_off_hand is not None:
-		if 'finesse' in weapon_in_off_hand.equipment.properties and ABILITY_MODIFIER[player.fighter.dexterity] > ABILITY_MODIFIER[player.fighter.strength]:
+		if 'finesse' in weapon_in_off_hand.equipment.properties and ABILITY_MODIFIER[target.fighter.dexterity] > ABILITY_MODIFIER[target.fighter.strength]:
 			off_finesse = True
-			off_to_hit_bonus = ABILITY_MODIFIER[player.fighter.dexterity]
+			off_to_hit_bonus = ABILITY_MODIFIER[target.fighter.dexterity]
 		else:
-			off_to_hit_bonus = ABILITY_MODIFIER[player.fighter.strength]
+			off_to_hit_bonus = ABILITY_MODIFIER[target.fighter.strength]
 		
 	off_proficient = False
 	if weapon_in_off_hand is not None:
-		if weapon_in_off_hand.name in player.fighter.proficiencies:
+		if weapon_in_off_hand.name in target.fighter.proficiencies:
 			off_proficient = True
 		else:
 			if 'simple weapon' in weapon_in_off_hand.equipment.properties:
-				if 'simple weapons' in player.fighter.proficiencies:
+				if 'simple weapons' in target.fighter.proficiencies:
 					off_proficient = True
 			if 'martial weapon' in weapon_in_off_hand.equipment.properties:
-				if 'martial weapons' in player.fighter.proficiencies:
+				if 'martial weapons' in target.fighter.proficiencies:
 					off_proficient = True
-	if off_proficient: off_to_hit_bonus += PROFICIENCY_BONUS[player.fighter.clevel]
+	if off_proficient: off_to_hit_bonus += PROFICIENCY_BONUS[target.fighter.clevel]
 	
 	### main weapon damage
 	
 	if weapon_in_main_hand:
 		base_num_dmg_die = weapon_in_main_hand.equipment.num_dmg_die
 		base_dmg_die = weapon_in_main_hand.equipment.dmg_die
-		if (finesse and ABILITY_MODIFIER[player.fighter.dexterity] > ABILITY_MODIFIER[player.fighter.strength]) or ranged: dmg_bonus = ABILITY_MODIFIER[player.fighter.dexterity]
-		else: dmg_bonus = ABILITY_MODIFIER[player.fighter.strength]
+		if (finesse and ABILITY_MODIFIER[target.fighter.dexterity] > ABILITY_MODIFIER[target.fighter.strength]) or ranged: dmg_bonus = ABILITY_MODIFIER[target.fighter.dexterity]
+		else: dmg_bonus = ABILITY_MODIFIER[target.fighter.strength]
 		if 'bludgeoning' in weapon_in_main_hand.equipment.properties: base_dmg_type = 'bludgeoning'
 		elif 'piercing' in weapon_in_main_hand.equipment.properties: base_dmg_type = 'piercing'
 		elif 'slashing' in weapon_in_main_hand.equipment.properties: base_dmg_type = 'slashing'
 	else: #unarmed or natural attack for monsters
-		base_num_dmg_die = player.fighter.base_num_dmg_die
-		base_dmg_die = player.fighter.base_dmg_die
-		dmg_bonus = ABILITY_MODIFIER[player.fighter.strength]
-		if player.fighter.base_dmg_type is None:
+		base_num_dmg_die = target.fighter.base_num_dmg_die
+		base_dmg_die = target.fighter.base_dmg_die
+		dmg_bonus = ABILITY_MODIFIER[target.fighter.strength]
+		if target.fighter.base_dmg_type is None:
 			base_dmg_type = 'bludgeoning'
 		else:
-			base_dmg_type = player.fighter.base_dmg_type
+			base_dmg_type = target.fighter.base_dmg_type
 		
 	### off weapon damage
 	
 	if weapon_in_off_hand:
 		off_base_num_dmg_die = weapon_in_off_hand.equipment.num_dmg_die
 		off_base_dmg_die = weapon_in_off_hand.equipment.dmg_die
-		if (off_finesse and ABILITY_MODIFIER[player.fighter.dexterity] > ABILITY_MODIFIER[player.fighter.strength]): off_dmg_bonus = ABILITY_MODIFIER[player.fighter.dexterity]
-		else: off_dmg_bonus = ABILITY_MODIFIER[player.fighter.strength]
+		if (off_finesse and ABILITY_MODIFIER[target.fighter.dexterity] > ABILITY_MODIFIER[target.fighter.strength]): off_dmg_bonus = ABILITY_MODIFIER[target.fighter.dexterity]
+		else: off_dmg_bonus = ABILITY_MODIFIER[target.fighter.strength]
 		if 'bludgeoning' in weapon_in_off_hand.equipment.properties: off_base_dmg_type = 'bludgeoning'
 		elif 'piercing' in weapon_in_off_hand.equipment.properties: off_base_dmg_type = 'piercing'
 		elif 'slashing' in weapon_in_off_hand.equipment.properties: off_base_dmg_type = 'slashing'
@@ -4608,21 +4610,21 @@ def get_player_attack_stats():
 	#work out if versatile weapon and if so, give a +2 to the base_dmg_die
 	if weapon_in_main_hand:
 		if 'versatile' in weapon_in_main_hand.equipment.properties:
-			if player.versatile_weapon_with_two_hands:
+			if target.versatile_weapon_with_two_hands:
 				base_dmg_die += 2
 		
 	#work out if using a one-handed weapon in main hand with the dueling fighting style - this gives a +2 bonus to damage
-	if 'dueling' in player.fighter.proficiencies:
+	if 'dueling' in target.fighter.proficiencies:
 		if weapon_in_main_hand is not None and not two_weapon_fighting:
 			if not ranged:
-				if 'two-handed' not in weapon_in_main_hand.equipment.properties and not player.versatile_weapon_with_two_hands:
+				if 'two-handed' not in weapon_in_main_hand.equipment.properties and not target.versatile_weapon_with_two_hands:
 					dmg_bonus += 2
 					
 	### give bonus if using ranged and have that fighting style
 	if ranged:
-		if 'archery' in player.fighter.proficiencies: to_hit_bonus += 2
+		if 'archery' in target.fighter.proficiencies: to_hit_bonus += 2
 		
-	for condition in player.fighter.conditions:
+	for condition in target.fighter.conditions:
 		if condition.to_hit_bonus != 0:
 			to_hit_bonus += condition.to_hit_bonus
 			off_to_hit_bonus += condition.to_hit_bonus
@@ -4630,7 +4632,7 @@ def get_player_attack_stats():
 			dmg_bonus += condition.dmg_bonus
 			off_dmg_bonus += condition.dmg_bonus
 			
-	for item in player.inventory:
+	for item in target.inventory:
 		if item.equipment:
 			if item.equipment.is_equipped:
 				if item.equipment.is_equipped != 'quiver': #this shouldn't give you a bonus
@@ -4649,7 +4651,7 @@ def get_player_attack_stats():
 								
 	### take into account two-weapon fighting style
 	if two_weapon_fighting:
-		if not 'two-weapon fighting' in player.fighter.proficiencies:
+		if not 'two-weapon fighting' in target.fighter.proficiencies:
 			if off_dmg_bonus > 0: off_dmg_bonus = 0
 					
 	if not two_weapon_fighting:
@@ -4664,12 +4666,12 @@ def get_player_attack_stats():
 
 	return to_hit_bonus, weapon_in_main_hand, finesse, proficient, two_handed, ranged, reach, base_num_dmg_die, base_dmg_die, dmg_bonus, base_dmg_type, two_weapon_fighting, weapon_in_off_hand, off_to_hit_bonus, off_finesse, off_proficient, off_base_num_dmg_die, off_base_dmg_die, off_dmg_bonus, off_base_dmg_type
 
-def get_player_defence_stats():
+def get_defence_stats(target):
 	#first of all get the defender's ac
 	#start by finding out what armour and shields are being used
 	equipped_armour = None
 	equipped_shield = None
-	for item in player.inventory:
+	for item in target.inventory:
 		if item.equipment:
 			if item.equipment.is_equipped:
 				if item.equipment.is_equipped == 'body':
@@ -4678,7 +4680,7 @@ def get_player_defence_stats():
 					equipped_shield = item
 	
 	#now apply any dexterity modifier based on the weight of the armour (if any)
-	dex_modifier = ABILITY_MODIFIER[player.fighter.dexterity]
+	dex_modifier = ABILITY_MODIFIER[target.fighter.dexterity]
 	if equipped_armour is not None:
 		defender_ac = equipped_armour.equipment.ac
 		if 'light armour' in equipped_armour.equipment.properties:
@@ -4691,7 +4693,7 @@ def get_player_defence_stats():
 		elif 'heavy armour' in equipped_armour.equipment.properties:
 			pass #no dex modifier for heavy armour
 	else:  
-		defender_ac = player.fighter.base_ac
+		defender_ac = target.fighter.base_ac
 		if dex_modifier > 0: 
 			defender_ac += dex_modifier #full benefit for dexterity while unarmoured
 			
@@ -4701,14 +4703,14 @@ def get_player_defence_stats():
 		
 	#deal with bonus for fighting style of defence
 	if equipped_armour is not None:
-		if 'defence' in player.fighter.proficiencies:
+		if 'defence' in target.fighter.proficiencies:
 			defender_ac += 1
 		
-	for condition in player.fighter.conditions:
+	for condition in target.fighter.conditions:
 		if condition.ac_bonus != 0:
 			defender_ac += condition.ac_bonus
 				
-	for item in player.inventory:
+	for item in target.inventory:
 		if item.equipment:
 			if item.equipment.is_equipped:
 				for condition in item.item.conditions:
@@ -4717,38 +4719,38 @@ def get_player_defence_stats():
 
 	armour_proficient = False
 	shield_proficient = False
-	for item in player.inventory:
+	for item in target.inventory:
 		if item.equipment:
 			if item.equipment.is_equipped:
 				if item.equipment.is_equipped == 'body':
 					if 'light armour' in item.equipment.properties:
-						if 'light armour' in player.fighter.proficiencies:
+						if 'light armour' in target.fighter.proficiencies:
 							armour_proficient = True
 					if 'medium armour' in item.equipment.properties:
-						if 'medium armour' in player.fighter.proficiencies:
+						if 'medium armour' in target.fighter.proficiencies:
 							armour_proficient = True
 					if 'heavy armour' in item.equipment.properties:
-						if 'heavy armour' in player.fighter.proficiencies:
+						if 'heavy armour' in target.fighter.proficiencies:
 							armour_proficient = True
 				if item.equipment.is_equipped == 'off hand':
 					if 'shield' in item.equipment.properties:
-						if 'shields' in player.fighter.proficiencies:
+						if 'shields' in target.fighter.proficiencies:
 							shield_proficient = True
 						
 	return defender_ac, equipped_armour, equipped_shield, dex_modifier, armour_proficient, shield_proficient
 	
-def get_player_speed_stats():
-	if player.move_cost is None:
+def get_speed_stats(target):
+	if target.move_cost is None:
 		move_cost = BASE_MOVEMENT_COST
 	else:
-		move_cost = player.move_cost
+		move_cost = target.move_cost
 		
-	for condition in player.fighter.conditions: 
+	for condition in target.fighter.conditions: 
 		if condition.name == 'hidden':
 			move_cost = int(move_cost * 1.5)
 			
-	if player.fighter.race != 'Mountain Dwarf' and player.fighter.race != 'Hill Dwarf':
-		for item in player.inventory:
+	if target.fighter.race != 'Mountain Dwarf' and target.fighter.race != 'Hill Dwarf':
+		for item in target.inventory:
 			if item.equipment:
 				if item.equipment.is_equipped == 'body':
 					if 'heavy armour' in item.equipment.properties:
@@ -4756,13 +4758,13 @@ def get_player_speed_stats():
 						if 'str 13' in item.equipment.properties: test = 13
 						if 'str 15' in item.equipment.properties: test = 15
 						if test is not None:
-							if player.fighter.strength < test:
+							if target.fighter.strength < test:
 								move_cost = int(move_cost * 1.5)
 		
-	if player.action_cost is None:
+	if target.action_cost is None:
 		action_cost = BASE_ACTION_COST
 	else:
-		action_cost = player.action_cost
+		action_cost = target.action_cost
 		
 	return move_cost, action_cost
 	
@@ -5527,13 +5529,13 @@ def render_game_info():
 	blt.color('white')
 	
 	#show the player's stats
-	to_hit_bonus, weapon_in_main_hand, finesse, proficient, two_handed, ranged, reach, base_num_dmg_die, base_dmg_die, dmg_bonus, base_dmg_type, two_weapon_fighting, weapon_in_off_hand, off_to_hit_bonus, off_finesse, off_proficient, off_base_num_dmg_die, off_base_dmg_die, off_dmg_bonus, off_base_dmg_type = get_player_attack_stats()
-	defender_ac, equipped_armour, equipped_shield, dex_modifier, armour_proficient, shield_proficient = get_player_defence_stats()
-	move_cost, action_cost = get_player_speed_stats()
+	to_hit_bonus, weapon_in_main_hand, finesse, proficient, two_handed, ranged, reach, base_num_dmg_die, base_dmg_die, dmg_bonus, base_dmg_type, two_weapon_fighting, weapon_in_off_hand, off_to_hit_bonus, off_finesse, off_proficient, off_base_num_dmg_die, off_base_dmg_die, off_dmg_bonus, off_base_dmg_type = get_attack_stats(player)
+	defender_ac, equipped_armour, equipped_shield, dex_modifier, armour_proficient, shield_proficient = get_defence_stats(player)
+	move_cost, action_cost = get_speed_stats(player)
 	
 	stats = [] #empty list to populate with relevant stats to display
 
-	if weapon_in_main_hand is None: weapon_in_main_hand = 'Unarmed'
+	if weapon_in_main_hand is None: weapon_in_main_hand = player.fighter.natural_weapon
 	else: weapon_in_main_hand = weapon_in_main_hand.name_for_printing(definite_article=False)
 	if dmg_bonus >= 0: dmg_bonus = '+' + str(dmg_bonus)
 	else: dmg_bonus = str(dmg_bonus)
@@ -6132,7 +6134,7 @@ def give_order(actor, order_all=False):
 	if order_all: #dont allow give new name for bulk orders - also applies to describe self
 		choice = menu('Choose an order to give:', ['Light torch', 'Put out torch', 'Defend only', 'Move to location', 'Clear previous orders'], 24)
 	else:
-		choice = menu('Choose an order to give:', ['Light torch', 'Put out torch', 'Defend only', 'Move to location', 'Clear previous orders', 'Inventory management', 'Give new name', 'Describe self', 'Dismiss'], 24)
+		choice = menu('Choose an order to give:', ['Light torch', 'Put out torch', 'Defend only', 'Move to location', 'Clear previous orders', 'Inventory management', 'Give new name', 'Dismiss'], 24)
 	followers = []
 	if actor is not None:
 		followers.append(actor)
@@ -6186,9 +6188,7 @@ def give_order(actor, order_all=False):
 		if len(name) > 0: 
 			actor.name = name
 			actor.custom_name = True
-	if choice == 7: #display the ally's stats
-		character_menu(actor)
-	if choice == 8: #dismiss from party
+	if choice == 7: #dismiss from party
 		actor.ai = actor.old_ai
 		actor.fighter.faction = 'neutral'
 		actor.fighter.true_faction = 'neutral'
@@ -6303,7 +6303,7 @@ def move_followers(monster):
 						break
 	update_lookup_map()
 		
-def menu(header, options, width, can_exit_without_option=True, return_option=False, y_adjust=0, header_colour=None, magic_menu=False):
+def menu(header, options, width, can_exit_without_option=True, return_option=False, y_adjust=0, header_colour=None, magic_menu=False, capitalise=True):
 	global game_state
 
 	if len(options) > 26: raise ValueError('Cannot have a menu with more than 26 options.')
@@ -6334,7 +6334,10 @@ def menu(header, options, width, can_exit_without_option=True, return_option=Fal
 	blt.layer(3)
 	blt.composition(False)
 	for option_text in options:
-		text = '(' + chr(letter_index) + ') ' + option_text.capitalize()
+		if capitalise:
+			text = '(' + chr(letter_index) + ') ' + option_text.capitalize()
+		else:
+			text = '(' + chr(letter_index) + ') ' + option_text
 		blt.puts(menu_x+1, y, "[font=log]" + text)
 		y += 2
 		letter_index += 1
@@ -6717,16 +6720,18 @@ def text_input(text, max_length=14):
 def create_window(x, y, w, h, title=None, header_colour=None):
 
 	last_bg = blt.state(blt.TK_BKCOLOR)
-	blt.bkcolor(blt.color_from_argb(200, 0, 0, 0))
-	blt.layer(0)
-	blt.clear_area(x - 2, y - 2, w + 3, h + 3)
+	#blt.bkcolor(blt.color_from_argb(200, 0, 0, 0))
+	#blt.layer(0)
+	#blt.clear_area(x - 3, y - 3, w + 3, h + 3)
 	blt.layer(1)
-	blt.clear_area(x - 2, y - 2, w + 3, h + 3)
+	blt.clear_area(x - 3, y - 3, w + 3, h + 3)
 	blt.layer(2)
-	blt.clear_area(x - 2, y - 2, w + 3, h + 3)
-	blt.bkcolor(last_bg)
-	blt.layer(3)
+	blt.clear_area(x - 3, y - 3, w + 3, h + 3)
+	blt.layer(0)
 	blt.composition(False)
+	for a in range(x-1, x+w+1):
+		for b in range(y-1, y+h+1):
+			blt.puts(a, b, "[font=log] ")
 	
 	# upper border
 	border = '┌' + '─' * (w) + '┐'
@@ -6745,6 +6750,7 @@ def create_window(x, y, w, h, title=None, header_colour=None):
 		if header_colour is not None: blt.color(header_colour)
 		blt.puts(x + offset, y - 1, "[font=log]" + title)
 	
+	blt.bkcolor(last_bg)
 	blt.color('white')
 	blt.layer(0)
 	blt.composition(True)
@@ -7014,7 +7020,7 @@ def handle_keys():
 		elif key_char == '?':
 			help_menu()
 		elif key_char == '@': 
-			character_menu(player)
+			examine_menu(player)
 		elif key == blt.TK_F1:
 			toggle_display_mode()
 		elif key == blt.TK_F2:
@@ -7059,19 +7065,109 @@ def help_menu():
 	message.append('F3 - set player avatar')
 	msgbox(message)
 
-def character_menu(target):
+def examine_menu(target):
 	text = []
-	text.append('Traits:')
+	text.append(target.name_for_printing(capitalise=True, definite_article=False))
 	text.append('')
-	traits = set(target.fighter.traits)
-	for trait in traits:
-		text.append('  ' + trait.capitalize())
-	text.append('')
-	text.append('Proficiencies:')
-	text.append('')
-	proficiencies = set(target.fighter.proficiencies)
-	for proficiency in proficiencies:
-		text.append('  ' + proficiency.capitalize())
+	if target == player:
+		text.append('Traits:')
+		text.append('')
+		traits = set(target.fighter.traits)
+		for trait in traits:
+			text.append('  ' + trait.capitalize())
+		text.append('')
+		text.append('Proficiencies:')
+		text.append('')
+		proficiencies = set(target.fighter.proficiencies)
+		for proficiency in proficiencies:
+			text.append('  ' + proficiency.capitalize())
+			
+	elif target.fighter is not None:
+		to_hit_bonus, weapon_in_main_hand, finesse, proficient, two_handed, ranged, reach, base_num_dmg_die, base_dmg_die, dmg_bonus, base_dmg_type, two_weapon_fighting, weapon_in_off_hand, off_to_hit_bonus, off_finesse, off_proficient, off_base_num_dmg_die, off_base_dmg_die, off_dmg_bonus, off_base_dmg_type = get_attack_stats(target)
+		defender_ac, equipped_armour, equipped_shield, dex_modifier, armour_proficient, shield_proficient = get_defence_stats(target)
+		move_cost, action_cost = get_speed_stats(target)
+		
+		if weapon_in_main_hand is None: weapon_in_main_hand = target.fighter.natural_weapon
+		else: weapon_in_main_hand = weapon_in_main_hand.name_for_printing(definite_article=False)
+		if dmg_bonus >= 0: dmg_bonus = '+' + str(dmg_bonus)
+		else: dmg_bonus = str(dmg_bonus)
+		
+		if weapon_in_off_hand is None: weapon_in_off_hand = 'None'
+		else: weapon_in_off_hand = weapon_in_off_hand.name_for_printing(definite_article=False)
+		if off_dmg_bonus >= 0: off_dmg_bonus = '+' + str(off_dmg_bonus)
+		else: off_dmg_bonus = str(off_dmg_bonus)	
+		
+		if equipped_armour is not None: equipped_armour = equipped_armour.name_for_printing(definite_article=False)
+		if equipped_shield is not None: equipped_shield = equipped_shield.name_for_printing(definite_article=False)
+		
+		traits = set(target.fighter.traits)
+		proficiencies = set(target.fighter.proficiencies)
+		number_of_attacks = 1
+		for trait in traits:
+			if trait == 'extra attack':
+				number_of_attacks += 1
+		while True:
+			if 'extra attack' in traits:
+				traits.remove('extra attack')
+			else:
+				break
+		
+		text.append('Str: ' + str(target.fighter.strength) + '  Int: ' + str(target.fighter.intelligence))
+		text.append('Dex: ' + str(target.fighter.dexterity) + '  Wis: ' + str(target.fighter.wisdom))
+		text.append('Con: ' + str(target.fighter.constitution) + '  Cha: ' + str(target.fighter.charisma))
+		text.append('')
+		text.append('Movement speed: ' + str(int(1/float(move_cost)*3000)) + "'")
+		text.append('')
+		text.append('Number of attacks: ' + str(number_of_attacks))
+		text.append('')
+		text.append('Main: ' + str(weapon_in_main_hand.capitalize()))
+		text.append('To hit bonus: ' + str(to_hit_bonus))
+		text.append('Damage: ' + str(base_num_dmg_die) + 'd' + str(base_dmg_die) + dmg_bonus)
+		text.append('- ' + base_dmg_type.capitalize())
+		if proficient: text.append('- Proficient')
+		if finesse: text.append('- Finesse')
+		if two_handed: text.append('- Two-handed')
+		if ranged: text.append('- Ranged')
+		if reach: text.append('- Reach')
+		if two_weapon_fighting:
+			text.append(' ')
+			text.append('Off: ' + str(weapon_in_off_hand.capitalize()))
+			text.append('To hit bonus: ' + str(off_to_hit_bonus))
+			text.append('Damage: ' + str(off_base_num_dmg_die) + 'd' + str(off_base_dmg_die) + off_dmg_bonus)
+			text.append('- ' + off_base_dmg_type.capitalize())
+			if off_proficient: text.append('- Proficient')
+			if off_finesse: text.append('- Finesse')
+		text.append(' ')
+		text.append('Armour class: ' + str(defender_ac))
+		if equipped_armour is not None: 
+			text.append(str(equipped_armour.capitalize()))
+			if armour_proficient:
+				text.append('- Proficient')
+			else:
+				text.append('- Not proficient')
+		if equipped_shield is not None: 
+			text.append(' ')
+			text.append(str(equipped_shield.capitalize()))
+			if shield_proficient:
+				text.append('- Proficient')
+			else:
+				text.append('- Not proficient')
+		text.append('')
+		if len(traits) > 0:
+			text.append('Traits:')
+			text.append('')
+			for trait in traits:
+				text.append('  ' + trait.capitalize())
+			text.append('')
+		if len(proficiencies) > 0:
+			text.append('Proficiencies:')
+			text.append('')
+			for proficiency in proficiencies:
+				text.append('  ' + proficiency.capitalize())
+	elif target.item is not None:
+		return
+	else:
+		return
 	msgbox(text)
 	
 def toggle_display_mode():
@@ -7534,7 +7630,7 @@ def monster_revive(monster, reviver):
 			condition.remove_from_actor(monster)
 	monster.fighter.hp = 1
  
-def look():
+def old_look():
 	(x, y) = target_tile()
 	#create a list with the names of all actor at the cursor's coordinates and in FOV
 	actor_names = [obj.name_for_printing(definite_article=False, display_inventory=True) for obj in actors
@@ -7550,6 +7646,29 @@ def look():
 			message('You do not see anything interesting here.', 'white')
 		else:
 			message('You see here: ' + names + '.', 'white')
+	
+def look():
+	(x, y) = target_tile()
+	if (x or y) != None:
+		list_of_objects = []
+		for obj in actors:
+			if obj.x == x and obj.y == y and libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
+				list_of_objects.append(obj)
+		for obj in items:
+			if obj.x == x and obj.y == y and libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
+				list_of_objects.append(obj)
+		for obj in effects:
+			if obj.x == x and obj.y == y and libtcod.map_is_in_fov(fov_map, obj.x, obj.y):
+				list_of_objects.append(obj)
+		
+		if len(list_of_objects) > 0:
+			names = []
+			for object in list_of_objects:
+				names.append(object.name_for_printing(definite_article=False, capitalise=True))
+			choice = menu('Choose something to examine: ', names, 40, capitalise=False)
+			if choice is not None:
+				examine_menu(list_of_objects[choice])
+		
 		
 def target_tile(max_range=None, target_radius=None, projectile=False, can_target_anywhere=False, target_hostile_first=True):
 	global game_state
@@ -11121,7 +11240,7 @@ def create_zombie(x, y):
 ###
 	
 def create_acolyte(x, y):
-	fighter_component = Fighter(hp=9, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=14, charisma=11, clevel=1, proficiencies=['magic', 'simple weapons', 'light armour'], traits=[], spells=['sacred flame', 'bless', 'cure wounds'], xp=50, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0.25, casting_stat = 'wisdom')	
+	fighter_component = Fighter(hp=9, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=14, charisma=11, clevel=1, proficiencies=['magic', 'simple weapons', 'light armour'], traits=[], spells=['sacred flame', 'bless', 'cure wounds'], xp=50, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0.25, casting_stat = 'wisdom', natural_weapon='Club')	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'acolyte', 'red', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11132,7 +11251,7 @@ def create_acolyte(x, y):
 	return monster
 	
 def create_archmage(x, y):
-	fighter_component = Fighter(hp=99, strength=10, dexterity=14, constitution=12, intelligence=20, wisdom=15, charisma=16, clevel=18, proficiencies=['magic', 'simple weapons', 'light armour'], traits=['magic resistance', 'damage resistance'], spells=['fire bolt', 'shocking grasp', 'mage armour', 'magic missile', 'shield', 'lightning bolt', 'banishment', 'fire shield', 'stoneskin', 'cone of cold', 'teleport'], xp=8400, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=6, challenge_rating=12)	
+	fighter_component = Fighter(hp=99, strength=10, dexterity=14, constitution=12, intelligence=20, wisdom=15, charisma=16, clevel=18, proficiencies=['magic', 'simple weapons', 'light armour'], traits=['magic resistance', 'damage resistance'], spells=['fire bolt', 'shocking grasp', 'mage armour', 'magic missile', 'shield', 'lightning bolt', 'banishment', 'fire shield', 'stoneskin', 'cone of cold', 'teleport'], xp=8400, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=6, challenge_rating=12, natural_weapon='Dagger')	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'archmage', 'crimson', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11143,7 +11262,7 @@ def create_archmage(x, y):
 	return monster
 	
 def create_assassin(x, y):
-	fighter_component = Fighter(hp=78, strength=11, dexterity=16, constitution=14, intelligence=13, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=['sneak attack', 'assassinate', 'extra attack'], spells=[], xp=3900, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'piercing', to_hit=6, challenge_rating=8)	
+	fighter_component = Fighter(hp=78, strength=11, dexterity=16, constitution=14, intelligence=13, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=['sneak attack', 'assassinate', 'extra attack'], spells=[], xp=3900, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'piercing', to_hit=6, challenge_rating=8, natural_weapon='Short sword')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'assassin', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11153,7 +11272,7 @@ def create_assassin(x, y):
 	return monster
 	
 def create_bandit(x, y):
-	fighter_component = Fighter(hp=11, strength=11, dexterity=12, constitution=12, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, ranged_num_dmg_die=1, ranged_dmg_die=6, ranged_dmg_bonus=3, ranged_dmg_type='piercing', ranged_to_hit=5, challenge_rating=0.125)	
+	fighter_component = Fighter(hp=11, strength=11, dexterity=12, constitution=12, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, ranged_num_dmg_die=1, ranged_dmg_die=6, ranged_dmg_bonus=3, ranged_dmg_type='piercing', ranged_to_hit=5, challenge_rating=0.125, natural_weapon='Scimitar')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'bandit', 'dark yellow', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11163,7 +11282,7 @@ def create_bandit(x, y):
 	return monster
 	
 def create_bandit_captain(x, y):
-	fighter_component = Fighter(hp=65, strength=15, dexterity=16, constitution=14, intelligence=14, wisdom=11, charisma=14, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack'], spells=[], xp=450, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2)	
+	fighter_component = Fighter(hp=65, strength=15, dexterity=16, constitution=14, intelligence=14, wisdom=11, charisma=14, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack'], spells=[], xp=450, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2, natural_weapon='Scimitar')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'bandit captain', 'gold', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11173,7 +11292,7 @@ def create_bandit_captain(x, y):
 	return monster
 	
 def create_berserker(x, y):
-	fighter_component = Fighter(hp=67, strength=16, dexterity=12, constitution=17, intelligence=9, wisdom=11, charisma=9, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour'], traits=['reckless'], spells=[], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=12, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2)	
+	fighter_component = Fighter(hp=67, strength=16, dexterity=12, constitution=17, intelligence=9, wisdom=11, charisma=9, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour'], traits=['reckless'], spells=[], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=12, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=2, natural_weapon='Great axe')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'berserker', 'orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11183,7 +11302,7 @@ def create_berserker(x, y):
 	return monster
 	
 def create_commoner(x, y):
-	fighter_component = Fighter(hp=4, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=['simple weapons'], traits=[], spells=[], xp=10, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0)	
+	fighter_component = Fighter(hp=4, strength=10, dexterity=10, constitution=10, intelligence=10, wisdom=10, charisma=10, clevel=1, proficiencies=['simple weapons'], traits=[], spells=[], xp=10, death_function=monster_ko, ac=10, num_dmg_die=1, dmg_die=4, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=0, natural_weapon='Club')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'commoner', 'silver', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11193,7 +11312,7 @@ def create_commoner(x, y):
 	return monster
 	
 def create_cultist(x, y):
-	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=10, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'light armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, challenge_rating=0.125)	
+	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=10, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'light armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'slashing', to_hit=3, challenge_rating=0.125, natural_weapon='Scimitar')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'cultist', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11203,7 +11322,7 @@ def create_cultist(x, y):
 	return monster
 	
 def create_cult_fanatic(x, y):
-	fighter_component = Fighter(hp=33, strength=11, dexterity=14, constitution=12, intelligence=10, wisdom=13, charisma=14, clevel=4, proficiencies=['magic', 'simple weapons', 'light armour'], traits=['extra attack'], spells=['sacred flame', 'inflict wounds', 'shield of faith', 'hold person', 'spiritual weapon'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=2)	
+	fighter_component = Fighter(hp=33, strength=11, dexterity=14, constitution=12, intelligence=10, wisdom=13, charisma=14, clevel=4, proficiencies=['magic', 'simple weapons', 'light armour'], traits=['extra attack'], spells=['sacred flame', 'inflict wounds', 'shield of faith', 'hold person', 'spiritual weapon'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=2, natural_weapon='Dagger')	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'cult fanatic', 'darker orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11214,7 +11333,7 @@ def create_cult_fanatic(x, y):
 	return monster
 	
 def create_gladiator(x, y):
-	fighter_component = Fighter(hp=112, strength=18, dexterity=15, constitution=16, intelligence=10, wisdom=12, charisma=15, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack', 'extra attack', 'brave'], spells=[], xp=1800, death_function=monster_ko, ac=16, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=5)	
+	fighter_component = Fighter(hp=112, strength=18, dexterity=15, constitution=16, intelligence=10, wisdom=12, charisma=15, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack', 'extra attack', 'brave'], spells=[], xp=1800, death_function=monster_ko, ac=16, num_dmg_die=2, dmg_die=6, dmg_bonus=4, dmg_type = 'piercing', to_hit=7, challenge_rating=5, natural_weapon='Spear')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'gladiator', 'dark orange', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11224,7 +11343,7 @@ def create_gladiator(x, y):
 	return monster	
 	
 def create_guard(x, y):
-	fighter_component = Fighter(hp=11, strength=13, dexterity=12, constitution=12, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['perception', 'protection without shield', 'simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=16, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)	
+	fighter_component = Fighter(hp=11, strength=13, dexterity=12, constitution=12, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['perception', 'protection without shield', 'simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=16, num_dmg_die=1, dmg_die=6, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125, natural_weapon='Spear')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'guard', 'yellow', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11234,7 +11353,7 @@ def create_guard(x, y):
 	return monster
 	
 def create_knight(x, y):
-	fighter_component = Fighter(hp=52, strength=16, dexterity=11, constitution=14, intelligence=11, wisdom=11, charisma=15, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['brave'], spells=[], xp=700, death_function=monster_ko, ac=18, num_dmg_die=2, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3)	
+	fighter_component = Fighter(hp=52, strength=16, dexterity=11, constitution=14, intelligence=11, wisdom=11, charisma=15, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['brave'], spells=[], xp=700, death_function=monster_ko, ac=18, num_dmg_die=2, dmg_die=6, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3, natural_weapon='Greatsword')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'knight', 'sky', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11244,7 +11363,7 @@ def create_knight(x, y):
 	return monster
 	
 def create_mage(x, y):
-	fighter_component = Fighter(hp=40, strength=9, dexterity=14, constitution=11, intelligence=17, wisdom=12, charisma=11, clevel=9, proficiencies=['magic', 'simple weapons', 'light armour'], traits=[], spells=['fire bolt', 'magic missile', 'shield', 'fireball', 'ice storm', 'cone of cold'], xp=2300, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=6)	
+	fighter_component = Fighter(hp=40, strength=9, dexterity=14, constitution=11, intelligence=17, wisdom=12, charisma=11, clevel=9, proficiencies=['magic', 'simple weapons', 'light armour'], traits=[], spells=['fire bolt', 'magic missile', 'shield', 'fireball', 'ice storm', 'cone of cold'], xp=2300, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=4, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=6, natural_weapon='Dagger')	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'mage', 'fuchsia', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11255,7 +11374,7 @@ def create_mage(x, y):
 	return monster
 	
 def create_noble(x, y):
-	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=11, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=['simple weapons', 'light armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125)
+	fighter_component = Fighter(hp=9, strength=11, dexterity=12, constitution=11, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=[], spells=[], xp=25, death_function=monster_ko, ac=15, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.125, natural_weapon='Rapier')
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'noble', 'light green', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11265,7 +11384,7 @@ def create_noble(x, y):
 	return monster
 	
 def create_priest(x, y):
-	fighter_component = Fighter(hp=27, strength=10, dexterity=10, constitution=12, intelligence=13, wisdom=16, charisma=13, clevel=5, proficiencies=['magic', 'simple weapons', 'light armour', 'medium armour'], traits=[], spells=['sacred flame', 'cure wounds', 'lesser restoration', 'spiritual weapon', 'dispel magic', 'spirit guardians'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=2)	
+	fighter_component = Fighter(hp=27, strength=10, dexterity=10, constitution=12, intelligence=13, wisdom=16, charisma=13, clevel=5, proficiencies=['magic', 'simple weapons', 'light armour', 'medium armour'], traits=[], spells=['sacred flame', 'cure wounds', 'lesser restoration', 'spiritual weapon', 'dispel magic', 'spirit guardians'], xp=450, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=0, dmg_type = 'bludgeoning', to_hit=2, challenge_rating=2, natural_weapon='Mace')	
 	ai_component = MagicMonster()
 	monster = Object(x, y, '@', 'priest', 'blue', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11276,7 +11395,7 @@ def create_priest(x, y):
 	return monster
 	
 def create_scout(x, y):
-	fighter_component = Fighter(hp=16, strength=11, dexterity=14, constitution=12, intelligence=11, wisdom=13, charisma=11, clevel=1, proficiencies=['perception', 'simple weapons', 'martial weapons', 'light armour'], traits=['extra attack'], spells=[], xp=100, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.5)	
+	fighter_component = Fighter(hp=16, strength=11, dexterity=14, constitution=12, intelligence=11, wisdom=13, charisma=11, clevel=1, proficiencies=['perception', 'simple weapons', 'martial weapons', 'light armour'], traits=['extra attack'], spells=[], xp=100, death_function=monster_ko, ac=13, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=4, challenge_rating=0.5, natural_weapon='Short sword')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'scout', 'celadon', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11286,7 +11405,7 @@ def create_scout(x, y):
 	return monster
 	
 def create_spy(x, y):
-	fighter_component = Fighter(hp=27, strength=10, dexterity=15, constitution=10, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=['sneak attack', 'extra attack'], spells=[], xp=200, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=1)	
+	fighter_component = Fighter(hp=27, strength=10, dexterity=15, constitution=10, intelligence=12, wisdom=14, charisma=16, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour'], traits=['sneak attack', 'extra attack'], spells=[], xp=200, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'piercing', to_hit=5, challenge_rating=1, natural_weapon='Short sword')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'spy', 'dark grey', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11296,7 +11415,7 @@ def create_spy(x, y):
 	return monster
 	
 def create_thug(x, y):
-	fighter_component = Fighter(hp=32, strength=15, dexterity=11, constitution=14, intelligence=10, wisdom=10, charisma=11, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour'], traits=['pack tactics', 'sneak attack'], spells=[], xp=100, death_function=monster_ko, ac=11, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'bludgeoning', to_hit=4, challenge_rating=0.5)	
+	fighter_component = Fighter(hp=32, strength=15, dexterity=11, constitution=14, intelligence=10, wisdom=10, charisma=11, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour'], traits=['pack tactics', 'sneak attack'], spells=[], xp=100, death_function=monster_ko, ac=11, num_dmg_die=1, dmg_die=6, dmg_bonus=2, dmg_type = 'bludgeoning', to_hit=4, challenge_rating=0.5, natural_weapon='Thug')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'thug', 'dark red', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11306,7 +11425,7 @@ def create_thug(x, y):
 	return monster
 	
 def create_tribal_warrior(x, y):
-	fighter_component = Fighter(hp=11, strength=13, dexterity=11, constitution=12, intelligence=8, wisdom=11, charisma=8, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['pack tactics'], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.5)	
+	fighter_component = Fighter(hp=11, strength=13, dexterity=11, constitution=12, intelligence=8, wisdom=11, charisma=8, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['pack tactics'], spells=[], xp=25, death_function=monster_ko, ac=12, num_dmg_die=1, dmg_die=8, dmg_bonus=1, dmg_type = 'piercing', to_hit=3, challenge_rating=0.5, natural_weapon='Spear')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'tribal warrior', 'flame', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -11316,7 +11435,7 @@ def create_tribal_warrior(x, y):
 	return monster
 	
 def create_veteran(x, y):
-	fighter_component = Fighter(hp=58, strength=16, dexterity=13, constitution=14, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack'], spells=[], xp=700, death_function=monster_ko, ac=17, num_dmg_die=1, dmg_die=8, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3)	
+	fighter_component = Fighter(hp=58, strength=16, dexterity=13, constitution=14, intelligence=10, wisdom=11, charisma=10, clevel=1, proficiencies=['simple weapons', 'martial weapons', 'light armour', 'medium armour', 'heavy armour', 'shields'], traits=['extra attack'], spells=[], xp=700, death_function=monster_ko, ac=17, num_dmg_die=1, dmg_die=8, dmg_bonus=3, dmg_type = 'slashing', to_hit=5, challenge_rating=3, natural_weapon='Longsword')	
 	ai_component = BasicMonster()
 	monster = Object(x, y, '@', 'veteran', 'light blue', blocks=True, fighter=fighter_component, ai=ai_component)
 	monster.fighter.can_join = True
@@ -13532,7 +13651,15 @@ def generate_character():
 	player.inventory.append(obj)
 	
 	#items to be given for testing purposes
-	#obj = create_periapt_of_proof_against_poisons()
+	#obj = create_helm_of_orcsblood()
+	#player.inventory.append(obj)
+	#obj = create_cloak_of_elvenkind()
+	#player.inventory.append(obj)
+	#obj = create_boots_of_elvenkind()
+	#player.inventory.append(obj)
+	#obj = create_boots_of_the_winterlands()
+	#player.inventory.append(obj)
+	#obj = create_wand_of_humblesongs_gift()
 	#player.inventory.append(obj)
 	
 	#generate map (at this point it's not drawn to the screen)

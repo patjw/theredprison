@@ -1292,3 +1292,9 @@ Rewrote code for conditions and items temporarily boosting or overwriting abilit
 Added amulet of mystic insight (wisdom bonus), ring of the forge (fire resistance), boots of the winterlands (cold resistance), ring of the dancer (+1 dex), cloak of elvenkind (stealth bonus), boots of elvenkind (stealth bonus), periapt of proof against poisons (poison resistance), gauntlets of ogrekind (+2 str, +2 con, -2 int, -4 cha), helm of orcsblood (+1 str, +1 con, -1 cha, relentless), ring of the drow (-2 cha, darkvision), wand of humblesong's gift (21 charge wand of prayer of healing).
 
 Fixed issue with rings of poison resistance being wrongly named rings of protection (this was a longstanding issue that I could never figure out!!!).
+
+26/5/20
+
+Expanded the examine other creatures function from just allies to anyone and anything. Now it reveals any creature's stats, along with their combat abilities, traits and proficiencies. Required a rewrite of how the game gather defence and attack stats so that monsters and the player worked in the same way. 
+
+Added names for the natural attacks possessed by all NPCs so that it's clear that they're armed without needing to be given a weapon.
