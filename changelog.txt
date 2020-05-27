@@ -1298,3 +1298,9 @@ Fixed issue with rings of poison resistance being wrongly named rings of protect
 Expanded the examine other creatures function from just allies to anyone and anything. Now it reveals any creature's stats, along with their combat abilities, traits and proficiencies. Required a rewrite of how the game gather defence and attack stats so that monsters and the player worked in the same way. 
 
 Added names for the natural attacks possessed by all NPCs so that it's clear that they're armed without needing to be given a weapon.
+
+27/5/20
+
+Added descriptions for most monsters and NPCs.
+
+Expanded examine menu to include descriptions, including code to break down those long strings into appropriately sized words for readability.

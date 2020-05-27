@@ -378,6 +378,8 @@ class Object:
 		
 		self.links_to = None #used to store links to other branches and levels for stairs and other portals
 		
+		self.description = None
+		
 	def flavour_text_check(self):
 		### check if we have flavour text and if so, use it
 		if self.flavour_text is not None and self.chatty:
@@ -7067,6 +7069,18 @@ def examine_menu(target):
 	text = []
 	text.append(target.name_for_printing(capitalise=True, definite_article=False))
 	text.append('')
+	if target.description is not None: #description will be a really long string which will look ugly, so we want to figure out how best to break it down into multiple lines. first, split into individual words. second, add words together until we get a string longer than 30 characters. third, repeat for the rest of the words
+		words = target.description.split()
+		description_strings = [] #this will be the final product to append
+		working_string = ''
+		while len(words) > 0:
+			working_string += words.pop(0) + ' '
+			if len(working_string) > 40:
+				description_strings.append(working_string)
+				working_string = ''
+		description_strings.append(working_string) #append whatever is left over
+		text += description_strings
+		text.append('')
 	if target == player:
 		text.append('Traits:')
 		text.append('')
@@ -9802,6 +9816,7 @@ def create_adult_red_dragon(x, y):
 	monster.big_char = int("0xE104", 16)
 	monster.small_char = int("0xE604", 16)
 	monster.move_cost = 75
+	monster.description = 'The odor of sulfur and pumice surrounds a red dragon, whose swept-back horns and spinal frill define its silhouette. Its beaked snout vents smoke at all times, and its eyes dance with flame when it is angry.'
 	return monster
 	
 def create_air_elemental(x, y):
@@ -9811,6 +9826,7 @@ def create_air_elemental(x, y):
 	monster.big_char = int("0xE105", 16)
 	monster.small_char = int("0xE605", 16)
 	monster.move_cost = 33
+	monster.description = 'An air elemental is a funneling cloud of whirling air with a vague semblance of a face. It can turn itself into a screaming cyclone, creating a whirlwind that batters creatures even as it flings them away.'
 	return monster
 	
 def create_allosaurus(x, y):
@@ -9820,6 +9836,7 @@ def create_allosaurus(x, y):
 	monster.big_char = int("0xE106", 16)
 	monster.small_char = int("0xE606", 16)
 	monster.move_cost = 50
+	monster.description = 'The allosaurus is a predatory dinosaur of great size, strength, and speed. It can run down almost any prey over open ground, pouncing to pull creatures down with its wicked claws.'
 	return monster
 	
 def create_animated_armour(x, y):
@@ -9829,6 +9846,7 @@ def create_animated_armour(x, y):
 	monster.big_char = int("0xE107", 16)
 	monster.small_char = int("0xE607", 16)
 	monster.move_cost = 120
+	monster.description = 'This suit of magically animated plate armor clamors as it moves, banging and grinding like the vengeful spirit of a fallen knight.'
 	return monster
 	
 def create_ankylosaurus(x, y):
@@ -9838,6 +9856,7 @@ def create_ankylosaurus(x, y):
 	monster.big_char = int("0xE108", 16)
 	monster.small_char = int("0xE608", 16)
 	monster.move_cost = 100
+	monster.description = 'Thick armor plating covers the body of the plant-eating dinosaur ankylosaurus, which defends itself against predators with a knobbed tail that delivers a devastating strike.'
 	return monster
 	
 def create_ape(x, y): 
@@ -9847,6 +9866,7 @@ def create_ape(x, y):
 	monster.big_char = int("0xE109", 16)
 	monster.small_char = int("0xE609", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_axe_beak(x, y): 
@@ -9856,6 +9876,7 @@ def create_axe_beak(x, y):
 	monster.big_char = int("0xE112", 16)
 	monster.small_char = int("0xE612", 16)
 	monster.move_cost = 60
+	monster.description = 'An axe beak is a tall flightless bird with strong legs, a wedge-shaped beak, and a nasty disposition.'
 	return monster
 	
 def create_baboon(x, y): 
@@ -9865,6 +9886,7 @@ def create_baboon(x, y):
 	monster.big_char = int("0xE113", 16)
 	monster.small_char = int("0xE613", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_badger(x, y): 
@@ -9874,6 +9896,7 @@ def create_badger(x, y):
 	monster.big_char = int("0xE114", 16)
 	monster.small_char = int("0xE614", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster	
 	
 def create_banshee(x, y): 
@@ -9883,6 +9906,7 @@ def create_banshee(x, y):
 	monster.big_char = int("0xE115", 16)
 	monster.small_char = int("0xE615", 16)
 	monster.move_cost = 75
+	monster.description = 'The woeful banshee is a spiteful creature formed from the spirit of a female elf. Its face is wreathed in a wild tangle of hair, its body clad in wispy rags that flutter and stream around it.'
 	return monster
 	
 def create_bat(x, y):
@@ -9892,6 +9916,7 @@ def create_bat(x, y):
 	monster.big_char = int("0xE116", 16)
 	monster.small_char = int("0xE616", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_basilisk(x, y):
@@ -9905,6 +9930,7 @@ def create_basilisk(x, y):
 	monster.big_char = int("0xE117", 16)
 	monster.small_char = int("0xE617", 16)
 	monster.move_cost = 150
+	monster.description = 'A basilisk is a multilegged, reptilian horror whose deadly gaze transforms victims into porous stone. With its strong jaws, the creature consumes this stone, which returns to organic form in its gullet.'
 	return monster
 	
 def create_black_bear(x, y):
@@ -9914,6 +9940,7 @@ def create_black_bear(x, y):
 	monster.big_char = int("0xE118", 16)
 	monster.small_char = int("0xE618", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_blink_dog(x, y):
@@ -9923,6 +9950,7 @@ def create_blink_dog(x, y):
 	monster.big_char = int("0xE119", 16)
 	monster.small_char = int("0xE619", 16)
 	monster.move_cost = 75
+	monster.description = 'A blink dog takes its name from its ability to blink in and out of existence, a talent it uses to aid its attacks and to avoid harm.'
 	return monster
 	
 def create_blood_hawk(x, y):
@@ -9932,6 +9960,7 @@ def create_blood_hawk(x, y):
 	monster.big_char = int("0xE120", 16)
 	monster.small_char = int("0xE620", 16)
 	monster.move_cost = 50
+	monster.description = 'Taking its name from its crimson feathers and aggressive nature, the blood hawk fearlessly attacks with its daggerlike beak.'
 	return monster
 	
 def create_boar(x, y):
@@ -9941,6 +9970,7 @@ def create_boar(x, y):
 	monster.big_char = int("0xE121", 16)
 	monster.small_char = int("0xE621", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_brown_bear(x, y):
@@ -9950,6 +9980,7 @@ def create_brown_bear(x, y):
 	monster.big_char = int("0xE122", 16)
 	monster.small_char = int("0xE622", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_bugbear(x, y):
@@ -9959,6 +9990,7 @@ def create_bugbear(x, y):
 	monster.big_char = int("0xE123", 16)
 	monster.small_char = int("0xE623", 16)
 	monster.move_cost = 100
+	monster.description = 'Bugbears are hairy goblinoids born for battle and mayhem. They survive by raiding and hunting, but are fond of setting ambushes and fleeing when outmatched.'
 	return monster
 	
 def create_cat(x, y):
@@ -9968,6 +10000,7 @@ def create_cat(x, y):
 	monster.big_char = int("0xE125", 16)
 	monster.small_char = int("0xE625", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_centaur(x, y):
@@ -9977,6 +10010,7 @@ def create_centaur(x, y):
 	monster.big_char = int("0xE126", 16)
 	monster.small_char = int("0xE626", 16)
 	monster.move_cost = 60
+	monster.description = 'A centaur has the body of a great horse topped by a humanoid torso, head, and arms. Reclusive wanderers, they avoid conflict but fight fiercely when pressed.'
 	return monster	
 	
 def create_chimera(x, y):
@@ -9986,6 +10020,7 @@ def create_chimera(x, y):
 	monster.big_char = int("0xE127", 16)
 	monster.small_char = int("0xE627", 16)
 	monster.move_cost = 50
+	monster.description = 'A chimera is a vile combination of goat, lion, and dragon, and features the heads of all three of those creatures. It likes to swoop down from the sky and engulf prey with its fiery breath before landing to attack.'
 	return monster
 	
 def create_cockatrice(x, y):
@@ -9995,6 +10030,7 @@ def create_cockatrice(x, y):
 	monster.big_char = int("0xE128", 16)
 	monster.small_char = int("0xE628", 16)
 	monster.move_cost = 75
+	monster.description = 'The cockatrice looks like a hideous hybrid of lizard, bird, and bat. It is infamous for its ability to turn flesh to stone.'
 	return monster
 	
 def create_constrictor_snake(x, y):
@@ -10004,6 +10040,7 @@ def create_constrictor_snake(x, y):
 	monster.big_char = int("0xE129", 16)
 	monster.small_char = int("0xE629", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_crab(x, y):
@@ -10013,6 +10050,7 @@ def create_crab(x, y):
 	monster.big_char = int("0xE130", 16)
 	monster.small_char = int("0xE630", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_crocodile(x, y):
@@ -10022,6 +10060,7 @@ def create_crocodile(x, y):
 	monster.big_char = int("0xE131", 16)
 	monster.small_char = int("0xE631", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_cyclops(x, y):
@@ -10031,6 +10070,7 @@ def create_cyclops(x, y):
 	monster.big_char = int("0xE132", 16)
 	monster.small_char = int("0xE632", 16)
 	monster.move_cost = 100
+	monster.description = 'Cyclopes are one-eyed giants that eke out a meager existence in wild lands. They are a terrifying threat in combat due to their size and strength, but they can often be tricked by clever foes.'
 	return monster
 	
 def create_death_dog(x, y):
@@ -10040,6 +10080,7 @@ def create_death_dog(x, y):
 	monster.big_char = int("0xE133", 16)
 	monster.small_char = int("0xE633", 16)
 	monster.move_cost = 75
+	monster.description = 'A death dog is an ugly two-headed hound that roams plains, deserts, and the Underdark.'
 	return monster
 	
 def create_deer(x, y):
@@ -10049,6 +10090,7 @@ def create_deer(x, y):
 	monster.big_char = int("0xE134", 16)
 	monster.small_char = int("0xE634", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_dire_wolf(x, y):
@@ -10058,6 +10100,7 @@ def create_dire_wolf(x, y):
 	monster.big_char = int("0xE135", 16)
 	monster.small_char = int("0xE635", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_doppelganger(x, y):
@@ -10067,6 +10110,7 @@ def create_doppelganger(x, y):
 	monster.big_char = int("0xE136", 16)
 	monster.small_char = int("0xE636", 16)
 	monster.move_cost = 100
+	monster.description = 'Doppelgangers are devious shapeshifters that take on the appearance of other humanoids, throwing off pursuit or luring victims to their doom with misdirection and disguise.'
 	return monster
 	
 def create_draft_horse(x, y):
@@ -10076,6 +10120,7 @@ def create_draft_horse(x, y):
 	monster.big_char = int("0xE137", 16)
 	monster.small_char = int("0xE637", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_eagle(x, y):
@@ -10085,6 +10130,7 @@ def create_eagle(x, y):
 	monster.big_char = int("0xE138", 16)
 	monster.small_char = int("0xE638", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_earth_elemental(x, y):
@@ -10094,6 +10140,7 @@ def create_earth_elemental(x, y):
 	monster.big_char = int("0xE139", 16)
 	monster.small_char = int("0xE639", 16)
 	monster.move_cost = 100
+	monster.description = 'An earth elemental plods forward like a walking hill, club-like arms of jagged stone swinging at its sides. Its head and body consist of dirt and stone, occasionally set with chunks of metal, gems, and bright minerals.'
 	return monster
 	
 def create_elephant(x, y):
@@ -10103,6 +10150,7 @@ def create_elephant(x, y):
 	monster.big_char = int("0xE140", 16)
 	monster.small_char = int("0xE640", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_elk(x, y):
@@ -10112,6 +10160,7 @@ def create_elk(x, y):
 	monster.big_char = int("0xE141", 16)
 	monster.small_char = int("0xE641", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_fire_elemental(x, y):
@@ -10121,6 +10170,7 @@ def create_fire_elemental(x, y):
 	monster.big_char = int("0xE142", 16)
 	monster.small_char = int("0xE642", 16)
 	monster.move_cost = 60
+	monster.description = 'A faint humanoid shape shows in a fire elemental’s capricious devastation. Wherever it moves, it sets its surroundings ablaze, turning the world to ash, smoke, and cinders.'
 	return monster
 	
 def create_fire_giant(x, y):
@@ -10130,6 +10180,7 @@ def create_fire_giant(x, y):
 	monster.big_char = int("0xE143", 16)
 	monster.small_char = int("0xE643", 16)
 	monster.move_cost = 100
+	monster.description = 'With dark skin and flaming red hair, fire giants have a fearsome reputation as soldiers and conquerors. They dwell among volcanoes, lava flows, and rocky mountains, and are known for their ability to burn, plunder, and destroy.'
 	return monster
 	
 def create_flameskull(x, y):
@@ -10139,6 +10190,7 @@ def create_flameskull(x, y):
 	monster.big_char = int("0xE144", 16)
 	monster.small_char = int("0xE644", 16)
 	monster.move_cost = 75
+	monster.description = 'Blazing green flames and mad, echoing laughter surround an undead flameskull. This disembodied skull blasts foes with fiery rays from its eyes and dreadful spells called up from the dark recesses of its memory.'
 	return monster
 	
 def create_flesh_golem(x, y):
@@ -10148,6 +10200,7 @@ def create_flesh_golem(x, y):
 	monster.big_char = int("0xE145", 16)
 	monster.small_char = int("0xE645", 16)
 	monster.move_cost = 100
+	monster.description = 'A flesh golem is a grisly assortment of humanoid body parts stitched and bolted together into a muscled brute imbued with formidable strength. Powerful enchantments protect it, deflecting spells and all but the most potent weapons.'
 	return monster
 	
 def create_flying_snake(x, y):
@@ -10161,6 +10214,7 @@ def create_flying_snake(x, y):
 	monster.big_char = int("0xE146", 16)
 	monster.small_char = int("0xE646", 16)
 	monster.move_cost = 50
+	monster.description = 'A flying snake is a brightly colored, winged serpent found in remote jungles.'
 	return monster
 	
 def create_flying_sword(x, y):
@@ -10170,6 +10224,7 @@ def create_flying_sword(x, y):
 	monster.big_char = int("0xE147", 16)
 	monster.small_char = int("0xE647", 16)
 	monster.move_cost = 50
+	monster.description = 'A magically animated flying sword dances through the air, fighting like a warrior that can’t be injured.'
 	return monster
 	
 def create_frog(x, y):
@@ -10179,6 +10234,7 @@ def create_frog(x, y):
 	monster.big_char = int("0xE148", 16)
 	monster.small_char = int("0xE648", 16)
 	monster.move_cost = 150
+	monster.description = 'A frog has no effective attacks. It feeds on small insects and typically dwells near water, in trees, or underground.'
 	return monster
 	
 def create_frost_giant(x, y):
@@ -10188,6 +10244,7 @@ def create_frost_giant(x, y):
 	monster.big_char = int("0xE149", 16)
 	monster.small_char = int("0xE649", 16)
 	monster.move_cost = 75
+	monster.description = 'Frost giants are creatures of ice and snow, with hair and beards of pale white or light blue, and flesh as blue as glacial ice. They respect only brute strength and skill in battle.'
 	return monster
 	
 def create_gargoyle(x, y):
@@ -10197,6 +10254,7 @@ def create_gargoyle(x, y):
 	monster.big_char = int("0xE150", 16)
 	monster.small_char = int("0xE650", 16)
 	monster.move_cost = 50
+	monster.description = 'These malevolent creatures of elemental earth resemble grotesque, fiendish statues. A gargoyle lurks among masonry and ruins, delighting in the terror it creates when it breaks from its suspended pose.'
 	return monster
 	
 def create_ghost(x, y):
@@ -10206,6 +10264,7 @@ def create_ghost(x, y):
 	monster.big_char = int("0xE151", 16)
 	monster.small_char = int("0xE651", 16)
 	monster.move_cost = 75
+	monster.description = 'A ghost is the soul of a once-living creature, bound to haunt a location, creature, or object from its life.'
 	return monster
 	
 def create_ghoul(x, y):
@@ -10215,6 +10274,7 @@ def create_ghoul(x, y):
 	monster.big_char = int("0xE152", 16)
 	monster.small_char = int("0xE652", 16)
 	monster.move_cost = 100
+	monster.description = 'With their razor-sharp teeth and jagged claws, ghouls roam the night in packs, driven by an insatiable hunger for humanoid flesh.'
 	return monster
 	
 def create_giant_ape(x, y):
@@ -10224,6 +10284,7 @@ def create_giant_ape(x, y):
 	monster.big_char = int("0xE153", 16)
 	monster.small_char = int("0xE653", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_giant_badger(x, y):
@@ -10233,6 +10294,7 @@ def create_giant_badger(x, y):
 	monster.big_char = int("0xE154", 16)
 	monster.small_char = int("0xE654", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_bat(x, y):
@@ -10242,6 +10304,7 @@ def create_giant_bat(x, y):
 	monster.big_char = int("0xE155", 16)
 	monster.small_char = int("0xE655", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_giant_boar(x, y):
@@ -10251,6 +10314,7 @@ def create_giant_boar(x, y):
 	monster.big_char = int("0xE156", 16)
 	monster.small_char = int("0xE656", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_giant_centipede(x, y):
@@ -10260,6 +10324,7 @@ def create_giant_centipede(x, y):
 	monster.big_char = int("0xE157", 16)
 	monster.small_char = int("0xE657", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_constrictor_snake(x, y):
@@ -10269,6 +10334,7 @@ def create_giant_constrictor_snake(x, y):
 	monster.big_char = int("0xE158", 16)
 	monster.small_char = int("0xE658", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_crab(x, y):
@@ -10278,6 +10344,7 @@ def create_giant_crab(x, y):
 	monster.big_char = int("0xE159", 16)
 	monster.small_char = int("0xE659", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_crocodile(x, y):
@@ -10287,6 +10354,7 @@ def create_giant_crocodile(x, y):
 	monster.big_char = int("0xE160", 16)
 	monster.small_char = int("0xE660", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_eagle(x, y):
@@ -10296,6 +10364,7 @@ def create_giant_eagle(x, y):
 	monster.big_char = int("0xE161", 16)
 	monster.small_char = int("0xE661", 16)
 	monster.move_cost = 37
+	monster.description = 'A giant eagle is a noble creature that speaks its own language and understands some speech.'
 	return monster
 	
 def create_giant_elk(x, y):
@@ -10305,6 +10374,7 @@ def create_giant_elk(x, y):
 	monster.big_char = int("0xE162", 16)
 	monster.small_char = int("0xE662", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_giant_fire_beetle(x, y):
@@ -10314,6 +10384,7 @@ def create_giant_fire_beetle(x, y):
 	monster.big_char = int("0xE163", 16)
 	monster.small_char = int("0xE663", 16)
 	monster.move_cost = 100
+	monster.description = 'A giant fire beetle is a nocturnal creature that features a pair of glowing glands that give off light for 1d6 days after the beetle dies.'
 	return monster
 	
 def create_giant_frog(x, y):
@@ -10323,6 +10394,7 @@ def create_giant_frog(x, y):
 	monster.big_char = int("0xE164", 16)
 	monster.small_char = int("0xE664", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_goat(x, y):
@@ -10332,6 +10404,7 @@ def create_giant_goat(x, y):
 	monster.big_char = int("0xE165", 16)
 	monster.small_char = int("0xE665", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_giant_hyena(x, y):
@@ -10341,6 +10414,7 @@ def create_giant_hyena(x, y):
 	monster.big_char = int("0xE166", 16)
 	monster.small_char = int("0xE666", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_giant_lizard(x, y):
@@ -10350,6 +10424,7 @@ def create_giant_lizard(x, y):
 	monster.big_char = int("0xE167", 16)
 	monster.small_char = int("0xE667", 16)
 	monster.move_cost = 100
+	monster.description = 'Giant lizards are fearsome predators often used as mounts or draft animals by reptilian humanoids and residents of the Underdark.'
 	return monster
 	
 def create_giant_octopus(x, y):
@@ -10359,6 +10434,7 @@ def create_giant_octopus(x, y):
 	monster.big_char = int("0xE168", 16)
 	monster.small_char = int("0xE668", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_giant_owl(x, y):
@@ -10368,6 +10444,7 @@ def create_giant_owl(x, y):
 	monster.big_char = int("0xE169", 16)
 	monster.small_char = int("0xE669", 16)
 	monster.move_cost = 50
+	monster.description = 'Giant owls are intelligent creatures that are the guardians of their woodland realms.'
 	return monster
 	
 def create_giant_poisonous_snake(x, y):
@@ -10380,6 +10457,7 @@ def create_giant_poisonous_snake(x, y):
 	monster.big_char = int("0xE170", 16)
 	monster.small_char = int("0xE670", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_rat(x, y):
@@ -10389,6 +10467,7 @@ def create_giant_rat(x, y):
 	monster.big_char = int("0xE171", 16)
 	monster.small_char = int("0xE671", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_scorpion(x, y):
@@ -10401,6 +10480,7 @@ def create_giant_scorpion(x, y):
 	monster.big_char = int("0xE172", 16)
 	monster.small_char = int("0xE672", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_giant_sea_horse(x, y):
@@ -10410,6 +10490,7 @@ def create_giant_sea_horse(x, y):
 	monster.big_char = int("0xE173", 16)
 	monster.small_char = int("0xE673", 16)
 	monster.move_cost = 75
+	monster.description = 'Giant sea horses are often used as mounts by aquatic humanoids.'
 	return monster
 	
 def create_giant_shark(x, y):
@@ -10419,6 +10500,7 @@ def create_giant_shark(x, y):
 	monster.big_char = int("0xE174", 16)
 	monster.small_char = int("0xE674", 16)
 	monster.move_cost = 60
+	monster.description = 'A giant shark is 30 feet long and normally found in deep oceans.'
 	return monster
 	
 def create_giant_spider(x, y):
@@ -10431,6 +10513,7 @@ def create_giant_spider(x, y):
 	monster.big_char = int("0xE175", 16)
 	monster.small_char = int("0xE675", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_giant_toad(x, y):
@@ -10440,6 +10523,7 @@ def create_giant_toad(x, y):
 	monster.big_char = int("0xE176", 16)
 	monster.small_char = int("0xE676", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_giant_vulture(x, y):
@@ -10449,6 +10533,7 @@ def create_giant_vulture(x, y):
 	monster.big_char = int("0xE177", 16)
 	monster.small_char = int("0xE677", 16)
 	monster.move_cost = 50
+	monster.description = 'A giant vulture has advanced intelligence and a malevolent bent.'
 	return monster
 	
 def create_giant_wasp(x, y):
@@ -10461,6 +10546,7 @@ def create_giant_wasp(x, y):
 	monster.big_char = int("0xE178", 16)
 	monster.small_char = int("0xE678", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_giant_weasel(x, y):
@@ -10470,6 +10556,7 @@ def create_giant_weasel(x, y):
 	monster.big_char = int("0xE179", 16)
 	monster.small_char = int("0xE679", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_giant_wolf_spider(x, y):
@@ -10482,6 +10569,7 @@ def create_giant_wolf_spider(x, y):
 	monster.big_char = int("0xE180", 16)
 	monster.small_char = int("0xE680", 16)
 	monster.move_cost = 75
+	monster.description = 'Giant wolf spiders hunt prey across open ground or hide in burrows or crevices to attack from ambush.'
 	return monster
 	
 def create_gnoll(x, y):
@@ -10491,6 +10579,7 @@ def create_gnoll(x, y):
 	monster.big_char = int("0xE181", 16)
 	monster.small_char = int("0xE681", 16)
 	monster.move_cost = 100
+	monster.description = 'Gnolls are feral, hyena-headed humanoids that attack without warning, slaughtering their victims and devouring their flesh.'
 	return monster
 	
 def create_goat(x, y):
@@ -10500,6 +10589,7 @@ def create_goat(x, y):
 	monster.big_char = int("0xE182", 16)
 	monster.small_char = int("0xE682", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_goblin(x, y):
@@ -10509,6 +10599,7 @@ def create_goblin(x, y):
 	monster.big_char = int("0xE183", 16)
 	monster.small_char = int("0xE683", 16)
 	monster.move_cost = 100
+	monster.description = 'Goblins are small, black-hearted humanoids that lair in despoiled dungeons and other dismal settings. Individually weak, they gather in large numbers to torment other creatures.'
 	return monster
 	
 def create_grick(x, y):
@@ -10518,6 +10609,7 @@ def create_grick(x, y):
 	monster.big_char = int("0xE184", 16)
 	monster.small_char = int("0xE684", 16)
 	monster.move_cost = 100
+	monster.description = 'This wormlike monstrosity blends in with the rock of the caverns it haunts. When prey comes near, its barbed tentacles unfurl to reveal its hungry, snapping beak.'
 	return monster
 	
 def create_griffon(x, y):
@@ -10527,6 +10619,7 @@ def create_griffon(x, y):
 	monster.big_char = int("0xE185", 16)
 	monster.small_char = int("0xE685", 16)
 	monster.move_cost = 37
+	monster.description = 'A griffon is an avian carnivore with the muscular body of a lion and the head, forelegs, and wings of an eagle.'
 	return monster
 	
 def create_harpy(x, y):
@@ -10536,6 +10629,7 @@ def create_harpy(x, y):
 	monster.big_char = int("0xE186", 16)
 	monster.small_char = int("0xE686", 16)
 	monster.move_cost = 75
+	monster.description = 'A harpy combines the body, legs, and wings of a vulture with the torso, arms, and head of a human female. Its sweet song has lured countless adventurers to their deaths.'
 	return monster
 	
 def create_hawk(x, y):
@@ -10545,6 +10639,7 @@ def create_hawk(x, y):
 	monster.big_char = int("0xE187", 16)
 	monster.small_char = int("0xE687", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_hell_hound(x, y):
@@ -10554,6 +10649,7 @@ def create_hell_hound(x, y):
 	monster.big_char = int("0xE188", 16)
 	monster.small_char = int("0xE688", 16)
 	monster.move_cost = 60
+	monster.description = 'Fire-breathing fiends that take the form of powerful dogs, hell hounds commonly serve evil creatures that use them as guard animals and companions.'
 	return monster
 	
 def create_hill_giant(x, y):
@@ -10563,6 +10659,7 @@ def create_hill_giant(x, y):
 	monster.big_char = int("0xE189", 16)
 	monster.small_char = int("0xE689", 16)
 	monster.move_cost = 75
+	monster.description = 'Hill giants are selfish, dimwitted brutes that hunt and raid in constant search of food. Their skins are tan from lives spent beneath the sun, and their weapons are uprooted trees and rocks pulled from the earth.'
 	return monster
 	
 def create_hippogriff(x, y):
@@ -10572,6 +10669,7 @@ def create_hippogriff(x, y):
 	monster.big_char = int("0xE190", 16)
 	monster.small_char = int("0xE690", 16)
 	monster.move_cost = 50
+	monster.description = 'A hippogriff is a magical creature possessing the wings and forelimbs of an eagle, the hindquarters of a horse, and a head that combines the features of both animals.'
 	return monster
 	
 def create_hobgoblin(x, y):
@@ -10581,6 +10679,7 @@ def create_hobgoblin(x, y):
 	monster.big_char = int("0xE191", 16)
 	monster.small_char = int("0xE691", 16)
 	monster.move_cost = 100
+	monster.description = 'Hobgoblins are large goblinoids with dark orange or red-orange skin. A hobgoblin measures virtue by physical strength and martial prowess, caring about nothing except skill and cunning in battle.'
 	return monster
 	
 def create_hunter_shark(x, y):
@@ -10590,6 +10689,7 @@ def create_hunter_shark(x, y):
 	monster.big_char = int("0xE192", 16)
 	monster.small_char = int("0xE692", 16)
 	monster.move_cost = 75
+	monster.description = 'A hunter shark is 15 to 20 feet long, and usually hunts alone in deep waters.'
 	return monster
 	
 def create_hydra(x, y):
@@ -10599,6 +10699,7 @@ def create_hydra(x, y):
 	monster.big_char = int("0xE193", 16)
 	monster.small_char = int("0xE693", 16)
 	monster.move_cost = 100
+	monster.description = 'The hydra is a reptilian horror with a crocodilian body and multiple heads on long, serpentine necks. Although its heads can be severed, the hydra magically regrows them in short order.'
 	return monster
 	
 def create_hyena(x, y):
@@ -10608,6 +10709,7 @@ def create_hyena(x, y):
 	monster.big_char = int("0xE194", 16)
 	monster.small_char = int("0xE694", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_jackal(x, y):
@@ -10617,6 +10719,7 @@ def create_jackal(x, y):
 	monster.big_char = int("0xE195", 16)
 	monster.small_char = int("0xE695", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_killer_whale(x, y):
@@ -10626,6 +10729,7 @@ def create_killer_whale(x, y):
 	monster.big_char = int("0xE196", 16)
 	monster.small_char = int("0xE696", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_kobold(x, y):
@@ -10635,6 +10739,7 @@ def create_kobold(x, y):
 	monster.big_char = int("0xE197", 16)
 	monster.small_char = int("0xE697", 16)
 	monster.move_cost = 100
+	monster.description = 'Kobolds are craven reptilian humanoids that commonly infest dungeons. They make up for their physical ineptitude with a cleverness for trap making.'
 	return monster
 	
 def create_lion(x, y):
@@ -10644,6 +10749,7 @@ def create_lion(x, y):
 	monster.big_char = int("0xE198", 16)
 	monster.small_char = int("0xE698", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_lizard(x, y):
@@ -10653,6 +10759,7 @@ def create_lizard(x, y):
 	monster.big_char = int("0xE199", 16)
 	monster.small_char = int("0xE699", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_lizardfolk(x, y):
@@ -10662,6 +10769,7 @@ def create_lizardfolk(x, y):
 	monster.big_char = int("0xE200", 16)
 	monster.small_char = int("0xE700", 16)
 	monster.move_cost = 100
+	monster.description = 'Lizardfolk are primitive reptilian humanoids that lurk in swamps and jungles. Fiercely territorial, they kill when it is expedient and do whatever it takes to survive.'
 	return monster
 	
 def create_mammoth(x, y):
@@ -10671,6 +10779,7 @@ def create_mammoth(x, y):
 	monster.big_char = int("0xE201", 16)
 	monster.small_char = int("0xE701", 16)
 	monster.move_cost = 75
+	monster.description = 'A mammoth is an elephantine creature with thick fur and long tusks.'
 	return monster
 	
 def create_manticore(x, y):
@@ -10680,6 +10789,7 @@ def create_manticore(x, y):
 	monster.big_char = int("0xE202", 16)
 	monster.small_char = int("0xE702", 16)
 	monster.move_cost = 60
+	monster.description = 'A manticore has a vaguely humanoid head, the body of a lion, and the wings of a dragon. Its long tail ends in a cluster of deadly spikes that can impale prey at impressive range.'
 	return monster
 	
 def create_mastiff(x, y):
@@ -10689,6 +10799,7 @@ def create_mastiff(x, y):
 	monster.big_char = int("0xE203", 16)
 	monster.small_char = int("0xE703", 16)
 	monster.move_cost = 75
+	monster.description = 'Mastiffs are impressive hounds prized by humanoids for their loyalty and keen senses.'
 	return monster
 	
 def create_medusa(x, y):
@@ -10702,6 +10813,7 @@ def create_medusa(x, y):
 	monster.big_char = int("0xE204", 16)
 	monster.small_char = int("0xE704", 16)
 	monster.move_cost = 100
+	monster.description = 'A victim of a terrible curse, the serpent-haired medusa petrifies all those who gaze upon it, turning creatures into stone monuments to its corruption.'
 	return monster
 	
 def create_merfolk(x, y):
@@ -10711,6 +10823,7 @@ def create_merfolk(x, y):
 	monster.big_char = int("0xE205", 16)
 	monster.small_char = int("0xE705", 16)
 	monster.move_cost = 75
+	monster.description = 'Merfolk are aquatic humanoids with the lower body of a fish. They live in small tribes beneath the waves'
 	return monster
 	
 def create_minotaur(x, y):
@@ -10720,6 +10833,7 @@ def create_minotaur(x, y):
 	monster.big_char = int("0xE206", 16)
 	monster.small_char = int("0xE706", 16)
 	monster.move_cost = 75
+	monster.description = 'Their fur stained with the blood of fallen foes, minotaurs are massive, bull-headed humanoids whose roar is a savage battle cry that all civilized creatures fear.'
 	return monster
 	
 def create_mule(x, y):
@@ -10729,6 +10843,7 @@ def create_mule(x, y):
 	monster.big_char = int("0xE207", 16)
 	monster.small_char = int("0xE707", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_mummy(x, y):
@@ -10738,6 +10853,7 @@ def create_mummy(x, y):
 	monster.big_char = int("0xE208", 16)
 	monster.small_char = int("0xE708", 16)
 	monster.move_cost = 150
+	monster.description = 'Raised by dark funerary rituals and still wrapped in the shrouds of death, mummies shamble out from lost temples and tombs to slay any who disturb their rest.'
 	return monster
 	
 def create_nothic(x, y):
@@ -10747,6 +10863,7 @@ def create_nothic(x, y):
 	monster.big_char = int("0xE209", 16)
 	monster.small_char = int("0xE709", 16)
 	monster.move_cost = 100
+	monster.description = "A nothic is a monstrous creature with terrible talons and a single great eye. When driven to violence, it uses its horrific gaze to rot the flesh from its enemies' bones."
 	return monster
 	
 def create_ochre_jelly(x, y):
@@ -10756,6 +10873,7 @@ def create_ochre_jelly(x, y):
 	monster.big_char = int("0xE210", 16)
 	monster.small_char = int("0xE710", 16)
 	monster.move_cost = 300
+	monster.description = 'An ochre jelly is a yellowish ooze that can slide under doors and through narrow cracks in pursuit of creatures to devour.'
 	return monster
 	
 def create_octopus(x, y):
@@ -10765,6 +10883,7 @@ def create_octopus(x, y):
 	monster.big_char = int("0xE211", 16)
 	monster.small_char = int("0xE711", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_ogre(x, y):
@@ -10774,6 +10893,7 @@ def create_ogre(x, y):
 	monster.big_char = int("0xE212", 16)
 	monster.small_char = int("0xE712", 16)
 	monster.move_cost = 75
+	monster.description = 'Ogres are hulking giants notorious for their quick tempers. When its rage is incited, an ogre lashes out in a frustrated tantrum until it runs out of objects or creatures to smash.'
 	return monster
 	
 def create_orc(x, y):
@@ -10783,6 +10903,7 @@ def create_orc(x, y):
 	monster.big_char = int("0xE213", 16)
 	monster.small_char = int("0xE713", 16)
 	monster.move_cost = 100
+	monster.description = 'Orcs are savage humanoids with stooped postures, piggish faces, and prominent teeth that resemble tusks. They gather in tribes that satisfy their bloodlust by slaying any humanoids that stand against them.'
 	return monster
 	
 def create_owl(x, y):
@@ -10792,6 +10913,7 @@ def create_owl(x, y):
 	monster.big_char = int("0xE214", 16)
 	monster.small_char = int("0xE714", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_owlbear(x, y):
@@ -10801,6 +10923,7 @@ def create_owlbear(x, y):
 	monster.big_char = int("0xE215", 16)
 	monster.small_char = int("0xE715", 16)
 	monster.move_cost = 75
+	monster.description = 'A monstrous cross between giant owl and bear, an owlbear’s reputation for ferocity and aggression makes it one of the most feared predators of the wild.'
 	return monster
 	
 def create_panther(x, y):
@@ -10810,6 +10933,7 @@ def create_panther(x, y):
 	monster.big_char = int("0xE216", 16)
 	monster.small_char = int("0xE716", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_pegasus(x, y):
@@ -10819,6 +10943,7 @@ def create_pegasus(x, y):
 	monster.big_char = int("0xE217", 16)
 	monster.small_char = int("0xE717", 16)
 	monster.move_cost = 50
+	monster.description = 'The white winged horses known as pegasi soar through the skies, a vision of grace and majesty.'
 	return monster
 	
 def create_phase_spider(x, y):
@@ -10831,6 +10956,7 @@ def create_phase_spider(x, y):
 	monster.big_char = int("0xE218", 16)
 	monster.small_char = int("0xE718", 16)
 	monster.move_cost = 100
+	monster.description = 'A phase spider possesses the magical ability to phase in and out of the Ethereal Plane. It seems to appear out of nowhere and quickly vanishes after attacking.'
 	return monster
 	
 def create_plesiosaurus(x, y):
@@ -10840,6 +10966,7 @@ def create_plesiosaurus(x, y):
 	monster.big_char = int("0xE219", 16)
 	monster.small_char = int("0xE719", 16)
 	monster.move_cost = 75
+	monster.description = 'This predatory marine reptile and cousin to the dinosaurs attacks any creature it encounters. Its long, flexible neck lets it twist in any direction to deliver a powerful bite.'
 	return monster
 	
 def create_poisonous_snake(x, y):
@@ -10852,6 +10979,7 @@ def create_poisonous_snake(x, y):
 	monster.big_char = int("0xE220", 16)
 	monster.small_char = int("0xE720", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_polar_bear(x, y):
@@ -10861,6 +10989,7 @@ def create_polar_bear(x, y):
 	monster.big_char = int("0xE221", 16)
 	monster.small_char = int("0xE721", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_pony(x, y):
@@ -10870,6 +10999,7 @@ def create_pony(x, y):
 	monster.big_char = int("0xE222", 16)
 	monster.small_char = int("0xE722", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_pteranodon(x, y):
@@ -10879,6 +11009,7 @@ def create_pteranodon(x, y):
 	monster.big_char = int("0xE223", 16)
 	monster.small_char = int("0xE723", 16)
 	monster.move_cost = 50
+	monster.description = 'These flying reptilian cousins to the dinosaurs have no teeth, instead using their sharp beaks to stab prey too large to swallow with one gulp.'
 	return monster
 	
 def create_quipper(x, y):
@@ -10888,6 +11019,7 @@ def create_quipper(x, y):
 	monster.big_char = int("0xE224", 16)
 	monster.small_char = int("0xE725", 16)
 	monster.move_cost = 75
+	monster.description = 'A quipper is a carnivorous fish with sharp teeth.'
 	return monster
 	
 def create_rat(x, y):
@@ -10897,6 +11029,7 @@ def create_rat(x, y):
 	monster.big_char = int("0xE225", 16)
 	monster.small_char = int("0xE725", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_raven(x, y):
@@ -10906,6 +11039,7 @@ def create_raven(x, y):
 	monster.big_char = int("0xE226", 16)
 	monster.small_char = int("0xE726", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_reef_shark(x, y):
@@ -10915,6 +11049,7 @@ def create_reef_shark(x, y):
 	monster.big_char = int("0xE227", 16)
 	monster.small_char = int("0xE727", 16)
 	monster.move_cost = 75
+	monster.description = 'Reef sharks measure 6 to 10 feet long, and inhabit shallow waters and coral reefs.'
 	return monster
 	
 def create_rhinoceros(x, y):
@@ -10924,6 +11059,7 @@ def create_rhinoceros(x, y):
 	monster.big_char = int("0xE228", 16)
 	monster.small_char = int("0xE728", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_riding_horse(x, y):
@@ -10933,6 +11069,7 @@ def create_riding_horse(x, y):
 	monster.big_char = int("0xE229", 16)
 	monster.small_char = int("0xE729", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 
 def create_sabre_toothed_tiger(x, y):
@@ -10942,6 +11079,7 @@ def create_sabre_toothed_tiger(x, y):
 	monster.big_char = int("0xE230", 16)
 	monster.small_char = int("0xE730", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_satyr(x, y):
@@ -10951,6 +11089,7 @@ def create_satyr(x, y):
 	monster.big_char = int("0xE231", 16)
 	monster.small_char = int("0xE731", 16)
 	monster.move_cost = 75
+	monster.description = 'Satyrs are raucous fey that resemble stout male humans with the furry lower bodies and cloven hooves of goats. They frolic in wild forests, driven by curiosity and hedonism in equal measure.'
 	return monster
 	
 def create_scorpion(x, y):
@@ -10963,6 +11102,7 @@ def create_scorpion(x, y):
 	monster.big_char = int("0xE232", 16)
 	monster.small_char = int("0xE732", 16)
 	monster.move_cost = 300
+	#monster.description = ''
 	return monster
 	
 def create_sea_horse(x, y):
@@ -10972,6 +11112,7 @@ def create_sea_horse(x, y):
 	monster.big_char = int("0xE233", 16)
 	monster.small_char = int("0xE733", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_skeleton(x, y):
@@ -10981,6 +11122,7 @@ def create_skeleton(x, y):
 	monster.big_char = int("0xE234", 16)
 	monster.small_char = int("0xE734", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_spectator(x, y):
@@ -10990,6 +11132,7 @@ def create_spectator(x, y):
 	monster.big_char = int("0xE235", 16)
 	monster.small_char = int("0xE735", 16)
 	monster.move_cost = 100
+	monster.description = 'A spectator is a lesser type of beholder — a foul and deadly aberration. It resembles a floating sphere with a gaping maw and a single great eye, set within four eyestalks that shoot forth deadly rays.'
 	return monster
 	
 def create_spider(x, y):
@@ -11002,6 +11145,7 @@ def create_spider(x, y):
 	monster.big_char = int("0xE236", 16)
 	monster.small_char = int("0xE736", 16)
 	monster.move_cost = 150
+	#monster.description = ''
 	return monster
 	
 def create_stirge(x, y):
@@ -11011,6 +11155,7 @@ def create_stirge(x, y):
 	monster.big_char = int("0xE237", 16)
 	monster.small_char = int("0xE737", 16)
 	monster.move_cost = 75
+	monster.description = 'This horrid monster looks like a cross between a large bat and an oversized mosquito. Its legs end in sharp pincers, and its long, needle-like proboscis slashes the air as it seeks to feed on the blood of living creatures.'
 	return monster
 	
 def create_stone_golem(x, y):
@@ -11020,6 +11165,7 @@ def create_stone_golem(x, y):
 	monster.big_char = int("0xE238", 16)
 	monster.small_char = int("0xE738", 16)
 	monster.move_cost = 100
+	monster.description = 'Stone golems are magical constructs cut and chiseled from stone to appear as tall, impressive statues. Like other golems, they are nearly impervious to spells and ordinary weapons.'
 	return monster
 	
 def create_swarm_of_bats(x, y):
@@ -11029,6 +11175,7 @@ def create_swarm_of_bats(x, y):
 	monster.big_char = int("0xE239", 16)
 	monster.small_char = int("0xE739", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_swarm_of_insects(x, y):
@@ -11038,6 +11185,7 @@ def create_swarm_of_insects(x, y):
 	monster.big_char = int("0xE240", 16)
 	monster.small_char = int("0xE740", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_swarm_of_poisonous_snakes(x, y):
@@ -11050,6 +11198,7 @@ def create_swarm_of_poisonous_snakes(x, y):
 	monster.big_char = int("0xE241", 16)
 	monster.small_char = int("0xE741", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_swarm_of_quippers(x, y):
@@ -11059,6 +11208,7 @@ def create_swarm_of_quippers(x, y):
 	monster.big_char = int("0xE242", 16)
 	monster.small_char = int("0xE742", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_swarm_of_rats(x, y):
@@ -11068,6 +11218,7 @@ def create_swarm_of_rats(x, y):
 	monster.big_char = int("0xE243", 16)
 	monster.small_char = int("0xE743", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_swarm_of_ravens(x, y):
@@ -11077,6 +11228,7 @@ def create_swarm_of_ravens(x, y):
 	monster.big_char = int("0xE244", 16)
 	monster.small_char = int("0xE744", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_tiger(x, y):
@@ -11086,6 +11238,7 @@ def create_tiger(x, y):
 	monster.big_char = int("0xE245", 16)
 	monster.small_char = int("0xE745", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_triceratops(x, y):
@@ -11095,6 +11248,7 @@ def create_triceratops(x, y):
 	monster.big_char = int("0xE246", 16)
 	monster.small_char = int("0xE746", 16)
 	monster.move_cost = 60
+	monster.description = 'One of the most aggressive of the herbivorous dinosaurs, a triceratops possesses great horns and formidable speed, which it uses to gore and trample would-be predators to death.'
 	return monster
 	
 def create_troll(x, y):
@@ -11104,6 +11258,7 @@ def create_troll(x, y):
 	monster.big_char = int("0xE247", 16)
 	monster.small_char = int("0xE747", 16)
 	monster.move_cost = 100
+	monster.description = "Fearsome green-skinned giants, trolls eat anything they can catch and devour. Only acid and fire can arrest the regenerative properties of a troll's flesh."
 	return monster
 	
 def create_twig_blight(x, y):
@@ -11113,6 +11268,7 @@ def create_twig_blight(x, y):
 	monster.big_char = int("0xE248", 16)
 	monster.small_char = int("0xE748", 16)
 	monster.move_cost = 150
+	monster.description = 'A twig blight is an awakened plant that resembles a woody shrub that can pull its roots free of the ground. Its branches twist together to form a humanoid-looking body with a head and limbs.'
 	return monster
 	
 def create_tyrannosaurus_rex(x, y):
@@ -11122,6 +11278,7 @@ def create_tyrannosaurus_rex(x, y):
 	monster.big_char = int("0xE249", 16)
 	monster.small_char = int("0xE749", 16)
 	monster.move_cost = 60
+	monster.description = 'This enormous predatory dinosaur terrorizes all other creatures in its territory. It chases anything it thinks it can eat, and there are few creatures it won’t try to devour whole.'
 	return monster
 	
 def create_vulture(x, y):
@@ -11131,6 +11288,7 @@ def create_vulture(x, y):
 	monster.big_char = int("0xE250", 16)
 	monster.small_char = int("0xE750", 16)
 	monster.move_cost = 60
+	#monster.description = ''
 	return monster
 	
 def create_warhorse(x, y):
@@ -11140,6 +11298,7 @@ def create_warhorse(x, y):
 	monster.big_char = int("0xE251", 16)
 	monster.small_char = int("0xE751", 16)
 	monster.move_cost = 50
+	#monster.description = ''
 	return monster
 	
 def create_water_elemental(x, y):
@@ -11149,6 +11308,7 @@ def create_water_elemental(x, y):
 	monster.big_char = int("0xE252", 16)
 	monster.small_char = int("0xE752", 16)
 	monster.move_cost = 100
+	monster.description = 'Beings native to the Elemental Plane of Water and summoned to the world, water elementals resemble cresting waves that roll across the ground. A water elemental engulfs any creatures that stand against it.'
 	return monster
 	
 def create_weasel(x, y):
@@ -11158,6 +11318,7 @@ def create_weasel(x, y):
 	monster.big_char = int("0xE253", 16)
 	monster.small_char = int("0xE753", 16)
 	monster.move_cost = 100
+	#monster.description = ''
 	return monster
 	
 def create_werewolf(x, y):
@@ -11167,6 +11328,7 @@ def create_werewolf(x, y):
 	monster.big_char = int("0xE254", 16)
 	monster.small_char = int("0xE754", 16)
 	monster.move_cost = 75
+	monster.description = "A werewolf is a savage predator that can appear as a humanoid, as a wolf, or in a terrifying hybrid form — a furred and well-muscled humanoid body topped by a ravening wolf's head."
 	return monster
 	
 def create_wight(x, y):
@@ -11176,6 +11338,7 @@ def create_wight(x, y):
 	monster.big_char = int("0xE255", 16)
 	monster.small_char = int("0xE755", 16)
 	monster.move_cost = 100
+	monster.description = 'Wights are intelligent undead humanoids that resemble armed and armored corpses. They never tire in pursuit of their goal of making eternal war against the living.'
 	return monster
 	
 def create_winter_wolf(x, y):
@@ -11185,6 +11348,7 @@ def create_winter_wolf(x, y):
 	monster.big_char = int("0xE256", 16)
 	monster.small_char = int("0xE756", 16)
 	monster.move_cost = 60
+	monster.description = 'Arctic-dwelling winter wolves are evil and intelligent creatures with snow-white fur and pale blue eyes.'
 	return monster
 	
 def create_wolf(x, y):
@@ -11194,6 +11358,7 @@ def create_wolf(x, y):
 	monster.big_char = int("0xE257", 16)
 	monster.small_char = int("0xE757", 16)
 	monster.move_cost = 75
+	#monster.description = ''
 	return monster
 	
 def create_worg(x, y):
@@ -11203,6 +11368,7 @@ def create_worg(x, y):
 	monster.big_char = int("0xE258", 16)
 	monster.small_char = int("0xE758", 16)
 	monster.move_cost = 60
+	monster.description = 'A worg is a monstrous wolf-like predator that delights in hunting and devouring creatures weaker than itself.'
 	return monster
 	
 def create_wyvern(x, y):
@@ -11212,6 +11378,7 @@ def create_wyvern(x, y):
 	monster.big_char = int("0xE259", 16)
 	monster.small_char = int("0xE759", 16)
 	monster.move_cost = 150
+	monster.description = 'Cousins to the great dragons, wyverns have two scaly legs, leathery wings, and a sinewy tail topped with a poison stinger that can kill a creature in seconds.'
 	return monster
 	
 def create_yeti(x, y):
@@ -11221,6 +11388,7 @@ def create_yeti(x, y):
 	monster.big_char = int("0xE260", 16)
 	monster.small_char = int("0xE760", 16)
 	monster.move_cost = 75
+	monster.description = 'Yeti are hulking monstrosities that stalk alpine peaks in a ceaseless hunt for food. Their snow-white fur lets them move like ghosts against the frozen landscape.'
 	return monster
 	
 def create_young_green_dragon(x, y):
@@ -11230,6 +11398,7 @@ def create_young_green_dragon(x, y):
 	monster.big_char = int("0xE261", 16)
 	monster.small_char = int("0xE761", 16)
 	monster.move_cost = 75
+	monster.description = 'The most cunning and treacherous of true dragons, green dragons use misdirection and trickery to get the upper hand against their enemies. A green dragon is recognized by the crest that begins near its eyes and continues down its spine, reaching full height just behind the skull.'
 	return monster
 	
 def create_zombie(x, y):
@@ -11239,6 +11408,7 @@ def create_zombie(x, y):
 	monster.big_char = int("0xE262", 16)
 	monster.small_char = int("0xE762", 16)
 	monster.move_cost = 150
+	monster.description = 'Undead zombies move with a jerky, uneven gait. They are clad in the moldering apparel they wore when put to rest, and carry the stench of decay.'
 	return monster
 	
 ###
@@ -11254,6 +11424,7 @@ def create_acolyte(x, y):
 	monster.big_char = int("0xE263", 16)
 	monster.small_char = int("0xE763", 16)
 	monster.flavour_text = ["Through patience and dedication, my power grows."]
+	monster.description = 'Acolytes are junior members of a clergy, usually answerable to a priest. They perform a variety of functions in a temple and are granted minor spellcasting power by their deities.'
 	return monster
 	
 def create_archmage(x, y):
@@ -11265,6 +11436,7 @@ def create_archmage(x, y):
 	monster.big_char = int("0xE264", 16)
 	monster.small_char = int("0xE764", 16)
 	monster.flavour_text = ["The mysteries of the arcane are mine to know."]
+	monster.description = 'Archmages are powerful (and usually quite old) spellcasters dedicated to the study of the arcane arts. Benevolent ones counsel kings and queens, while evil ones rule as tyrants and pursue lichdom. Those who are neither good nor evil sequester themselves in remote towers to practice their magic without interruption.'
 	return monster
 	
 def create_assassin(x, y):
@@ -11275,6 +11447,7 @@ def create_assassin(x, y):
 	monster.big_char = int("0xE265", 16)
 	monster.small_char = int("0xE765", 16)
 	monster.flavour_text = ["Do not come too close unless you seek to taste my blade."]
+	monster.description = 'Trained in the use of poison, assassins are remorseless killers who work for nobles, guildmasters, sovereigns, and anyone else who can afford them.'
 	return monster
 	
 def create_bandit(x, y):
@@ -11285,6 +11458,7 @@ def create_bandit(x, y):
 	monster.big_char = int("0xE266", 16)
 	monster.small_char = int("0xE766", 16)
 	monster.flavour_text = ["What's that you've got in your pack?"]
+	monster.description = 'Bandits rove in gangs and are sometimes led by more powerful NPCs, including spellcasters. Not all bandits are evil. Oppression, drought, disease, or famine can often drive otherwise honest folk to a life of banditry.'
 	return monster
 	
 def create_bandit_captain(x, y):
@@ -11295,6 +11469,7 @@ def create_bandit_captain(x, y):
 	monster.big_char = int("0xE267", 16)
 	monster.small_char = int("0xE767", 16)
 	monster.flavour_text = ["If you don't want trouble then you'll stay out of our way."]
+	monster.description = 'It takes a strong personality, ruthless cunning, and a silver tongue to keep a gang of bandits in line. The bandit captain has these qualities in spades.'
 	return monster
 	
 def create_berserker(x, y):
@@ -11305,6 +11480,7 @@ def create_berserker(x, y):
 	monster.big_char = int("0xE268", 16)
 	monster.small_char = int("0xE768", 16)
 	monster.flavour_text = ["It has been far too long since the battle lust has consumed me."]
+	monster.description = 'Hailing from uncivilized lands, unpredictable berserkers come together in war parties and seek conflict wherever they can find it.'
 	return monster
 	
 def create_commoner(x, y):
@@ -11315,6 +11491,7 @@ def create_commoner(x, y):
 	monster.big_char = int("0xE269", 16)
 	monster.small_char = int("0xE769", 16)
 	monster.flavour_text = ["Good day sir, I'll just be on my way if that's alright by you."]
+	monster.description = 'Commoners include peasants, serfs, slaves, servants, pilgrims, merchants, artisans, and hermits.'
 	return monster
 	
 def create_cultist(x, y):
@@ -11325,6 +11502,7 @@ def create_cultist(x, y):
 	monster.big_char = int("0xE270", 16)
 	monster.small_char = int("0xE770", 16)
 	monster.flavour_text = ["The whispers from the shadows haunt my dreams."]
+	monster.description = 'Cultists swear allegiance to dark powers, and often show signs of insanity in their beliefs and practices.'
 	return monster
 	
 def create_cult_fanatic(x, y):
@@ -11336,6 +11514,7 @@ def create_cult_fanatic(x, y):
 	monster.big_char = int("0xE271", 16)
 	monster.small_char = int("0xE771", 16)
 	monster.flavour_text = ["You have no idea about the glorious dark things that I have seen."]
+	monster.description = "Fanatics are often part of a cult's leadership, using their charisma and dogma to influence and prey on those of weak will. Most are interested in personal power above all else."
 	return monster
 	
 def create_gladiator(x, y):
@@ -11346,6 +11525,7 @@ def create_gladiator(x, y):
 	monster.big_char = int("0xE272", 16)
 	monster.small_char = int("0xE772", 16)
 	monster.flavour_text = ["I have won many battles against greater odds than this."]
+	monster.description = 'Gladiators battle for the entertainment of raucous crowds. Some gladiators are brutal pit fighters who treat each match as a life-or-death struggle, while others are professional duelists who command huge fees but rarely fight to the death.'
 	return monster	
 	
 def create_guard(x, y):
@@ -11356,6 +11536,7 @@ def create_guard(x, y):
 	monster.big_char = int("0xE273", 16)
 	monster.small_char = int("0xE773", 16)
 	monster.flavour_text = ["Through the strength of my arms, I dedicate myself to keeping those safe around me."]
+	monster.description = 'Guards include members of a city watch, sentries in a citadel or fortified town, and the bodyguards of merchants and nobles.'
 	return monster
 	
 def create_knight(x, y):
@@ -11366,6 +11547,7 @@ def create_knight(x, y):
 	monster.big_char = int("0xE274", 16)
 	monster.small_char = int("0xE774", 16)
 	monster.flavour_text = ["It takes much more than being able to swing a sword to become a knight."]
+	monster.description = "Knights are warriors who pledge service to rulers, religious orders, and noble causes. A knight's alignment determines the extent to which a pledge is honoured."
 	return monster
 	
 def create_mage(x, y):
@@ -11377,6 +11559,7 @@ def create_mage(x, y):
 	monster.big_char = int("0xE275", 16)
 	monster.small_char = int("0xE775", 16)
 	monster.flavour_text = ["My studies of the mysteries of the arcane have granted me great power."]
+	monster.description = 'Mages spend their lives in the study and practice of magic.'
 	return monster
 	
 def create_noble(x, y):
@@ -11387,6 +11570,7 @@ def create_noble(x, y):
 	monster.big_char = int("0xE276", 16)
 	monster.small_char = int("0xE776", 16)
 	monster.flavour_text = ["I have little time for the likes of you."]
+	monster.description = 'Nobles wield great authority and influence as members of the upper class, possessing wealth and connections that can make them as powerful as monarchs and generals. A noble often travels in the company of guards, as well as servants who are commoners.'
 	return monster
 	
 def create_priest(x, y):
@@ -11398,6 +11582,7 @@ def create_priest(x, y):
 	monster.big_char = int("0xE277", 16)
 	monster.small_char = int("0xE777", 16)
 	monster.flavour_text = ["True wisdom comes from contemplation, meditation and prayer."]
+	monster.description = 'Priests are the spiritual leaders of temples and shrines.'
 	return monster
 	
 def create_scout(x, y):
@@ -11408,6 +11593,7 @@ def create_scout(x, y):
 	monster.big_char = int("0xE278", 16)
 	monster.small_char = int("0xE778", 16)
 	monster.flavour_text = ["I could hear you coming a mile away."]
+	monster.description = 'Scouts are skilled hunters and trackers who offer their services for a fee. Most hunt wild game, but a few work as bounty hunters, serve as guides, or provide military reconnaissance.'
 	return monster
 	
 def create_spy(x, y):
@@ -11418,6 +11604,7 @@ def create_spy(x, y):
 	monster.big_char = int("0xE279", 16)
 	monster.small_char = int("0xE779", 16)
 	monster.flavour_text = ["The best way to gain influence in this world is through intelligence and cunning."]
+	monster.description = 'Rulers, nobles, merchants, guildmasters, and other wealthy individuals use spies to gain the upper hand in a world of cutthroat politics. A spy is trained to secretly gather information. Loyal spies would rather die than divulge information that could compromise them or their employers.'
 	return monster
 	
 def create_thug(x, y):
@@ -11428,6 +11615,7 @@ def create_thug(x, y):
 	monster.big_char = int("0xE280", 16)
 	monster.small_char = int("0xE780", 16)
 	monster.flavour_text = ["If you want anything for yourself in this world, then you've just got to take it."]
+	monster.description = 'Thugs are ruthless enforcers skilled at intimidation and violence. They work for money and have few scruples.'
 	return monster
 	
 def create_tribal_warrior(x, y):
@@ -11438,6 +11626,7 @@ def create_tribal_warrior(x, y):
 	monster.big_char = int("0xE281", 16)
 	monster.small_char = int("0xE781", 16)
 	monster.flavour_text = ["To battle and die alongside my tribe is the highest honour of all."]
+	monster.description = 'Tribal warriors live beyond civilization, most often subsisting on fishing and hunting. Each tribe acts in accordance with the wishes of its chief, who is the greatest or oldest warrior of the tribe or a tribe member blessed by the gods.'
 	return monster
 	
 def create_veteran(x, y):
@@ -11448,6 +11637,7 @@ def create_veteran(x, y):
 	monster.big_char = int("0xE282", 16)
 	monster.small_char = int("0xE782", 16)
 	monster.flavour_text = ["I have forgotten more battles than you've ever seen."]
+	monster.description = 'Veterans are professional fighters that take up arms for pay or to protect something they believe in or value. Their ranks include soldiers retired from long service and warriors who never served anyone but themselves.'
 	return monster
 	
 ###
