@@ -6424,7 +6424,7 @@ def inventory_menu(header, actor=None, equipped=None):
 						text = text + ' (' + str(item.item.charges) + ')'
 				options.append(text)
  
- 	if len(options) == 0:
+	if len(options) == 0:
 		options = ['No available items.']
 	index = menu(header, options, INVENTORY_WIDTH)
  
@@ -7182,8 +7182,12 @@ def examine_menu(target):
 		if len(inventory) > 0:
 			text.append('Inventory:')
 			text.append('')
+			
 			for item in inventory:
-				text.append('  ' + item.name_for_printing(definite_article=False, capitalise=True))
+				working_string = '  ' + item.name_for_printing(definite_article=False, capitalise=True)
+				if item.equipment:
+					if item.equipment.is_equipped is not None: working_string += ' (' + item.equipment.is_equipped + ')'
+				text.append(working_string)
 	elif target.item is not None:
 		return
 	else:
