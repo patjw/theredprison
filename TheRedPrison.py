@@ -6720,26 +6720,24 @@ def text_input(text, max_length=14):
 def create_window(x, y, w, h, title=None, header_colour=None):
 
 	last_bg = blt.state(blt.TK_BKCOLOR)
-	#blt.bkcolor(blt.color_from_argb(200, 0, 0, 0))
-	#blt.layer(0)
-	#blt.clear_area(x - 3, y - 3, w + 3, h + 3)
-	blt.layer(1)
-	blt.clear_area(x - 3, y - 3, w + 3, h + 3)
-	blt.layer(2)
-	blt.clear_area(x - 3, y - 3, w + 3, h + 3)
-	blt.layer(0)
 	blt.composition(False)
-	for a in range(x-1, x+w+1):
-		for b in range(y-1, y+h+1):
-			blt.puts(a, b, "[font=log] ")
+	blt.bkcolor('black')
+	blt.color('white')
+	for i in range(1, 3):
+		blt.layer(i)
+		blt.clear_area(x-2, y-3, w+3, h+2)
 	
+	blt.color('white')
+	blt.bkcolor('black')
+	blt.layer(0)
 	# upper border
 	border = '┌' + '─' * (w) + '┐'
 	blt.puts(x - 1, y - 1, "[font=log]" + border)
 	# sides
 	for i in range(h):
-		blt.puts(x - 1, y + i, "[font=log]" + '│')
-		blt.puts(x + w, y + i, "[font=log]" + '│')
+		line = "[font=log]" + '│' + ' ' * (w) + "[font=log]" + '│'
+		blt.puts(x - 1, y + i, line)
+		#blt.puts(x + w, y + i, "[font=log]" + '│')
 	# lower border
 	border = '└' + '─' * (w) + "[font=log]" + '┘'
 	blt.puts(x - 1, y + h, "[font=log]" + border)
@@ -7102,6 +7100,8 @@ def examine_menu(target):
 		
 		traits = set(target.fighter.traits)
 		proficiencies = set(target.fighter.proficiencies)
+		inventory = target.inventory
+		
 		number_of_attacks = 1
 		for trait in traits:
 			if trait == 'extra attack':
@@ -7116,8 +7116,8 @@ def examine_menu(target):
 		text.append('Dex: ' + str(target.fighter.dexterity) + '  Wis: ' + str(target.fighter.wisdom))
 		text.append('Con: ' + str(target.fighter.constitution) + '  Cha: ' + str(target.fighter.charisma))
 		text.append('')
+		text.append('Max HP: ' + str(target.fighter.max_hp))
 		text.append('Movement speed: ' + str(int(1/float(move_cost)*3000)) + "'")
-		text.append('')
 		text.append('Number of attacks: ' + str(number_of_attacks))
 		text.append('')
 		text.append('Main: ' + str(weapon_in_main_hand.capitalize()))
@@ -7164,6 +7164,12 @@ def examine_menu(target):
 			text.append('')
 			for proficiency in proficiencies:
 				text.append('  ' + proficiency.capitalize())
+			text.append('')
+		if len(inventory) > 0:
+			text.append('Inventory:')
+			text.append('')
+			for item in inventory:
+				text.append('  ' + item.name_for_printing(definite_article=False, capitalise=True))
 	elif target.item is not None:
 		return
 	else:
@@ -13932,9 +13938,9 @@ def play_game():
  
 	player_action = None
  
-	blt.clear()
-	render_all()
-	blt.refresh()
+	#blt.clear()
+	#render_all()
+	#blt.refresh()
 	key = blt.peek()
 	#main loop
 	while key != blt.TK_CLOSE:
