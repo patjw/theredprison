@@ -4583,7 +4583,11 @@ def get_attack_stats(target):
 	else: #unarmed or natural attack for monsters
 		base_num_dmg_die = target.fighter.base_num_dmg_die
 		base_dmg_die = target.fighter.base_dmg_die
-		dmg_bonus = ABILITY_MODIFIER[target.fighter.strength]
+		if target.fighter.monster:
+			#don't apply a standard strength bonus because it's built into the stat block
+			dmg_bonus = target.fighter.base_dmg_bonus
+		else:
+			dmg_bonus = ABILITY_MODIFIER[target.fighter.strength]
 		if target.fighter.base_dmg_type is None:
 			base_dmg_type = 'bludgeoning'
 		else:
@@ -4673,7 +4677,11 @@ def get_defence_stats(target):
 					equipped_shield = item
 	
 	#now apply any dexterity modifier based on the weight of the armour (if any)
-	dex_modifier = ABILITY_MODIFIER[target.fighter.dexterity]
+	if target.fighter.monster and equipped_armour is None:
+		#don't apply a dex bonus because it's built into the stat block
+		dex_modifier = 0 
+	else:
+		dex_modifier = ABILITY_MODIFIER[target.fighter.dexterity]
 	if equipped_armour is not None:
 		defender_ac = equipped_armour.equipment.ac
 		if 'light armour' in equipped_armour.equipment.properties:

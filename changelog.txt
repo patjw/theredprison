@@ -1304,3 +1304,7 @@ Added names for the natural attacks possessed by all NPCs so that it's clear tha
 Added descriptions for most monsters and NPCs.
 
 Expanded examine menu to include descriptions, including code to break down those long strings into appropriately sized words for readability.
+
+27/6/20
+
+Finished porting code over to python 3.
