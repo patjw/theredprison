@@ -42,7 +42,7 @@ VIEW_WIDTH = 105
 VIEW_HEIGHT = 70
 
 MINIMAP_OFFSET = 4
-MINIMAP_FLAG = True #lets me turn off minimap for local testing - should be True for release
+MINIMAP_FLAG = False #lets me turn off minimap for local testing - should be True for release
 STARTING_EXPLORED = False #again for testing, allows for fully explored maps - should be False for release
 SHOW_ALL_OBJECTS = False #for testing, shows every object on map - should be False for release
  
@@ -11801,7 +11801,7 @@ def create_saint_cormag(x, y):
 	monster.proper_noun = True
 	monster.fighter.can_join = False
 	monster.chatty = True
-	monster.flavour_text = ["Necromancy is not what you think, it is only the short-sighted that can not understand what I do.", "You have the chance to stand by my side forever; what greater boon could there be.", "There are many who desire everlasting life, and it is my plan to give it to those who desire it.", "It would be wise to submit without a fight; you will carry these ugly wounds for all eternity.", "I follow the word of Saint Peregrine; it is only through necromancy that you can be healed without harming others.", "I know that you think my path is an evil one but this is the only way to stay true to Saint Peregrine.", "Those fools in the Order of Saint Peregrine know the truth but lack the courage to follow me."]
+	monster.flavour_text = ["Necromancy is not what you think, it is only the short-sighted that can not understand what I do.", "You have the chance to stand by my side forever; what greater boon could there be.", "There are many who desire everlasting life, and it is my plan to give it to those who desire it.", "It would be wise to submit without a fight; you will carry these ugly wounds for all eternity.", "I still follow the word of Saint Peregrine; it is only through necromancy that you can be healed without doing harm to others.", "I know that you think my path is an evil one but this is the only way to stay true to Saint Peregrine.", "Those fools in the Order of Saint Peregrine know the truth but lack the courage to follow me."]
 	return monster
 	
 ###

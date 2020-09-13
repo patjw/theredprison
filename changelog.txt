@@ -1308,3 +1308,5 @@ Expanded examine menu to include descriptions, including code to break down thos
 27/6/20
 
 Finished porting code over to python 3.
+
+Fixed monster stats when using new examine command so that they displayt properly.
