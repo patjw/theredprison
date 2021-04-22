@@ -12814,14 +12814,13 @@ def autoexplore():
 							if player.x == item.x and player.y == item.y:
 								test = item
 					if item is not None:
-						# B33J edit message('Finished exploring.')
 						message('Finished exploring.')
 						game_state = 'playing'
 					else: 
 						unexplored_tile = (down_stairs.x, down_stairs.y) #simulate the down stairs being unexplored to make the player walk there
 			elif game_state == 'autoplay':
 				if dungeon_level == dungeon_branch.depth:
-					message('This floor has been fully explored.')
+					message('Finished exploring.')
 					game_state = 'playing'
 				else:
 					test = None
@@ -14216,7 +14215,7 @@ def play_game():
 			for actor in actors: #check to see if rest was disturbed
 				if player.can_see_object(actor) and player != actor:
 					if player.fighter.faction != actor.fighter.faction:
-						message('Your rest is interrupted!', 'orange')
+						message('Your rest is interrupted!', 'white')
 						rest_counter = 0
 			if rest_counter == 0:
 				game_state = 'playing'
