@@ -28,7 +28,7 @@ import encounters
 #import anydbm
 import sys
 from PIL import Image
-
+ 
 #actual size of the window
 SCREEN_WIDTH = 135
 SCREEN_HEIGHT = 90
@@ -128,7 +128,6 @@ PLAYER_STARTING_XP = 0
 PLAYER_XP_MODIFER = 0.5
 STARTING_DUNGEON_LEVEL = 1
 STARTING_DUNGEON_BRANCH = 'overworld'
-# STARTING_DUNGEON_BRANCH = 'dungeon'
 
 LEVEL_CAP = 10
 
@@ -6937,8 +6936,7 @@ def handle_keys():
 					if item.x == player.x and item.y == player.y and item.item:
 						chosen_item = item
 				if chosen_item is not None:
-					message('You picked up the ' + chosen_item.name_for_printing() + '.')
-					chosen_item.item.pick_up(player)					
+					chosen_item.item.pick_up(player)
 				else: return 'didnt-take-turn'
 				return
 			elif key_char == 'd' and not dungeon_branch.overworld:
