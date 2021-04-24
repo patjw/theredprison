@@ -11643,7 +11643,7 @@ def create_odette(x, y):
 	monster.fighter.true_faction = 'neutral'
 	monster.fighter.can_join = False
 	monster.chatty = True
-	monster.flavour_text = ["Welcome to North Warden traveller, you are safe here.", "The kobolds hide in the warrens nearby and have done so for generations.", "We have lost more good people to the kobolds than I care to remember.", "The kobolds would not dare to venture as far as North Warren but they plague my people nonetheless.", "We have sent for aid from Mirefield Keep but we are still waiting for a response."]
+	monster.flavour_text = ["Welcome to North Warren traveler, you are safe here.", "The kobolds hide in the warrens nearby and have done so for generations.", "We have lost more good people to the kobolds than I care to remember.", "The kobolds would not dare to venture as far as North Warren but they plague my people nonetheless.", "We have sent for aid from Mirefield Keep but we are still waiting for a response."]
 	return monster
 	
 def create_sunny(x, y):
