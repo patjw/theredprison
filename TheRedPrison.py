@@ -1244,27 +1244,27 @@ class Fighter:
 					if critical_hit and sneak_attack:
 						if player_can_see: 
 							if off_hand_attack:
-								message(self.owner.name_for_printing() + ' sneak attacks and critically hits ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' hit points!' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' sneak attacks and critically hits ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' damage!' + adv_string + opportunity_attack_string, 'orange')
 							else:
-								message(self.owner.name_for_printing() + ' sneak attacks and critically hits ' + target.name_for_printing() + ' for ' + str(damage) + ' hit points!' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' sneak attacks and critically hits ' + target.name_for_printing() + ' for ' + str(damage) + ' damage!' + adv_string + opportunity_attack_string, 'orange')
 					elif critical_hit:
 						if player_can_see: 
 							if off_hand_attack:
-								message(self.owner.name_for_printing() + ' critically hits ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' hit points!' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' critically hits ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' damage!' + adv_string + opportunity_attack_string, 'orange')
 							else:
-								message(self.owner.name_for_printing() + ' critically hits ' + target.name_for_printing() + ' for ' + str(damage) + ' hit points!' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' critically hits ' + target.name_for_printing() + ' for ' + str(damage) + ' damage!' + adv_string + opportunity_attack_string, 'orange')
 					elif sneak_attack:
 						if player_can_see: 
 							if off_hand_attack:
-								message(self.owner.name_for_printing() + ' sneak attacks ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' hit points!' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' sneak attacks ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' damage!' + adv_string + opportunity_attack_string, 'orange')
 							else:
-								message(self.owner.name_for_printing() + ' sneak attacks ' + target.name_for_printing() + ' for ' + str(damage) + ' hit points!' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' sneak attacks ' + target.name_for_printing() + ' for ' + str(damage) + ' damage!' + adv_string + opportunity_attack_string, 'orange')
 					else:
 						if player_can_see: 
 							if off_hand_attack:
-								message(self.owner.name_for_printing() + ' hits ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' hit points.' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' hits ' + target.name_for_printing() + ' with the off hand for ' + str(damage) + ' damage.' + adv_string + opportunity_attack_string, 'orange')
 							else:
-								message(self.owner.name_for_printing() + ' hits ' + target.name_for_printing() + ' for ' + str(damage) + ' hit points.' + adv_string + opportunity_attack_string)
+								message(self.owner.name_for_printing() + ' hits ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.' + adv_string + opportunity_attack_string, 'orange')
 					target.fighter.take_damage(damage, self.owner, damage_type)
 				elif player_can_see:
 					message(self.owner.name_for_printing() + ' attacks ' + target.name_for_printing() + ' but misses.' + adv_string + opportunity_attack_string)
@@ -3076,9 +3076,9 @@ class Condition:
 					player_can_see = player.can_see_object(target) 
 					if player_can_see: 
 						if saving_throw:
-							message(target.name_for_printing() + ' resists and takes ' + str(damage) + ' damage from the ' + self.name + ' effect.')
+							message(target.name_for_printing() + ' resists and takes ' + str(damage) + ' damage from the ' + self.name + ' effect.', 'orange')
 						else:
-							message(target.name_for_printing() + ' takes ' + str(damage) + ' damage from the ' + self.name + ' effect.')
+							message(target.name_for_printing() + ' takes ' + str(damage) + ' damage from the ' + self.name + ' effect.', 'orange')
 					target.fighter.take_damage(damage, attacker, self.dmg_type)
 					
 	def effect_on_being_hit(self, target, attacker):
@@ -3095,7 +3095,7 @@ class Condition:
 				if monster.fighter:
 					if not is_unconscious(monster):
 						damage_inflicted = random.randint(1, self.causes_damage)
-						if player_can_see: message(monster.name_for_printing() + ' takes ' + str(damage_inflicted) + ' damage from ' + self.name + '.')
+						if player_can_see: message(monster.name_for_printing() + ' takes ' + str(damage_inflicted) + ' damage from ' + self.name + '.', 'orange')
 						monster.fighter.take_damage(damage_inflicted, self, self.dmg_type)
 		
 		if self.duration > 0: #deal with expiring conditions whose duration has worn out
@@ -3186,10 +3186,10 @@ class Effect:
 						if self.owner.distance_to(actor) < 2:
 							damage = dice_roll(self.num_dmg_die, self.dmg_die)
 							if actor.fighter.saving_throw('dexterity', self.special):
-								message(actor.name_for_printing() + ' resists the flaming sphere but still takes ' + str(damage//2) + ' damage.', 'white')
+								message(actor.name_for_printing() + ' resists the flaming sphere but still takes ' + str(damage//2) + ' damage.', 'orange')
 								actor.fighter.take_damage(damage//2, self.creator, 'fire')
 							else:
-								message(actor.name_for_printing() + ' is struck by the flaming sphere for ' + str(damage) + ' damage.', 'white')
+								message(actor.name_for_printing() + ' is struck by the flaming sphere for ' + str(damage) + ' damage.', 'orange')
 								actor.fighter.take_damage(damage, self.creator, 'fire')
 		
 		#special case for web spell
@@ -8243,7 +8243,7 @@ def use_preserve_life(user):
 					heal_amount = (target.fighter.max_hp // 2) - target.fighter.hp
 					if heal_amount > power: heal_amount = power
 					target.fighter.heal(heal_amount)
-					message(target.name_for_printing() + ' regains ' + str(heal_amount) + ' hit points.', 'white')
+					message(target.name_for_printing() + ' regains ' + str(heal_amount) + ' hit points.', 'green')
 					power -= heal_amount
 					explosion_effect(target.x, target.y, 1, [255,255,0])
 		else:
@@ -8271,7 +8271,7 @@ def use_second_wind(user):
 		if heal_amount > (user.fighter.max_hp - user.fighter.hp): #make sure we aren't trying to heal above maximum  
 			heal_amount = (user.fighter.max_hp - user.fighter.hp)
 		user.fighter.heal(heal_amount)
-		message(user.name_for_printing() + ' uses second wind and regains ' + str(heal_amount) + ' hit points.', 'white')
+		message(user.name_for_printing() + ' uses second wind and regains ' + str(heal_amount) + ' hit points.', 'green')
 	else:
 		message(user.name_for_printing() + ' needs to rest before using that ability again.', 'white')
 
@@ -8312,7 +8312,7 @@ def use_healing_hands(user, target=None):
 				if healing == 0:
 					message(user.name_for_printing() + ' uses healing hands on ' + target.name_for_printing() + ' but it has no effect.', 'white')
 				else:
-					message(user.name_for_printing() + ' uses healing hands on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' damage.', 'white')
+					message(user.name_for_printing() + ' uses healing hands on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' hit points.', 'green')
 					target.fighter.heal(healing)
 			obj = Condition(name='used healing hands', permanent=True, visible=False, remove_on_rest=True) #this object prevents us from using it twice without rest
 			obj.owner = user 
@@ -8661,7 +8661,7 @@ def cast_acid_splash(caster, target=None, level=None):
 				elif clvl >= 5: num_rolls = 2
 				else: num_rolls = 1
 				damage = dice_roll(num_rolls, 6)
-				if player_can_see: message(caster.name_for_printing() + ' casts acid splash on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts acid splash on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'acid')
 			else:
 				if player_can_see: message(caster.name_for_printing() + ' casts acid splash on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -8686,7 +8686,7 @@ def cast_fire_bolt(caster, target=None, level=None):
 			elif clvl >= 5: num_rolls = 2
 			else: num_rolls = 1
 			damage = dice_roll(num_rolls, 10)
-			if player_can_see: message(caster.name_for_printing() + ' casts fire bolt on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts fire bolt on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'fire')
 		else:
 			if player_can_see: message(caster.name_for_printing() + ' casts fire bolt on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -8711,7 +8711,7 @@ def cast_poison_spray(caster, target=None, level=None):
 			elif clvl >= 5: num_rolls = 2
 			else: num_rolls = 1
 			damage = dice_roll(num_rolls, 12)
-			if player_can_see: message(caster.name_for_printing() + ' casts poison spray on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts poison spray on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'poison')
 		else:
 			if player_can_see: message(caster.name_for_printing() + ' casts poison spray on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -8735,7 +8735,7 @@ def cast_ray_of_frost(caster, target=None, level=None):
 			elif clvl >= 5: num_rolls = 2
 			else: num_rolls = 1
 			damage = dice_roll(num_rolls, 8)
-			if player_can_see: message(caster.name_for_printing() + ' casts ray of frost on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts ray of frost on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'cold')
 			###
 			### need to add in slow effect
@@ -8765,7 +8765,7 @@ def cast_shocking_grasp(caster, target=None, level=None):
 			elif clvl >= 5: num_rolls = 2
 			else: num_rolls = 1
 			damage = dice_roll(num_rolls, 8)
-			if player_can_see: message(caster.name_for_printing() + ' casts shocking grasp on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts shocking grasp on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'lightning')
 		else:
 			if player_can_see: message(caster.name_for_printing() + ' casts shocking grasp on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -8788,7 +8788,7 @@ def cast_chill_touch(caster, target=None, level=None):
 			elif clvl >= 5: num_rolls = 2
 			else: num_rolls = 1
 			damage = dice_roll(num_rolls, 8)
-			if player_can_see: message(caster.name_for_printing() + ' casts chill touch on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts chill touch on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'necrotic')
 			###
 			### disadvantage effect for undead targets
@@ -8826,9 +8826,9 @@ def cast_burning_hands(caster, level=None):
 							damage = dice_roll(number_of_d6, 6) #3d6 damage
 							if result: 
 								damage = damage // 2 #half damage if saving throw made
-								if player_can_see: message(caster.name_for_printing() + ' casts burning hands ineffectively on ' + actor.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+								if player_can_see: message(caster.name_for_printing() + ' casts burning hands ineffectively on ' + actor.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 							else:
-								if player_can_see: message(caster.name_for_printing() + ' casts burning hands on ' + actor.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+								if player_can_see: message(caster.name_for_printing() + ' casts burning hands on ' + actor.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 							actor.fighter.take_damage(damage, caster, 'fire')
 	area_effect(target_squares, [255, 0, 0], [255, 128, 0])
 		
@@ -8865,7 +8865,7 @@ def cast_magic_missile(caster, target=None, level=None):
 				if shield == False:
 					#work out damage
 					damage = dice_roll(1, 4) + 1 #1d4 + 1
-					if player_can_see: message(caster.name_for_printing() + ' casts magic missile on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+					if player_can_see: message(caster.name_for_printing() + ' casts magic missile on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 					target.fighter.take_damage(damage, caster, 'force')
 			projectile_effect(caster.x, caster.y, target.x, target.y, [255,0,255])
 
@@ -9014,12 +9014,12 @@ def cast_thunderwave(caster, level=None):
 			result = target.fighter.saving_throw('constitution', difficulty)
 			if result == False: #failed saving throw
 				damage = dice_roll(number_of_d8, 8)
-				if player_can_see: message(caster.name_for_printing() + ' casts thunderwave on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts thunderwave on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'thunder')
 				knock_back(target, caster, 2) 
 			else:
 				damage = dice_roll(number_of_d8, 8) // 2 #2d8 and then halved
-				if player_can_see: message(caster.name_for_printing() + ' casts thunderwave ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts thunderwave ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'thunder')
 		else:
 			knock_back(target, caster, 2) #items and other inanimate objects get knocked back as well
@@ -9164,11 +9164,11 @@ def cast_shatter(caster, x=None, y=None, level=None):
 			result = target.fighter.saving_throw('constitution', difficulty)
 			if result == False: #failed saving throw
 				damage = dice_roll(number_of_d8, 8)
-				if player_can_see: message(caster.name_for_printing() + ' casts shatter on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts shatter on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'thunder')
 			else:
 				damage = dice_roll(number_of_d8, 8) // 2
-				if player_can_see: message(caster.name_for_printing() + ' casts shatter ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts shatter ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'thunder')
 		explosion_effect(x, y, 2, [160,160,160])
 	
@@ -9225,11 +9225,11 @@ def cast_fireball(caster, target=None, level=None):
 			result = target.fighter.saving_throw('dexterity', difficulty)
 			if result == False: #failed saving throw
 				damage = dice_roll(number_of_d6, 6)
-				if player_can_see: message(caster.name_for_printing() + ' casts fireball on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts fireball on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'fire')
 			else:
 				damage = dice_roll(number_of_d6, 6) // 2
-				if player_can_see: message(caster.name_for_printing() + ' casts fireball ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts fireball ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'fire')
 		if x is not None: explosion_effect(x, y, 3, [255,128,0])
 		
@@ -9268,11 +9268,11 @@ def cast_lightning_bolt(caster, target=None, level=None):
 			result = target.fighter.saving_throw('dexterity', difficulty)
 			if result == False: #failed saving throw
 				damage = dice_roll(number_of_d6, 6)
-				if player_can_see: message(caster.name_for_printing() + ' casts lightning bolt on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts lightning bolt on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'lightning')
 			else:
 				damage = dice_roll(number_of_d6, 6) // 2
-				if player_can_see: message(caster.name_for_printing() + ' casts lightning bolt ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts lightning bolt ineffectively on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 				target.fighter.take_damage(damage, caster, 'lightning')
 		if x is not None: 
 			bolt_effect(caster.x, caster.y, x, y, [0,255,255])
@@ -9298,7 +9298,7 @@ def cast_sacred_flame(caster, target=None, level=None):
 			elif clvl >= 5: num_rolls = 2
 			else: num_rolls = 1
 			damage = dice_roll(num_rolls, 8)
-			if player_can_see: message(caster.name_for_printing() + ' casts sacred flame on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts sacred flame on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'radiant')
 		else:
 			if player_can_see: message(caster.name_for_printing() + ' casts sacred flame on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -9372,7 +9372,7 @@ def cast_cure_wounds(caster, target=None, level=None):
 			if healing == 0:
 				if player_can_see: message(caster.name_for_printing() + ' casts cure wounds on ' + target.name_for_printing() + ' but it has no effect.', 'white')
 			else:
-				if player_can_see: message(caster.name_for_printing() + ' casts cure wounds on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' damage.', 'white')
+				if player_can_see: message(caster.name_for_printing() + ' casts cure wounds on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' hit points.', 'green')
 				target.fighter.heal(healing)
 			
 def cast_healing_word(caster, target=None, level=None):
@@ -9406,7 +9406,7 @@ def cast_healing_word(caster, target=None, level=None):
 				if healing == 0:
 					if player_can_see: message(caster.name_for_printing() + ' casts healing word on ' + target.name_for_printing() + ' but it has no effect.', 'white')
 				else:
-					if player_can_see: message(caster.name_for_printing() + ' casts healing word on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' damage.', 'white')
+					if player_can_see: message(caster.name_for_printing() + ' casts healing word on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' hit points.', 'green')
 					target.fighter.heal(healing)
 				
 def cast_inflict_wounds(caster, target=None, level=None):
@@ -9429,7 +9429,7 @@ def cast_inflict_wounds(caster, target=None, level=None):
 		result = caster.fighter.melee_spell_attack(target)
 		if result == True and 'necrotic immune' not in target.fighter.traits: #successful melee attack
 			damage = dice_roll(number_of_d10, 10)
-			if player_can_see: message(caster.name_for_printing() + ' casts inflict wounds on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+			if player_can_see: message(caster.name_for_printing() + ' casts inflict wounds on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 			target.fighter.take_damage(damage, caster, 'necrotic')
 		else:
 			if player_can_see: message(caster.name_for_printing() + ' casts inflict wounds on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -9541,7 +9541,7 @@ def cast_prayer_of_healing(caster, target=None, level=None):
 					if healing == 0:
 						if player_can_see: message(caster.name_for_printing() + ' casts prayer of healing on ' + target.name_for_printing() + ' but it has no effect.', 'white')
 					else:
-						if player_can_see: message(caster.name_for_printing() + ' casts prayer of healing on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' damage.', 'white')
+						if player_can_see: message(caster.name_for_printing() + ' casts prayer of healing on ' + target.name_for_printing() + ' and heals ' + str(healing) + ' hit points.', 'green')
 						target.fighter.heal(healing)
 	
 def cast_silence(caster, level=None):
@@ -9641,7 +9641,7 @@ def cast_eldritch_blast(caster, target=None, level=None):
 				result = caster.fighter.ranged_spell_attack(target)
 				damage = dice_roll(1, 10)
 				if result == True:
-					if player_can_see: message(caster.name_for_printing() + ' casts eldritch blast on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+					if player_can_see: message(caster.name_for_printing() + ' casts eldritch blast on ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 					target.fighter.take_damage(damage, caster, 'force')
 				else:
 					if player_can_see: message(caster.name_for_printing() + ' casts eldritch blast on ' + target.name_for_printing() + ' to no effect.', 'white')
@@ -9679,11 +9679,11 @@ def process_hellish_rebuke(target, attacker, power=None):
 	result = attacker.fighter.saving_throw('dexterity', difficulty)
 	if result == False: #failed saving throw
 		damage = dice_roll(power, 10)
-		if player_can_see: message(target.name_for_printing() + ' uses hellish rebuke on ' + attacker.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+		if player_can_see: message(target.name_for_printing() + ' uses hellish rebuke on ' + attacker.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 		attacker.fighter.take_damage(damage, target, 'fire')
 	else:
 		damage = dice_roll(power, 10) // 2
-		if player_can_see: message(target.name_for_printing() + ' uses hellish rebuke ineffectively on ' + attacker.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+		if player_can_see: message(target.name_for_printing() + ' uses hellish rebuke ineffectively on ' + attacker.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 		attacker.fighter.take_damage(damage, target, 'fire')
 	bolt_effect(target.x, target.y, attacker.x, attacker.y, [255,0,0])
 		
@@ -9727,7 +9727,7 @@ def use_potion_of_healing(user, item):
 		max_heal = user.fighter.max_hp - user.fighter.hp
 		if heal_amount > max_heal: heal_amount = max_heal
 		user.fighter.heal(heal_amount)
-		message(user.name_for_printing() + ' uses potion of healing and recovers ' + str(heal_amount) + ' hit points.', 'white')
+		message(user.name_for_printing() + ' uses potion of healing and recovers ' + str(heal_amount) + ' hit points.', 'green')
 	else:
 		return 'cancelled'
 		
@@ -9736,7 +9736,7 @@ def use_vial_of_acid(user, item):
 	target = target_monster(projectile=True)
 	if target is not None:
 		damage = dice_roll(2, 6)
-		message(user.name_for_printing() + ' throws a vial of acid at ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'white')
+		message(user.name_for_printing() + ' throws a vial of acid at ' + target.name_for_printing() + ' for ' + str(damage) + ' damage.', 'orange')
 		target.fighter.take_damage(damage, user, 'acid')
 	else:
 		return 'cancelled'
@@ -14216,7 +14216,7 @@ def play_game():
 			for actor in actors: #check to see if rest was disturbed
 				if player.can_see_object(actor) and player != actor:
 					if player.fighter.faction != actor.fighter.faction:
-						message('Your rest is interrupted!')
+						message('Your rest is interrupted!', 'white')
 						rest_counter = 0
 			if rest_counter == 0:
 				game_state = 'playing'
