@@ -6936,7 +6936,7 @@ def handle_keys():
 					if item.x == player.x and item.y == player.y and item.item:
 						chosen_item = item
 				if chosen_item is not None:
-					message('You picked up the ' + str(chosen_item.name_for_printing()) + '.')
+					message('You picked up ' + str(chosen_item.name_for_printing()) + '.')
 					chosen_item.item.pick_up(player)
 				else: return 'didnt-take-turn'
 				return
