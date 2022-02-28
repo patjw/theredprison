@@ -42,7 +42,7 @@ VIEW_WIDTH = 105
 VIEW_HEIGHT = 70
 
 MINIMAP_OFFSET = 4
-MINIMAP_FLAG = False #lets me turn off minimap for local testing - should be True for release
+MINIMAP_FLAG = True #lets me turn off minimap for local testing - should be True for release
 STARTING_EXPLORED = False #again for testing, allows for fully explored maps - should be False for release
 SHOW_ALL_OBJECTS = False #for testing, shows every object on map - should be False for release
  
@@ -375,6 +375,8 @@ class Object:
 		self.wants_text = None
 		self.reward = None
 		self.reward_text = None
+		
+		self.merchant = False
 		
 		self.links_to = None #used to store links to other branches and levels for stairs and other portals
 		
@@ -6055,6 +6057,9 @@ def player_talk(dx, dy):
 					if quest_test is not None:
 						quest_talk(actor)
 						return
+					elif actor.merchant:
+						merchant_talk(actor)
+						return
 					elif actor.fighter.faction == player.fighter.faction:
 						give_order(actor)
 						return
@@ -6129,7 +6134,25 @@ def quest_talk(actor):
 			return
 				
 	longmsgbox(actor.name_for_printing() + ' says: ' + active_quest.incomplete_text)
-		
+	
+def merchant_talk(actor):
+	global player
+	
+	#show a menu with each item of the merchant's inventory as an option
+	if len(actor.inventory) == 0:
+		options = ['Merchant has nothing for sale.']
+	else:
+		options = []
+		for item in actor.inventory:
+			text = item.name_for_printing(definite_article=False)
+			text = text + ' (' + '5 gold' + ')'
+			options.append(text)
+ 
+	index = menu('Choose an item to purchase:', options, INVENTORY_WIDTH)
+ 
+	#if an item was chosen, return it
+	if index is None or len(actor.inventory) == 0: return None
+	return actor.inventory[index].item
 	
 def give_order(actor, order_all=False):
 	player.record_last_action('talk')
@@ -11643,7 +11666,7 @@ def create_odette(x, y):
 	monster.fighter.true_faction = 'neutral'
 	monster.fighter.can_join = False
 	monster.chatty = True
-	monster.flavour_text = ["Welcome to North Warden traveller, you are safe here.", "The kobolds hide in the warrens nearby and have done so for generations.", "We have lost more good people to the kobolds than I care to remember.", "The kobolds would not dare to venture as far as North Warren but they plague my people nonetheless.", "We have sent for aid from Mirefield Keep but we are still waiting for a response."]
+	monster.flavour_text = ["Welcome to North Warren traveller, you are safe here.", "The kobolds hide in the warrens nearby and have done so for generations.", "We have lost more good people to the kobolds than I care to remember.", "The kobolds would not dare to venture as far as North Warren but they plague my people nonetheless.", "We have sent for aid from Mirefield Keep but we are still waiting for a response."]
 	return monster
 	
 def create_sunny(x, y):
@@ -11802,6 +11825,25 @@ def create_saint_cormag(x, y):
 	monster.fighter.can_join = False
 	monster.chatty = True
 	monster.flavour_text = ["Necromancy is not what you think, it is only the short-sighted that can not understand what I do.", "You have the chance to stand by my side forever; what greater boon could there be.", "There are many who desire everlasting life, and it is my plan to give it to those who desire it.", "It would be wise to submit without a fight; you will carry these ugly wounds for all eternity.", "I still follow the word of Saint Peregrine; it is only through necromancy that you can be healed without doing harm to others.", "I know that you think my path is an evil one but this is the only way to stay true to Saint Peregrine.", "Those fools in the Order of Saint Peregrine know the truth but lack the courage to follow me."]
+	return monster
+	
+###
+### NPC MERCHANT GENERATION FUNCTIONS
+###
+
+def create_godfrey(x, y):
+	monster = create_commoner(x, y)
+	monster.name = 'Godfrey'
+	monster.unique = True
+	monster.proper_noun = True
+	monster.fighter.faction = 'neutral'
+	monster.fighter.true_faction = 'neutral'
+	monster.fighter.can_join = False
+	monster.chatty = True
+	monster.flavour_text = ["Nothing but the finest goods!", "Braised oxen! Steamed slime mold! Fried shrieker!", "Rations for sale! We've got the best pies this side of Beggar's Hole!", "Special prices for adventurers! Rations guaranteed to keep you going on even the longest journeys!"]
+	monster.merchant = True
+	for i in range(3):
+		monster.inventory.append(create_food_rations())
 	return monster
 	
 ###
@@ -13845,6 +13887,8 @@ def generate_character():
 	#player.inventory.append(obj)
 	#obj = create_wand_of_humblesongs_gift()
 	#player.inventory.append(obj)
+	for i in range(10):
+		player.inventory.append(create_ring_of_protection())
 	
 	#generate map (at this point it's not drawn to the screen)
 	dungeon_level = STARTING_DUNGEON_LEVEL
