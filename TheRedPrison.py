@@ -11840,7 +11840,7 @@ def create_godfrey(x, y):
 	monster.fighter.true_faction = 'neutral'
 	monster.fighter.can_join = False
 	monster.chatty = True
-	monster.flavour_text = ["Nothing but the finest goods!", "Braised oxen! Steamed slime mold! Fried shrieker!", "Rations for sale! We've got the best pies this side of Beggar's Hole!", "Special prices for adventurers! Rations guaranteed to keep you going on even the longest journeys!"]
+	monster.flavour_text = ["Nothing but the finest goods!", "Braised oxen! Steamed slime mold! Fried shrieker!", "Rations for sale! We've got the best pies this side of Beggar's Hole!", "Special prices for adventurers! Rations guaranteed to keep you going on even the longest journeys!", "Cheerio!"]
 	monster.merchant = True
 	for i in range(3):
 		monster.inventory.append(create_food_rations())
