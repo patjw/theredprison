@@ -13887,8 +13887,6 @@ def generate_character():
 	#player.inventory.append(obj)
 	#obj = create_wand_of_humblesongs_gift()
 	#player.inventory.append(obj)
-	for i in range(10):
-		player.inventory.append(create_ring_of_protection())
 	
 	#generate map (at this point it's not drawn to the screen)
 	dungeon_level = STARTING_DUNGEON_LEVEL

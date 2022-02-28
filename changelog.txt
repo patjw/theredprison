@@ -1310,3 +1310,9 @@ Expanded examine menu to include descriptions, including code to break down thos
 Finished porting code over to python 3.
 
 Fixed monster stats when using new examine command so that they displayt properly.
+
+28/2/22
+
+Added Godfrey the test merchant.
+
+Added merchant variable and basic merchant talk functionality to show merchant inventory.
