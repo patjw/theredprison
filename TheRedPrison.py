@@ -6150,7 +6150,7 @@ def merchant_talk(actor):
 def merchant_sell(actor):
 	global player
 	
-	price_modifier = 0.5 + (ABILITY_MODIFIER[player.fighter.charisma] / 10)
+	price_modifier = 0.3 + (ABILITY_MODIFIER[player.fighter.charisma] / 10)
 	
 	#show a menu with each item of the player's inventory as an option
 	if len(player.inventory) == 0:
