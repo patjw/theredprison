@@ -1309,7 +1309,7 @@ Expanded examine menu to include descriptions, including code to break down thos
 
 Finished porting code over to python 3.
 
-Fixed monster stats when using new examine command so that they displayt properly.
+Fixed monster stats when using new examine command so that they display properly.
 
 28/2/22
 
@@ -1324,3 +1324,11 @@ Added merchant menu display functions for item quantities and charges.
 Dealt with code for merging items bought with multiple quantities after purchase.
 
 Added gold being used by merchants to buy items.
+
+Added base value variable to object class.
+
+Added gold variable to object class to abstract money out to avoid confusion of having it in the inventory.
+
+Amended item pickup code to make special case for collecting gold coins.
+
+Updated sidebar to always display player's gold.

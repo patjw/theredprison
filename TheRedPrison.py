@@ -330,6 +330,8 @@ class Object:
 		self.inventory = []
 		self.followers = []
 		self.quantity = quantity
+		self.gold = 0
+		self.value = None #base price if able to be bought and sold
 		self.last_quiver = None #variable used to track thrown weapons used by player to re-equip automatically if picked up again
 		self.versatile_weapon_with_two_hands = False #variable to use when tracking versatile weapon use
 		self.two_weapon_fighting = False #variable to use when tracking dual wielding 
@@ -2787,9 +2789,12 @@ class Item:
  
 	def pick_up(self, monster):
 		#add to the player's inventory and remove from the map
-		monster.inventory.append(self.owner)
+		if self.owner.name == 'gold coins':
+			self.owner.gold += self.owner.quantity
+		else:
+			monster.inventory.append(self.owner)
 		items.remove(self.owner)
-		if monster != player: message(monster.name_for_printing() + ' picked up a ' + self.owner.name + '.', 'white')
+		if monster != player: message(monster.name_for_printing() + ' picked up ' + self.owner.name_for_printing() + '.', 'white')
 
 		#special case: automatically equip, if the corresponding equipment slot is unused
 		#equipment = self.owner.equipment
@@ -5563,7 +5568,7 @@ def render_game_info():
 	stats.append('Level: ' + str(player.fighter.clevel) + ' (' + str(player.fighter.xp) + '/' + str(XP_TO_LEVEL[player.fighter.clevel+1]) + ')')
 	stats.append((dungeon_branch.name.title().replace('_', ' ') + ':' + str(dungeon_level)))
 	stats.append(' ')
-	stats.append('HP: ' + str(player.fighter.hp + player.fighter.temp_hp) + '/' + str(player.fighter.max_hp))
+	stats.append('HP: ' + str(player.fighter.hp + player.fighter.temp_hp) + '/' + str(player.fighter.max_hp) + '  Gold: ' + str(player.gold))
 	stats.append('Movement speed: ' + str(int(1/float(move_cost)*3000)) + "'")
 	stats.append(' ')
 	stats.append('Main: ' + str(weapon_in_main_hand.capitalize()))
@@ -6164,19 +6169,10 @@ def merchant_talk(actor):
 		
 		### HANDLE PARTIAL QUANTITY BUYING 
 		
-		player_gold = None
-		for item in player.inventory:
-			if item.name == 'gold coins':
-				player_gold = item
-		
-		if player_gold == None:
-			message(player.name_for_printing() + ' has no money!')
-			return
-		
 		item_cost = 5 #dummy number for testing
 		
-		if player_gold.quantity > item_cost:
-			player_gold.use_quantity(player, item_cost)
+		if player.gold > item_cost:
+			player.gold -= item_cost
 		else:
 			message(player.name_for_printing() + ' does not have enough money!')
 			return
@@ -13922,8 +13918,7 @@ def generate_character():
 	#all players get some gold based on charisma
 	gold_amount = 100 + (ABILITY_MODIFIER[player.fighter.charisma] * 20)
 	gold_amount = random.randint(gold_amount - 5, gold_amount + 5)
-	obj = create_gold(gold_amount)
-	player.inventory.append(obj)
+	player.gold = gold_amount
 	
 	#items to be given for testing purposes
 	#obj = create_helm_of_orcsblood()
