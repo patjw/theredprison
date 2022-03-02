@@ -1313,6 +1313,14 @@ Fixed monster stats when using new examine command so that they displayt properl
 
 28/2/22
 
-Added Godfrey the test merchant.
+Added Godfrey the test merchant in North Warren.
 
 Added merchant variable and basic merchant talk functionality to show merchant inventory.
+
+2/3/22
+
+Added merchant menu display functions for item quantities and charges.
+
+Dealt with code for merging items bought with multiple quantities after purchase.
+
+Added gold being used by merchants to buy items.

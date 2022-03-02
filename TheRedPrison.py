@@ -6145,14 +6145,55 @@ def merchant_talk(actor):
 		options = []
 		for item in actor.inventory:
 			text = item.name_for_printing(definite_article=False)
-			text = text + ' (' + '5 gold' + ')'
+			if item.quantity is not None:
+				text = text + ' (' + str(item.quantity) + ')'
+			if item.item:
+				if item.item.charges is not None:
+					text = text + ' (' + str(item.item.charges) + ')'
+			if item.quantity is not None:
+				text = text + ' (' + '5 gold each' + ')'
+			else:
+				text = text + ' (' + '5 gold' + ')'
 			options.append(text)
  
 	index = menu('Choose an item to purchase:', options, INVENTORY_WIDTH)
- 
-	#if an item was chosen, return it
-	if index is None or len(actor.inventory) == 0: return None
-	return actor.inventory[index].item
+	if len(actor.inventory) == 0 or index == None:
+		return
+	else:
+		bought_item = actor.inventory[index]
+		
+		### HANDLE PARTIAL QUANTITY BUYING 
+		
+		player_gold = None
+		for item in player.inventory:
+			if item.name == 'gold coins':
+				player_gold = item
+		
+		if player_gold == None:
+			message(player.name_for_printing() + ' has no money!')
+			return
+		
+		item_cost = 5 #dummy number for testing
+		
+		if player_gold.quantity > item_cost:
+			player_gold.use_quantity(player, item_cost)
+		else:
+			message(player.name_for_printing() + ' does not have enough money!')
+			return
+		
+		player.inventory.append(bought_item)
+		### if the item has a quantity aspect, check the inventory for others and combine them by adding the quantity and destroying the other item
+		if bought_item.quantity is not None:
+			for item in player.inventory:
+				if item.name == bought_item.name and item != bought_item: #we've found a candidate for merging
+					bought_item.quantity += item.quantity
+					if item.equipment and bought_item.equipment:
+						if item.equipment.is_equipped:
+							bought_item.equipment.equip(player) #this is because if the other item is equipped (such as a quiver of arrows) the merged item should also be equipped automatically
+							item.equipment.dequip(player)
+					player.inventory.remove(item)
+		actor.inventory.remove(bought_item)
+		message(player.name_for_printing() + ' buys ' + bought_item.name + ' from ' + actor.name_for_printing() + '.')
 	
 def give_order(actor, order_all=False):
 	player.record_last_action('talk')
@@ -11842,8 +11883,10 @@ def create_godfrey(x, y):
 	monster.chatty = True
 	monster.flavour_text = ["Nothing but the finest goods!", "Braised oxen! Steamed slime mold! Fried shrieker!", "Rations for sale! We've got the best pies this side of Beggar's Hole!", "Special prices for adventurers! Rations guaranteed to keep you going on even the longest journeys!", "Cheerio!"]
 	monster.merchant = True
-	for i in range(3):
-		monster.inventory.append(create_food_rations())
+	monster.inventory.append(create_food_rations(10))
+	monster.inventory.append(create_dagger())
+	monster.inventory.append(create_shortsword())
+	monster.inventory.append(create_arrows(20))
 	return monster
 	
 ###
@@ -13874,6 +13917,12 @@ def generate_character():
 	obj = create_torch()
 	player.inventory.append(obj)
 	obj = create_food_rations(5)
+	player.inventory.append(obj)
+	
+	#all players get some gold based on charisma
+	gold_amount = 100 + (ABILITY_MODIFIER[player.fighter.charisma] * 20)
+	gold_amount = random.randint(gold_amount - 5, gold_amount + 5)
+	obj = create_gold(gold_amount)
 	player.inventory.append(obj)
 	
 	#items to be given for testing purposes
