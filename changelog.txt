@@ -1332,3 +1332,5 @@ Added gold variable to object class to abstract money out to avoid confusion of 
 Amended item pickup code to make special case for collecting gold coins.
 
 Updated sidebar to always display player's gold.
+
+Added monetary values to every item in the game, mostly sticking to rules as written.

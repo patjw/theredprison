@@ -330,7 +330,7 @@ class Object:
 		self.inventory = []
 		self.followers = []
 		self.quantity = quantity
-		self.gold = 0
+		self.gold = 0.0
 		self.value = None #base price if able to be bought and sold
 		self.last_quiver = None #variable used to track thrown weapons used by player to re-equip automatically if picked up again
 		self.versatile_weapon_with_two_hands = False #variable to use when tracking versatile weapon use
@@ -6156,9 +6156,9 @@ def merchant_talk(actor):
 				if item.item.charges is not None:
 					text = text + ' (' + str(item.item.charges) + ')'
 			if item.quantity is not None:
-				text = text + ' (' + '5 gold each' + ')'
+				text = text + ' (' + str(item.value) + ' gold each' + ')'
 			else:
-				text = text + ' (' + '5 gold' + ')'
+				text = text + ' (' + str(item.value) + ' gold' + ')'
 			options.append(text)
  
 	index = menu('Choose an item to purchase:', options, INVENTORY_WIDTH)
@@ -6167,9 +6167,24 @@ def merchant_talk(actor):
 	else:
 		bought_item = actor.inventory[index]
 		
-		### HANDLE PARTIAL QUANTITY BUYING 
+		if bought_item.quantity is not None:
+			bought_quantity = text_input('How many do you want to buy?')
+			if not bought_quantity.isdigit():
+				message('That is not a valid number!')
+				return
+			else:
+				bought_quantity = int(bought_quantity)
+			if bought_quantity < 1:
+				message('That is not a valid number!')
+				return
+			elif bought_quantity > bought_item.quantity:
+				message('That is more than there is for sale!')
+				return
 		
-		item_cost = 5 #dummy number for testing
+		if bought_item.quantity is None:
+			item_cost = bought_item.value
+		else:
+			item_cost = bought_item.value * bought_quantity
 		
 		if player.gold > item_cost:
 			player.gold -= item_cost
@@ -6177,18 +6192,21 @@ def merchant_talk(actor):
 			message(player.name_for_printing() + ' does not have enough money!')
 			return
 		
-		player.inventory.append(bought_item)
-		### if the item has a quantity aspect, check the inventory for others and combine them by adding the quantity and destroying the other item
-		if bought_item.quantity is not None:
+		if bought_item.quantity is None:
+			player.inventory.append(bought_item)
+			actor.inventory.remove(bought_item)
+		else:
+			has_been_given = False
 			for item in player.inventory:
 				if item.name == bought_item.name and item != bought_item: #we've found a candidate for merging
-					bought_item.quantity += item.quantity
-					if item.equipment and bought_item.equipment:
-						if item.equipment.is_equipped:
-							bought_item.equipment.equip(player) #this is because if the other item is equipped (such as a quiver of arrows) the merged item should also be equipped automatically
-							item.equipment.dequip(player)
-					player.inventory.remove(item)
-		actor.inventory.remove(bought_item)
+					item.quantity += bought_quantity
+					bought_item.quantity -= bought_quantity
+					if bought_item.quantity == 0:
+						actor.inventory.remove(bought_item)
+					has_been_given = True
+			if not has_been_given:
+				player.inventory.append(bought_item)
+				actor.inventory.remove(bought_item)
 		message(player.name_for_printing() + ' buys ' + bought_item.name + ' from ' + actor.name_for_printing() + '.')
 	
 def give_order(actor, order_all=False):
@@ -11883,6 +11901,7 @@ def create_godfrey(x, y):
 	monster.inventory.append(create_dagger())
 	monster.inventory.append(create_shortsword())
 	monster.inventory.append(create_arrows(20))
+	monster.inventory.append(create_gauntlets_of_ogrekind())
 	return monster
 	
 ###
@@ -11894,6 +11913,7 @@ def create_godfrey(x, y):
 def create_club():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=2, properties=['bludgeoning', 'light', 'simple weapon'])
 	item = Object(0, 0, ')', 'club', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = .1
 	item.always_visible = False
 	item.big_char = int("0xE316", 16)
 	item.small_char = int("0xE816", 16)
@@ -11902,6 +11922,7 @@ def create_club():
 def create_dagger():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=1, properties=['piercing', 'finesse', 'light', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'dagger', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 2
 	item.always_visible = False
 	item.big_char = int("0xE317", 16)
 	item.small_char = int("0xE817", 16)
@@ -11910,6 +11931,7 @@ def create_dagger():
 def create_great_club():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=10, properties=['bludgeoning', 'two-handed', 'simple weapon'])
 	item = Object(0, 0, ')', 'great club', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = .2
 	item.always_visible = False
 	item.big_char = int("0xE318", 16)
 	item.small_char = int("0xE818", 16)
@@ -11918,6 +11940,7 @@ def create_great_club():
 def create_handaxe():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=2, properties=['slashing', 'light', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'hand axe', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 5
 	item.always_visible = False
 	item.big_char = int("0xE319", 16)
 	item.small_char = int("0xE819", 16)
@@ -11926,6 +11949,7 @@ def create_handaxe():
 def create_javelin():
 	equipment_component = Equipment(slot='quiver', num_dmg_die=1, dmg_die=6, ac=0, weight=2, properties=['piercing', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'javelin', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = .5
 	item.always_visible = False
 	item.big_char = int("0xE320", 16)
 	item.small_char = int("0xE820", 16)
@@ -11934,6 +11958,7 @@ def create_javelin():
 def create_light_hammer():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=2, properties=['bludgeoning', 'light', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'light hammer', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 2
 	item.always_visible = False
 	item.big_char = int("0xE321", 16)
 	item.small_char = int("0xE821", 16)
@@ -11942,6 +11967,7 @@ def create_light_hammer():
 def create_mace():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=4, properties=['bludgeoning', 'simple weapon'])
 	item = Object(0, 0, ')', 'mace', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 5
 	item.always_visible = False
 	item.big_char = int("0xE322", 16)
 	item.small_char = int("0xE822", 16)
@@ -11950,6 +11976,7 @@ def create_mace():
 def create_quarterstaff():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=4, properties=['bludgeoning', 'versatile', 'simple weapon'])
 	item = Object(0, 0, ')', 'quarterstaff', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = .2
 	item.always_visible = False
 	item.big_char = int("0xE323", 16)
 	item.small_char = int("0xE823", 16)
@@ -11958,6 +11985,7 @@ def create_quarterstaff():
 def create_sickle():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=2, properties=['slashing', 'light', 'simple weapon'])
 	item = Object(0, 0, ')', 'sickle', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 1
 	item.always_visible = False
 	item.big_char = int("0xE324", 16)
 	item.small_char = int("0xE824", 16)
@@ -11966,6 +11994,7 @@ def create_sickle():
 def create_spear():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=3, properties=['piercing', 'versatile', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'spear', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 1
 	item.always_visible = False
 	item.big_char = int("0xE325", 16)
 	item.small_char = int("0xE825", 16)
@@ -11974,6 +12003,7 @@ def create_spear():
 def create_light_crossbow():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=5, properties=['piercing', 'loading', 'launcher', 'two-handed', 'simple weapon'])
 	item = Object(0, 0, ')', 'light crossbow', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 25
 	item.always_visible = False
 	item.big_char = int("0xE326", 16)
 	item.small_char = int("0xE826", 16)
@@ -11982,6 +12012,7 @@ def create_light_crossbow():
 def create_shortbow():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=2, properties=['piercing', 'launcher', 'two-handed', 'simple weapon'])
 	item = Object(0, 0, ')', 'shortbow', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 25
 	item.always_visible = False
 	item.big_char = int("0xE328", 16)
 	item.small_char = int("0xE828", 16)
@@ -11990,6 +12021,7 @@ def create_shortbow():
 def create_sling():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=1, properties=['bludgeoning', 'launcher', 'simple weapon'])
 	item = Object(0, 0, ')', 'sling', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = .1
 	item.always_visible = False
 	item.big_char = int("0xE350", 16)
 	item.small_char = int("0xE850", 16)
@@ -11998,6 +12030,7 @@ def create_sling():
 def create_battleaxe():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=4, properties=['slashing', 'versatile', 'martial weapon'])
 	item = Object(0, 0, ')', 'battleaxe', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE329", 16)
 	item.small_char = int("0xE829", 16)
@@ -12006,6 +12039,7 @@ def create_battleaxe():
 def create_flail():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=2, properties=['bludgeoning', 'martial weapon'])
 	item = Object(0, 0, ')', 'flail', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE330", 16)
 	item.small_char = int("0xE830", 16)
@@ -12014,6 +12048,7 @@ def create_flail():
 def create_glaive():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=10, ac=0, weight=6, properties=['slashing', 'heavy', 'reach', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'glaive', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 20
 	item.always_visible = False
 	item.big_char = int("0xE331", 16)
 	item.small_char = int("0xE831", 16)
@@ -12022,6 +12057,7 @@ def create_glaive():
 def create_greataxe():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=12, ac=0, weight=7, properties=['slashing', 'heavy', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'greataxe', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 30
 	item.always_visible = False
 	item.big_char = int("0xE332", 16)
 	item.small_char = int("0xE832", 16)
@@ -12030,6 +12066,7 @@ def create_greataxe():
 def create_greatsword():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=2, dmg_die=6, ac=0, weight=6, properties=['slashing', 'heavy', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'greatsword', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 50
 	item.always_visible = False
 	item.big_char = int("0xE333", 16)
 	item.small_char = int("0xE833", 16)
@@ -12038,6 +12075,7 @@ def create_greatsword():
 def create_halberd():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=10, ac=0, weight=6, properties=['slashing', 'heavy', 'reach', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'halberd', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 20
 	item.always_visible = False
 	item.big_char = int("0xE334", 16)
 	item.small_char = int("0xE834", 16)
@@ -12046,6 +12084,7 @@ def create_halberd():
 def create_longsword():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=3, properties=['slashing', 'versatile', 'martial weapon'])
 	item = Object(0, 0, ')', 'longsword', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 15
 	item.always_visible = False
 	item.big_char = int("0xE336", 16)
 	item.small_char = int("0xE836", 16)
@@ -12054,6 +12093,7 @@ def create_longsword():
 def create_maul():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=2, dmg_die=8, ac=0, weight=10, properties=['bludgeoning', 'heavy', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'maul', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE337", 16)
 	item.small_char = int("0xE837", 16)
@@ -12062,6 +12102,7 @@ def create_maul():
 def create_morningstar():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=4, properties=['piercing', 'martial weapon'])
 	item = Object(0, 0, ')', 'morningstar', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 15
 	item.always_visible = False
 	item.big_char = int("0xE338", 16)
 	item.small_char = int("0xE838", 16)
@@ -12070,6 +12111,7 @@ def create_morningstar():
 def create_pike():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=10, ac=0, weight=10, properties=['piercing', 'heavy', 'reach', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'pike', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 5
 	item.always_visible = False
 	item.big_char = int("0xE339", 16)
 	item.small_char = int("0xE839", 16)
@@ -12078,6 +12120,7 @@ def create_pike():
 def create_rapier():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=2, properties=['piercing', 'finesse', 'martial weapon'])
 	item = Object(0, 0, ')', 'rapier', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 25
 	item.always_visible = False
 	item.big_char = int("0xE340", 16)
 	item.small_char = int("0xE840", 16)
@@ -12086,6 +12129,7 @@ def create_rapier():
 def create_scimitar():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=3, properties=['slashing', 'finesse', 'light', 'martial weapon'])
 	item = Object(0, 0, ')', 'scimitar', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 25
 	item.always_visible = False
 	item.big_char = int("0xE341", 16)
 	item.small_char = int("0xE841", 16)
@@ -12094,6 +12138,7 @@ def create_scimitar():
 def create_shortsword():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=2, properties=['piercing', 'finesse', 'light', 'martial weapon'])
 	item = Object(0, 0, ')', 'shortsword', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE342", 16)
 	item.small_char = int("0xE842", 16)
@@ -12102,6 +12147,7 @@ def create_shortsword():
 def create_trident():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=4, properties=['piercing', 'thrown', 'versatile', 'martial weapon'])
 	item = Object(0, 0, ')', 'trident', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 5
 	item.always_visible = False
 	item.big_char = int("0xE343", 16)
 	item.small_char = int("0xE843", 16)
@@ -12110,6 +12156,7 @@ def create_trident():
 def create_war_pick():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=2, properties=['piercing', 'martial weapon'])
 	item = Object(0, 0, ')', 'war pick', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 5
 	item.always_visible = False
 	item.big_char = int("0xE344", 16)
 	item.small_char = int("0xE844", 16)
@@ -12118,6 +12165,7 @@ def create_war_pick():
 def create_warhammer():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=2, properties=['bludgeoning', 'versatile', 'martial weapon'])
 	item = Object(0, 0, ')', 'warhammer', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 15
 	item.always_visible = False
 	item.big_char = int("0xE345", 16)
 	item.small_char = int("0xE845", 16)
@@ -12126,6 +12174,7 @@ def create_warhammer():
 def create_whip():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=3, properties=['slashing', 'finesse', 'reach', 'martial weapon'])
 	item = Object(0, 0, ')', 'whip', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 2
 	item.always_visible = False
 	item.big_char = int("0xE346", 16)
 	item.small_char = int("0xE846", 16)
@@ -12134,6 +12183,7 @@ def create_whip():
 def create_blowgun():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=1, ac=0, weight=1, properties=['piercing', 'launcher', 'loading', 'martial weapon'])
 	item = Object(0, 0, ')', 'blowgun', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 10
 	condition = Condition(name='poison', damage_on_hit=True, num_dmg_die=1, dmg_die=4, dmg_type='poison')
 	condition.owner = item
 	item.item.conditions.append(condition)
@@ -12145,6 +12195,7 @@ def create_blowgun():
 def create_hand_crossbow():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=3, properties=['piercing', 'launcher', 'loading', 'martial weapon'])
 	item = Object(0, 0, ')', 'hand crossbow', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 75
 	item.always_visible = False
 	item.big_char = int("0xE326", 16)
 	item.small_char = int("0xE826", 16)
@@ -12153,6 +12204,7 @@ def create_hand_crossbow():
 def create_heavy_crossbow():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=10, ac=0, weight=18, properties=['piercing', 'launcher', 'loading', 'heavy', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'heavy crossbow', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 50
 	item.always_visible = False
 	item.big_char = int("0xE348", 16)
 	item.small_char = int("0xE848", 16)
@@ -12161,6 +12213,7 @@ def create_heavy_crossbow():
 def create_longbow():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=8, ac=0, weight=2, properties=['piercing', 'launcher', 'heavy', 'two-handed', 'martial weapon'])
 	item = Object(0, 0, ')', 'longbow', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 50
 	item.always_visible = False
 	item.big_char = int("0xE349", 16)
 	item.small_char = int("0xE849", 16)
@@ -12171,6 +12224,7 @@ def create_longbow():
 def create_shield():
 	equipment_component = Equipment(slot='off hand', num_dmg_die=0, dmg_die=0, ac=2, weight=6, properties=['shield'])
 	item = Object(0, 0, '[', 'shield', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE315", 16)
 	item.small_char = int("0xE815", 16)
@@ -12181,6 +12235,7 @@ def create_shield():
 def create_padded_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=11, weight=8, properties=['light armour', 'unstealthy'])
 	item = Object(0, 0, '[', 'padded armour', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 5
 	item.always_visible = False
 	item.big_char = int("0xE303", 16)
 	item.small_char = int("0xE803", 16)
@@ -12189,6 +12244,7 @@ def create_padded_armour():
 def create_leather_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=11, weight=10, properties=['light armour'])
 	item = Object(0, 0, '[', 'leather armour', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE304", 16)
 	item.small_char = int("0xE804", 16)
@@ -12197,6 +12253,7 @@ def create_leather_armour():
 def create_studded_leather_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=12, weight=13, properties=['light armour'])
 	item = Object(0, 0, '[', 'studded leather', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 45
 	item.always_visible = False
 	item.big_char = int("0xE305", 16)
 	item.small_char = int("0xE805", 16)
@@ -12205,6 +12262,7 @@ def create_studded_leather_armour():
 def create_hide_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=12, weight=12, properties=['medium armour'])
 	item = Object(0, 0, '[', 'hide armour', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 10
 	item.always_visible = False
 	item.big_char = int("0xE306", 16)
 	item.small_char = int("0xE806", 16)
@@ -12213,6 +12271,7 @@ def create_hide_armour():
 def create_chain_shirt_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=13, weight=20, properties=['medium armour', 'metal'])
 	item = Object(0, 0, '[', 'chain shirt', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 50
 	item.always_visible = False
 	item.big_char = int("0xE307", 16)
 	item.small_char = int("0xE807", 16)
@@ -12221,6 +12280,7 @@ def create_chain_shirt_armour():
 def create_scale_mail_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=45, properties=['medium armour', 'unstealthy', 'metal'])
 	item = Object(0, 0, '[', 'scale mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 50
 	item.always_visible = False
 	item.big_char = int("0xE308", 16)
 	item.small_char = int("0xE808", 16)
@@ -12229,6 +12289,7 @@ def create_scale_mail_armour():
 def create_breastplate_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=20, properties=['medium armour', 'metal'])
 	item = Object(0, 0, '[', 'breastplate', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 400
 	item.always_visible = False
 	item.big_char = int("0xE309", 16)
 	item.small_char = int("0xE809", 16)
@@ -12237,6 +12298,7 @@ def create_breastplate_armour():
 def create_half_plate_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=15, weight=40, properties=['medium armour', 'unstealthy', 'metal'])
 	item = Object(0, 0, '[', 'half plate armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 750
 	item.always_visible = False
 	item.big_char = int("0xE310", 16)
 	item.small_char = int("0xE810", 16)
@@ -12245,6 +12307,7 @@ def create_half_plate_armour():
 def create_ring_mail_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=40, properties=['heavy armour', 'unstealthy', 'metal'])
 	item = Object(0, 0, '[', 'ring mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 30
 	item.always_visible = False
 	item.big_char = int("0xE311", 16)
 	item.small_char = int("0xE811", 16)
@@ -12253,6 +12316,7 @@ def create_ring_mail_armour():
 def create_chain_mail_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=16, weight=55, properties=['heavy armour', 'unstealthy', 'str 13', 'metal'])
 	item = Object(0, 0, '[', 'chain mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 75
 	item.always_visible = False
 	item.big_char = int("0xE312", 16)
 	item.small_char = int("0xE812", 16)
@@ -12261,6 +12325,7 @@ def create_chain_mail_armour():
 def create_splint_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=17, weight=60, properties=['heavy armour', 'unstealthy', 'str 15', 'metal'])
 	item = Object(0, 0, '[', 'splint armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 200
 	item.always_visible = False
 	item.big_char = int("0xE313", 16)
 	item.small_char = int("0xE813", 16)
@@ -12269,6 +12334,7 @@ def create_splint_armour():
 def create_plate_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=18, weight=65, properties=['heavy armour', 'unstealthy', 'str 15', 'metal'])
 	item = Object(0, 0, '[', 'plate armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 1500
 	item.always_visible = False
 	item.big_char = int("0xE314", 16)
 	item.small_char = int("0xE814", 16)
@@ -12289,6 +12355,7 @@ def create_gold(quantity=None):
 def create_torch():
 	equipment_component = Equipment(slot='off hand', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=['flammable'])
 	item = Object(0, 0, '(', 'torch', OTHER_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = .1
 	item.always_visible = False
 	item.big_char = int("0xE355", 16)
 	item.small_char = int("0xE855", 16)
@@ -12297,6 +12364,7 @@ def create_torch():
 def create_food_rations(quantity=None):
 	if quantity is None: quantity = 1
 	item = Object(0, 0, '%', 'food rations', OTHER_WEAPON_COLOUR, quantity=quantity)
+	item.value = 10
 	item.always_visible = False
 	item.item = Item() #equipment takes care of this automatically but food is a weird special case because it doesn't do anything
 	item.item.owner = item
@@ -12308,6 +12376,7 @@ def create_arrows(quantity=None):
 	if quantity is None: quantity = random.randint(15, 20)
 	equipment_component = Equipment(slot='quiver', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, ')', 'arrows', OTHER_WEAPON_COLOUR, equipment=equipment_component, quantity=quantity)
+	item.value = .2
 	item.always_visible = False
 	item.big_char = int("0xE353", 16)
 	item.small_char = int("0xE853", 16)
@@ -12317,6 +12386,7 @@ def create_bolts(quantity=None):
 	if quantity is None: quantity = random.randint(15, 20)
 	equipment_component = Equipment(slot='quiver', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, ')', 'bolts', METAL_WEAPON_COLOUR, equipment=equipment_component, quantity=quantity)
+	item.value = .2
 	item.always_visible = False
 	item.big_char = int("0xE352", 16)
 	item.small_char = int("0xE852", 16)
@@ -12326,6 +12396,7 @@ def create_bullets(quantity=None):
 	if quantity is None: quantity = random.randint(15, 20)
 	equipment_component = Equipment(slot='quiver', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, ')', 'bullets', OTHER_WEAPON_COLOUR, equipment=equipment_component, quantity=quantity)
+	item.value = .1
 	item.always_visible = False
 	item.big_char = int("0xE354", 16)
 	item.small_char = int("0xE854", 16)
@@ -12335,6 +12406,7 @@ def create_dart(quantity=None):
 	if quantity is None: quantity = random.randint(15, 20)
 	equipment_component = Equipment(slot='quiver', num_dmg_die=1, dmg_die=4, ac=0, weight=0, properties=['piercing', 'finesse', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'dart', METAL_WEAPON_COLOUR, equipment=equipment_component, quantity=quantity)
+	item.value = .2
 	item.always_visible = False
 	item.big_char = int("0xE327", 16)
 	item.small_char = int("0xE827", 16)
@@ -12344,6 +12416,7 @@ def create_needles(quantity=None):
 	if quantity is None: quantity = random.randint(15, 20)
 	equipment_component = Equipment(slot='quiver', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, ')', 'needles', METAL_WEAPON_COLOUR, equipment=equipment_component, quantity=quantity)
+	item.value = .2
 	item.always_visible = False
 	item.big_char = int("0xE351", 16)
 	item.small_char = int("0xE851", 16)
@@ -12357,6 +12430,7 @@ def create_potion_of_healing(quantity=None):
 	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_potion_of_healing)
 	item = Object(0, 0, '!', 'potion of healing', MISC_COLOUR, item=item_component, quantity=quantity)
+	item.value = 50
 	item.always_visible = False
 	item.big_char = int("0xE357", 16)
 	item.small_char = int("0xE857", 16)
@@ -12369,6 +12443,7 @@ def create_vial_of_acid(quantity=None):
 	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_vial_of_acid)
 	item = Object(0, 0, '!', 'vial of acid', MISC_COLOUR, item=item_component, quantity=quantity)
+	item.value = 25
 	item.always_visible = False
 	item.big_char = int("0xE359", 16)
 	item.small_char = int("0xE859", 16)
@@ -12381,6 +12456,7 @@ def create_oil_of_sharpness(quantity=None):
 	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_oil_of_sharpness)
 	item = Object(0, 0, '!', 'oil of sharpness', MISC_COLOUR, item=item_component, quantity=quantity)
+	item.value = 250
 	item.always_visible = False
 	item.big_char = int("0xE358", 16)
 	item.small_char = int("0xE858", 16)
@@ -12397,6 +12473,7 @@ def create_potion_of_giant_strength(type=None, quantity=None):
 	item_component = Item(use_function=use_potion_of_giant_strength)
 	item_component.special = type[1]
 	item = Object(0, 0, '!', 'potion of ' + type[0] + ' strength', MISC_COLOUR, item=item_component, quantity=quantity)
+	item.value = 350
 	item.always_visible = False
 	item.big_char = int("0xE360", 16)
 	item.small_char = int("0xE860", 16)
@@ -12409,6 +12486,7 @@ def create_potion_of_heroism(quantity=None):
 	if quantity is None: quantity = 1
 	item_component = Item(use_function=use_potion_of_heroism)
 	item = Object(0, 0, '!', 'potion of heroism', MISC_COLOUR, item=item_component, quantity=quantity)
+	item.value = 250
 	item.always_visible = False
 	item.big_char = int("0xE361", 16)
 	item.small_char = int("0xE861", 16)
@@ -12420,6 +12498,7 @@ def create_potion_of_heroism(quantity=None):
 def create_ring_of_protection():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '=', 'ring of protection', MISC_COLOUR, equipment=equipment_component)
+	item.value = 500
 	item.always_visible = False
 	item.big_char = int("0xE372", 16)
 	item.small_char = int("0xE872", 16)
@@ -12431,6 +12510,7 @@ def create_ring_of_protection():
 def create_ring_of_invisibility():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], adds_trait=['use invisibility'])
 	item = Object(0, 0, '=', 'ring of invisibility', MISC_COLOUR, equipment=equipment_component)
+	item.value = 1000
 	item.always_visible = False
 	item.big_char = int("0xE373", 16)
 	item.small_char = int("0xE873", 16)
@@ -12442,6 +12522,7 @@ def create_ring_of_invisibility():
 def create_ring_of_poison_resistance():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '=', 'ring of poison resistance', MISC_COLOUR, equipment=equipment_component)
+	item.value = 500
 	item.always_visible = False
 	item.big_char = int("0xE374", 16)
 	item.small_char = int("0xE874", 16)
@@ -12456,6 +12537,7 @@ def create_ring_of_poison_resistance():
 def create_ring_of_the_forge():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '=', 'ring of the forge', MISC_COLOUR, equipment=equipment_component)
+	item.value = 250
 	item.always_visible = False
 	item.big_char = int("0xE375", 16)
 	item.small_char = int("0xE875", 16)
@@ -12470,6 +12552,7 @@ def create_ring_of_the_forge():
 def create_ring_of_the_dancer():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], dex_bonus=1)
 	item = Object(0, 0, '=', 'ring of the dancer', MISC_COLOUR, equipment=equipment_component)
+	item.value = 450
 	item.always_visible = False
 	item.big_char = int("0xE376", 16)
 	item.small_char = int("0xE876", 16)
@@ -12481,6 +12564,7 @@ def create_ring_of_the_dancer():
 def create_ring_of_the_drow():
 	equipment_component = Equipment(slot='finger', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], cha_bonus=-2)
 	item = Object(0, 0, '=', 'ring of the drow', MISC_COLOUR, equipment=equipment_component)
+	item.value = 1000
 	item.always_visible = False
 	item.big_char = int("0xE372", 16)
 	item.small_char = int("0xE872", 16)
@@ -12495,6 +12579,7 @@ def create_ring_of_the_drow():
 def create_wand_of_magic_missiles():
 	item_component = Item(use_function=use_wand_of_magic_missile, max_charges=7)
 	item = Object(0, 0, '/', 'wand of magic missiles', MISC_COLOUR, item=item_component)
+	item.value = 2500
 	item.always_visible = False
 	item.big_char = int("0xE316", 16)
 	item.small_char = int("0xE816", 16)
@@ -12506,6 +12591,7 @@ def create_wand_of_magic_missiles():
 def create_wand_of_lightning_bolts():
 	item_component = Item(use_function=use_wand_of_lightning_bolt, max_charges=7)
 	item = Object(0, 0, '/', 'wand of lightning bolts', MISC_COLOUR, item=item_component)
+	item.value = 5000
 	item.always_visible = False
 	item.big_char = int("0xE316", 16)
 	item.small_char = int("0xE816", 16)
@@ -12517,6 +12603,7 @@ def create_wand_of_lightning_bolts():
 def create_wand_of_fireballs():
 	item_component = Item(use_function=use_wand_of_fireball, max_charges=7)
 	item = Object(0, 0, '/', 'wand of fireballs', MISC_COLOUR, item=item_component)
+	item.value = 4500
 	item.always_visible = False
 	item.big_char = int("0xE316", 16)
 	item.small_char = int("0xE816", 16)
@@ -12528,6 +12615,7 @@ def create_wand_of_fireballs():
 def create_wand_of_web():
 	item_component = Item(use_function=use_wand_of_web, max_charges=7)
 	item = Object(0, 0, '/', 'wand of web', MISC_COLOUR, item=item_component)
+	item.value = 2500
 	item.always_visible = False
 	item.big_char = int("0xE316", 16)
 	item.small_char = int("0xE816", 16)
@@ -12539,6 +12627,7 @@ def create_wand_of_web():
 def create_wand_of_humblesongs_gift():
 	item_component = Item(use_function=use_wand_of_humblesongs_gift, max_charges=21)
 	item = Object(0, 0, '/', "wand of humblesong's gift", MISC_COLOUR, item=item_component)
+	item.value = 1000
 	item.always_visible = False
 	item.big_char = int("0xE316", 16)
 	item.small_char = int("0xE816", 16)
@@ -12550,6 +12639,7 @@ def create_wand_of_humblesongs_gift():
 def create_dwarven_plate_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=18, weight=65, properties=['heavy armour', 'unstealthy', 'str 15'])
 	item = Object(0, 0, '[', 'dwarven plate armour', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 10000
 	item.always_visible = False
 	item.big_char = int("0xE314", 16)
 	item.small_char = int("0xE814", 16)
@@ -12561,6 +12651,7 @@ def create_dwarven_plate_armour():
 def create_dragon_scale_mail(type=None):
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=14, weight=45, properties=['medium armour', 'unstealthy'])
 	item = Object(0, 0, '[', 'dragon scale mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 10000
 	item.always_visible = False
 	item.big_char = int("0xE308", 16)
 	item.small_char = int("0xE808", 16)
@@ -12578,6 +12669,7 @@ def create_dragon_scale_mail(type=None):
 def create_elven_chain_mail_armour():
 	equipment_component = Equipment(slot='body', num_dmg_die=0, dmg_die=0, ac=13, weight=20, properties=['medium armour', 'metal'])
 	item = Object(0, 0, '[', 'elven chain mail', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 7500
 	item.always_visible = False
 	item.big_char = int("0xE307", 16)
 	item.small_char = int("0xE807", 16)
@@ -12594,6 +12686,7 @@ def create_mithral_armour(type=None):
 		types = (create_chain_shirt_armour, create_scale_mail_armour, create_breastplate_armour, create_half_plate_armour, create_ring_mail_armour, create_chain_mail_armour, create_splint_armour, create_plate_armour)
 		type = random.choice(types)
 	item = type()
+	item.value = item.value * 50
 	if 'unstealthy' in item.equipment.properties: item.equipment.properties.remove('unstealthy')
 	for property in item.equipment.properties:
 		if property[:3] == 'str':
@@ -12606,6 +12699,7 @@ def create_mithral_armour(type=None):
 def create_scimitar_of_speed():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=6, ac=0, weight=3, properties=['slashing', 'finesse', 'light', 'martial weapon'])
 	item = Object(0, 0, ')', 'scimitar', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 10000
 	item.always_visible = False
 	item.big_char = int("0xE341", 16)
 	item.small_char = int("0xE841", 16)
@@ -12620,6 +12714,7 @@ def create_scimitar_of_speed():
 def create_quickblade():
 	equipment_component = Equipment(slot='main hand', num_dmg_die=1, dmg_die=4, ac=0, weight=1, properties=['piercing', 'finesse', 'light', 'thrown', 'simple weapon'])
 	item = Object(0, 0, ')', 'quickblade', METAL_WEAPON_COLOUR, equipment=equipment_component)
+	item.value = 7500
 	item.always_visible = False
 	item.big_char = int("0xE317", 16)
 	item.small_char = int("0xE817", 16)
@@ -12635,6 +12730,7 @@ def create_quickblade():
 def create_girdle_of_tenacity():
 	equipment_component = Equipment(slot='belt', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], con_bonus=1)
 	item = Object(0, 0, '[', 'girdle of tenacity', MISC_COLOUR, equipment=equipment_component)
+	item.value = 750
 	item.always_visible = False
 	item.big_char = int("0xE379", 16)
 	item.small_char = int("0xE879", 16)
@@ -12646,6 +12742,7 @@ def create_girdle_of_tenacity():
 def create_amulet_of_detection():
 	equipment_component = Equipment(slot='neck', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '"', 'amulet of detection', MISC_COLOUR, equipment=equipment_component)
+	item.value = 750
 	item.always_visible = False
 	item.big_char = int("0xE362", 16)
 	item.small_char = int("0xE862", 16)
@@ -12660,6 +12757,7 @@ def create_amulet_of_detection():
 def create_amulet_of_mystic_insight():
 	equipment_component = Equipment(slot='neck', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[], wis_bonus=1)
 	item = Object(0, 0, '"', 'amulet of mystic insight', MISC_COLOUR, equipment=equipment_component)
+	item.value = 750
 	item.always_visible = False
 	item.big_char = int("0xE363", 16)
 	item.small_char = int("0xE863", 16)
@@ -12671,6 +12769,7 @@ def create_amulet_of_mystic_insight():
 def create_boots_of_the_winterlands():
 	equipment_component = Equipment(slot='feet', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '[', 'boots of the winterlands', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 500
 	item.always_visible = False
 	item.big_char = int("0xE380", 16)
 	item.small_char = int("0xE880", 16)
@@ -12685,6 +12784,7 @@ def create_boots_of_the_winterlands():
 def create_mantle_of_magic_resistance():
 	equipment_component = Equipment(slot='cloak', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '[', 'mantle of magic resistance', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 2500
 	item.always_visible = False
 	item.big_char = int("0xE382", 16)
 	item.small_char = int("0xE882", 16)
@@ -12699,6 +12799,7 @@ def create_mantle_of_magic_resistance():
 def create_cloak_of_elvenkind():
 	equipment_component = Equipment(slot='cloak', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '[', 'cloak of elvenkind', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 2000
 	item.always_visible = False
 	item.big_char = int("0xE382", 16)
 	item.small_char = int("0xE882", 16)
@@ -12713,6 +12814,7 @@ def create_cloak_of_elvenkind():
 def create_boots_of_elvenkind():
 	equipment_component = Equipment(slot='feet', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '[', 'boots of elvenkind', OTHER_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 1750
 	item.always_visible = False
 	item.big_char = int("0xE380", 16)
 	item.small_char = int("0xE880", 16)
@@ -12727,6 +12829,7 @@ def create_boots_of_elvenkind():
 def create_periapt_of_proof_against_poisons():
 	equipment_component = Equipment(slot='neck', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=[])
 	item = Object(0, 0, '"', 'periapt of proof against poisons', MISC_COLOUR, equipment=equipment_component)
+	item.value = 750
 	item.always_visible = False
 	item.big_char = int("0xE364", 16)
 	item.small_char = int("0xE884", 16)
@@ -12741,6 +12844,7 @@ def create_periapt_of_proof_against_poisons():
 def create_gauntlets_of_ogrekind():
 	equipment_component = Equipment(slot='hands', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=['metal'], str_bonus=2, con_bonus=2, int_bonus=-2, cha_bonus=-4)
 	item = Object(0, 0, '[', 'gauntlets of ogrekind', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 5000
 	item.always_visible = False
 	item.big_char = int("0xE384", 16)
 	item.small_char = int("0xE884", 16)
@@ -12752,6 +12856,7 @@ def create_gauntlets_of_ogrekind():
 def create_helm_of_orcsblood():
 	equipment_component = Equipment(slot='head', num_dmg_die=0, dmg_die=0, ac=0, weight=1, properties=['metal'], str_bonus=1, con_bonus=1, cha_bonus=-2)
 	item = Object(0, 0, '[', 'helm of orcsblood', METAL_ARMOUR_COLOUR, equipment=equipment_component)
+	item.value = 3500
 	item.always_visible = False
 	item.big_char = int("0xE385", 16)
 	item.small_char = int("0xE885", 16)
@@ -13916,9 +14021,9 @@ def generate_character():
 	player.inventory.append(obj)
 	
 	#all players get some gold based on charisma
-	gold_amount = 100 + (ABILITY_MODIFIER[player.fighter.charisma] * 20)
-	gold_amount = random.randint(gold_amount - 5, gold_amount + 5)
-	player.gold = gold_amount
+	gold_amount = 100.0 + (ABILITY_MODIFIER[player.fighter.charisma] * 20)
+	gold_amount = random.uniform(gold_amount - 5, gold_amount + 5)
+	player.gold = round(gold_amount, 1)
 	
 	#items to be given for testing purposes
 	#obj = create_helm_of_orcsblood()
