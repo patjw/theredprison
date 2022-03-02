@@ -6141,7 +6141,86 @@ def quest_talk(actor):
 	longmsgbox(actor.name_for_printing() + ' says: ' + active_quest.incomplete_text)
 	
 def merchant_talk(actor):
+	choice = menu('Do you want to purchase or sell items?', ['Purchase items', 'Sell items'], 50)
+	if choice == 0:
+		merchant_buy(actor)
+	elif choice == 1:
+		merchant_sell(actor)
+	
+def merchant_sell(actor):
 	global player
+	
+	price_modifier = 0.5 + (ABILITY_MODIFIER[player.fighter.charisma] / 10)
+	
+	#show a menu with each item of the player's inventory as an option
+	if len(player.inventory) == 0:
+		options = ['You do not have any items to sell!']
+	else:
+		options = []
+		for item in player.inventory:
+			text = item.name_for_printing(definite_article=False)
+			if item.quantity is not None:
+				text = text + ' (' + str(item.quantity) + ')'
+			if item.item:
+				if item.item.charges is not None:
+					text = text + ' (' + str(item.item.charges) + ')'
+			if item.quantity is not None:
+				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold each' + ')'
+			else:
+				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold' + ')'
+			options.append(text)
+ 
+	index = menu('Choose an item to sell:', options, INVENTORY_WIDTH)
+	if len(player.inventory) == 0 or index == None:
+		return
+	else:
+		sold_item = player.inventory[index]
+		
+		if sold_item.quantity is not None:
+			sold_quantity = text_input('How many do you want to sell?')
+			if not sold_quantity.isdigit():
+				message('That is not a valid number!')
+				return
+			else:
+				sold_quantity = int(sold_quantity)
+			if sold_quantity < 1:
+				message('That is not a valid number!')
+				return
+			elif sold_quantity > sold_item.quantity:
+				message('That is more than you have to sell!')
+				return
+		
+		if sold_item.quantity is None:
+			item_cost = round(sold_item.value * price_modifier, 2)
+		else:
+			item_cost = round(sold_item.value * sold_quantity * price_modifier, 2)
+		
+		player.gold += item_cost 
+		
+		if sold_item.quantity is None:
+			if sold_item.equipment: sold_item.equipment.dequip(player)
+			actor.inventory.append(sold_item)
+			player.inventory.remove(sold_item)
+		else:
+			working_item = None
+			for item in actor.inventory:
+				if item.name == sold_item.name and item != sold_item: #we've found a candidate for merging
+					working_item = item
+			if working_item == None: #we can't find a merging candidate so create a dummy item of the same type with zero quantity
+				working_item = copy.deepcopy(sold_item)
+				working_item.quantity = 0
+				actor.inventory.append(working_item)
+			working_item.quantity += sold_quantity
+			sold_item.quantity -= sold_quantity
+			if sold_item.quantity == 0:
+				if sold_item.equipment: sold_item.equipment.dequip(player)
+				player.inventory.remove(sold_item)
+		message(player.name_for_printing() + ' sells ' + sold_item.name + ' to ' + actor.name_for_printing() + '.')
+
+def merchant_buy(actor):
+	global player
+	
+	price_modifier = 1.0 - (ABILITY_MODIFIER[player.fighter.charisma] / 10)
 	
 	#show a menu with each item of the merchant's inventory as an option
 	if len(actor.inventory) == 0:
@@ -6156,9 +6235,9 @@ def merchant_talk(actor):
 				if item.item.charges is not None:
 					text = text + ' (' + str(item.item.charges) + ')'
 			if item.quantity is not None:
-				text = text + ' (' + str(item.value) + ' gold each' + ')'
+				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold each' + ')'
 			else:
-				text = text + ' (' + str(item.value) + ' gold' + ')'
+				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold' + ')'
 			options.append(text)
  
 	index = menu('Choose an item to purchase:', options, INVENTORY_WIDTH)
@@ -6182,9 +6261,9 @@ def merchant_talk(actor):
 				return
 		
 		if bought_item.quantity is None:
-			item_cost = bought_item.value
+			item_cost = round(bought_item.value * price_modifier, 2)
 		else:
-			item_cost = bought_item.value * bought_quantity
+			item_cost = round(bought_item.value * bought_quantity * price_modifier, 2)
 		
 		if player.gold > item_cost:
 			player.gold -= item_cost
@@ -6196,16 +6275,17 @@ def merchant_talk(actor):
 			player.inventory.append(bought_item)
 			actor.inventory.remove(bought_item)
 		else:
-			has_been_given = False
+			working_item = None
 			for item in player.inventory:
 				if item.name == bought_item.name and item != bought_item: #we've found a candidate for merging
-					item.quantity += bought_quantity
-					bought_item.quantity -= bought_quantity
-					if bought_item.quantity == 0:
-						actor.inventory.remove(bought_item)
-					has_been_given = True
-			if not has_been_given:
-				player.inventory.append(bought_item)
+					working_item = item
+			if working_item == None: #we can't find a merging candidate so create a dummy item of the same type with zero quantity
+				working_item = copy.deepcopy(bought_item)
+				working_item.quantity = 0
+				player.inventory.append(working_item)
+			working_item.quantity += bought_quantity
+			bought_item.quantity -= bought_quantity
+			if bought_item.quantity == 0:
 				actor.inventory.remove(bought_item)
 		message(player.name_for_printing() + ' buys ' + bought_item.name + ' from ' + actor.name_for_printing() + '.')
 	
@@ -14023,7 +14103,7 @@ def generate_character():
 	#all players get some gold based on charisma
 	gold_amount = 100.0 + (ABILITY_MODIFIER[player.fighter.charisma] * 20)
 	gold_amount = random.uniform(gold_amount - 5, gold_amount + 5)
-	player.gold = round(gold_amount, 1)
+	player.gold = round(gold_amount, 2)
 	
 	#items to be given for testing purposes
 	#obj = create_helm_of_orcsblood()

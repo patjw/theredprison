@@ -1334,3 +1334,9 @@ Amended item pickup code to make special case for collecting gold coins.
 Updated sidebar to always display player's gold.
 
 Added monetary values to every item in the game, mostly sticking to rules as written.
+
+Finished merchant buying code to allow for buying partial quantities and for float gold values to account for silver pieces (I couldn't be bothered doing copper!!!!)
+
+Added selling to merchants.
+
+Added price modifiers for buying and selling based on charisma ability modifier.
