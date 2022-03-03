@@ -5654,6 +5654,9 @@ def render_game_info():
 				elif actor.unique and actor.fighter.faction == 'neutral':
 					blt.color('purple')
 					blt.puts(5, count, ("[font=log]" + actor.name_for_printing(definite_article=False, capitalise=True) + ' (' + str(actor.fighter.max_hp) + ')')[:32])
+				elif actor.merchant and actor.fighter.faction == 'neutral':
+					blt.color('yellow')
+					blt.puts(5, count, ("[font=log]" + actor.name_for_printing(definite_article=False, capitalise=True) + ' (' + str(actor.fighter.max_hp) + ')')[:32])
 				elif actor.fighter.faction == 'neutral':
 					blt.color('white')
 					blt.puts(5, count, ("[font=log]" + actor.name_for_printing(definite_article=False, capitalise=True) + ' (' + str(actor.fighter.max_hp) + ')')[:32])
@@ -11967,7 +11970,7 @@ def create_saint_cormag(x, y):
 ###
 
 def create_merchant(x, y):
-	monster = create_commoner(x, y)
+	monster = create_noble(x, y)
 	monster.name = 'Merchant'
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
