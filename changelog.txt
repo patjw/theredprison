@@ -1340,3 +1340,11 @@ Finished merchant buying code to allow for buying partial quantities and for flo
 Added selling to merchants.
 
 Added price modifiers for buying and selling based on charisma ability modifier.
+
+3/3/22
+
+Updated base merchant item generation code to guarantee some rations, a range of ammo, some random weapons and armour and a single common magic item.
+
+Changed Godfrey to a base merchant class so I don't have to create uniques for this kind of NPC.
+
+Added merchants to most friendly settlements in various locations.

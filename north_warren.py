@@ -1,10 +1,10 @@
 actors = {'a': ('town_commoner', 'indoors'),
 'b': ('town_guard', None),
+'c': ('merchant', 'indoors'),
 'A': ('odette', 'indoors'),
 'B': ('sunny', 'indoors'),
 'C': ('susie', 'indoors'), 
 'D': ('saint_barnabas', None),
-'E': ('godfrey', None)
 } #tuple with actor creation function and the tile to underneath
 
 items = None
@@ -34,7 +34,7 @@ vault_layouts = [
 '                               #,,,,#           #,,,,,#      +,,,,,,#           ',
 '                       ######  ####+#           ####+##      #,,,,,,#           ',
 '                       #,,,,#                ######          ########           ',
-'           ######      #,a,,#           b    #,,,,#                   t         ',
+'           ######      #,c,,#           b    #,,,,#                   t         ',
 '           #,,,,#      #,,,,#                #,a,,#                             ',
 '           #,,a,#      #,,,,#                #,,,,#                             ',
 '     TT    #,,a,+      #,,,,+      t         #,,,,#                             ',
@@ -45,7 +45,7 @@ vault_layouts = [
 '                           b                   Tt                               ',
 '                                      D                                         ',
 '                   #########                                                    ',
-'   1               #,,,,,,,#            E                   ####                ',
+'   1               #,,,,,,,#                                ####                ',
 '                   #,,,B,,,#                         b      #,,#          Tt    ',
 '                   #,,A,C,,+                                #,,#                ',
 '       t           #,,,,,,,#     t                          #a,#                ',
@@ -54,7 +54,7 @@ vault_layouts = [
 '                                               T            #,,#                ',
 '                                                  ###+##    ####                ',
 '                                                  #,,,,#                        ',
-'                              #+#                 #,,,,#                        ',
+'                              #+#                 #,,c,#                        ',
 '                              #,#     Tt          ######                        ',
 '                     #####+#  #,#                                               ',
 '                     #,,,,,#  #,#                                       TT      ',

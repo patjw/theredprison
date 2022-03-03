@@ -6150,7 +6150,7 @@ def merchant_talk(actor):
 def merchant_sell(actor):
 	global player
 	
-	price_modifier = 0.3 + (ABILITY_MODIFIER[player.fighter.charisma] / 10)
+	price_modifier = 0.5 + (ABILITY_MODIFIER[player.fighter.charisma] / 20)
 	
 	#show a menu with each item of the player's inventory as an option
 	if len(player.inventory) == 0:
@@ -6170,7 +6170,7 @@ def merchant_sell(actor):
 				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold' + ')'
 			options.append(text)
  
-	index = menu('Choose an item to sell:', options, INVENTORY_WIDTH)
+	index = menu('Choose an item to sell:', options, INVENTORY_WIDTH + 10)
 	if len(player.inventory) == 0 or index == None:
 		return
 	else:
@@ -6220,7 +6220,7 @@ def merchant_sell(actor):
 def merchant_buy(actor):
 	global player
 	
-	price_modifier = 1.0 - (ABILITY_MODIFIER[player.fighter.charisma] / 10)
+	price_modifier = 1.0 - (ABILITY_MODIFIER[player.fighter.charisma] / 20)
 	
 	#show a menu with each item of the merchant's inventory as an option
 	if len(actor.inventory) == 0:
@@ -6240,7 +6240,7 @@ def merchant_buy(actor):
 				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold' + ')'
 			options.append(text)
  
-	index = menu('Choose an item to purchase:', options, INVENTORY_WIDTH)
+	index = menu('Choose an item to purchase:', options, INVENTORY_WIDTH + 10)
 	if len(actor.inventory) == 0 or index == None:
 		return
 	else:
@@ -11966,10 +11966,9 @@ def create_saint_cormag(x, y):
 ### NPC MERCHANT GENERATION FUNCTIONS
 ###
 
-def create_godfrey(x, y):
+def create_merchant(x, y):
 	monster = create_commoner(x, y)
-	monster.name = 'Godfrey'
-	monster.unique = True
+	monster.name = 'Merchant'
 	monster.proper_noun = True
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
@@ -11977,11 +11976,19 @@ def create_godfrey(x, y):
 	monster.chatty = True
 	monster.flavour_text = ["Nothing but the finest goods!", "Braised oxen! Steamed slime mold! Fried shrieker!", "Rations for sale! We've got the best pies this side of Beggar's Hole!", "Special prices for adventurers! Rations guaranteed to keep you going on even the longest journeys!", "Cheerio!"]
 	monster.merchant = True
-	monster.inventory.append(create_food_rations(10))
-	monster.inventory.append(create_dagger())
-	monster.inventory.append(create_shortsword())
-	monster.inventory.append(create_arrows(20))
-	monster.inventory.append(create_gauntlets_of_ogrekind())
+	monster.inventory.append(create_food_rations(random.randint(3, 5)))
+	monster.inventory.append(create_bullets(random.randint(12, 25)))
+	monster.inventory.append(create_arrows(random.randint(10, 15)))
+	monster.inventory.append(create_bolts(random.randint(8, 12)))
+	monster.inventory.append(create_dart(random.randint(5, 7)))
+	for i in range(random.randint(3, 5)):
+		func = random.choice(weapon_func_list)
+		monster.inventory.append(func())
+	for i in range(random.randint(1, 3)):
+		func = random.choice(armour_func_list)
+		monster.inventory.append(func())
+	func = random.choice(common_magic_func_list)
+	monster.inventory.append(func())
 	return monster
 	
 ###

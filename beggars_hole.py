@@ -4,6 +4,7 @@ actors = {
 'c': ('town_thug', None),
 'd': ('town_assassin', None),
 'e': ('town_bandit_captain', None),
+'f': ('merchant', None),
 }
 
 #tuple with actor creation function and the tile to underneath
@@ -25,7 +26,7 @@ vault_layouts = [
 '############  ###                               #######        #  ##############',
 '#########    ##                              ####     ####        ##############',
 '########                         a          ##           ##        #############',
-'########  #                                 #             #         ####  ######',
+'########  #                                 #      f      #         ####  ######',
 '###########                                 ##           ##          ####  #####',
 '##########                   #######         ####     ####            ###  #####',
 '#########                   ##     ##           ###+###         a      ##   ####',
