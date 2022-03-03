@@ -1352,3 +1352,5 @@ Added merchants to most friendly settlements in various locations.
 Changed merchant to noble base class.
 
 Added yellow text for merchants in sidebar.
+
+Readded Godfrey into the game as a unique magic artefact seller in Cindemere.

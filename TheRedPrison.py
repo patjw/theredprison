@@ -11994,6 +11994,24 @@ def create_merchant(x, y):
 	monster.inventory.append(func())
 	return monster
 	
+def create_godfrey(x, y):
+	monster = create_noble(x, y)
+	monster.name = 'Godfrey'
+	monster.proper_noun = True
+	monster.fighter.faction = 'neutral'
+	monster.fighter.true_faction = 'neutral'
+	monster.fighter.can_join = False
+	monster.chatty = True
+	monster.flavour_text = ["The most amazing magical items can be yours!", "Come! Examine my wares! I promise that you will be amazed!", "The deepest secrets! The most forbidden magics! Power beyond imagining!", "Do not miss this opportunity to purchase incredible artefacts!"]
+	monster.merchant = True
+	for i in range(random.randint(5, 8)):
+		func = random.choice(common_magic_func_list)
+		monster.inventory.append(func())
+	for i in range(random.randint(3, 5)):
+		func = random.choice(rare_magic_func_list)
+		monster.inventory.append(func())
+	return monster
+	
 ###
 ### ITEM GENERATION FUNCTIONS
 ###
