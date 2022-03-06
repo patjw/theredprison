@@ -1354,3 +1354,17 @@ Changed merchant to noble base class.
 Added yellow text for merchants in sidebar.
 
 Re-added Godfrey into the game as a unique magic artefact seller in Cindemere.
+
+6/3/22
+
+Added code for merchant who sells hirelings called guildmaster in the code.
+
+Added Ingefred the unique guildmaster for North Warren.
+
+Finished code for spawning hirelings upon purchase.
+
+Added code for price of hirelings to shift based on player charisma.
+
+Added stored value for each possible type of NPC.
+
+Added list of standard hirelings for Ingefred and placed her in a house in North Warren.
