@@ -379,6 +379,7 @@ class Object:
 		self.reward_text = None
 		
 		self.merchant = False
+		self.guildmaster = None
 		
 		self.links_to = None #used to store links to other branches and levels for stairs and other portals
 		
@@ -5568,7 +5569,7 @@ def render_game_info():
 	stats.append('Level: ' + str(player.fighter.clevel) + ' (' + str(player.fighter.xp) + '/' + str(XP_TO_LEVEL[player.fighter.clevel+1]) + ')')
 	stats.append((dungeon_branch.name.title().replace('_', ' ') + ':' + str(dungeon_level)))
 	stats.append(' ')
-	stats.append('HP: ' + str(player.fighter.hp + player.fighter.temp_hp) + '/' + str(player.fighter.max_hp) + '  Gold: ' + str(player.gold))
+	stats.append('HP: ' + str(player.fighter.hp + player.fighter.temp_hp) + '/' + str(player.fighter.max_hp) + '  Gold: ' + str(round(player.gold, 2)))
 	stats.append('Movement speed: ' + str(int(1/float(move_cost)*3000)) + "'")
 	stats.append(' ')
 	stats.append('Main: ' + str(weapon_in_main_hand.capitalize()))
@@ -6068,6 +6069,9 @@ def player_talk(dx, dy):
 					elif actor.merchant:
 						merchant_talk(actor)
 						return
+					elif actor.guildmaster is not None:
+						guildmaster_talk(actor)
+						return
 					elif actor.fighter.faction == player.fighter.faction:
 						give_order(actor)
 						return
@@ -6149,6 +6153,50 @@ def merchant_talk(actor):
 		merchant_buy(actor)
 	elif choice == 1:
 		merchant_sell(actor)
+		
+def guildmaster_talk(actor):
+	if actor.guildmaster is None:
+		options = ['Guildmaster has no hirelings available.']
+		return
+		
+	price_modifier = 1.0 - (ABILITY_MODIFIER[player.fighter.charisma] / 10)
+	list_of_hirelings = []
+	
+	for hireling in actor.guildmaster:
+		list_of_hirelings.append(hireling.name + ' (' + str(round(hireling.value * price_modifier, 2)) + ' gold)')
+		
+	if len(actor.guildmaster) == 0:
+		options = ['Guildmaster has no hirelings available.']
+		return
+	else:
+		choice = menu('Who do you wish to hire?', list_of_hirelings, 24)
+	
+	if choice is not None:
+	
+		hireling = actor.guildmaster[choice]
+		hireling_cost = round(hireling.value * price_modifier, 2)
+		
+		if player.gold > hireling_cost:
+			player.gold -= hireling_cost
+		else:
+			message(player.name_for_printing() + ' does not have enough money!')
+			return
+		
+		actor.guildmaster.remove(hireling)
+		(hireling.x, hireling.y) = random_unblocked_spot_near(player.x, player.y)
+		hireling.fighter.faction = player.fighter.faction
+		hireling.fighter.true_faction = player.fighter.faction
+		hireling.old_ai = hireling.ai #store the old ai for later use
+		if 'magic' in hireling.fighter.proficiencies:
+			companion_ai_component = CompanionMagicMonster(player, 5)
+		elif 'ranged' in hireling.fighter.traits:
+			companion_ai_component = CompanionRangedMonster(player, 5)
+		else:
+			companion_ai_component = CompanionMonster(player, 5)
+		hireling.ai = companion_ai_component
+		companion_ai_component.owner = hireling
+		player.followers.append(hireling)
+		actors.append(hireling)
 	
 def merchant_sell(actor):
 	global player
@@ -6168,9 +6216,9 @@ def merchant_sell(actor):
 				if item.item.charges is not None:
 					text = text + ' (' + str(item.item.charges) + ')'
 			if item.quantity is not None:
-				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold each' + ')'
+				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold each)'
 			else:
-				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold' + ')'
+				text = text + ' (' + str(round(item.value * price_modifier, 2)) + ' gold)'
 			options.append(text)
  
 	index = menu('Choose an item to sell:', options, INVENTORY_WIDTH + 10)
@@ -11574,6 +11622,7 @@ def create_acolyte(x, y):
 	monster.small_char = int("0xE763", 16)
 	monster.flavour_text = ["Through patience and dedication, my power grows."]
 	monster.description = 'Acolytes are junior members of a clergy, usually answerable to a priest. They perform a variety of functions in a temple and are granted minor spellcasting power by their deities.'
+	monster.value = 100
 	return monster
 	
 def create_archmage(x, y):
@@ -11586,6 +11635,7 @@ def create_archmage(x, y):
 	monster.small_char = int("0xE764", 16)
 	monster.flavour_text = ["The mysteries of the arcane are mine to know."]
 	monster.description = 'Archmages are powerful (and usually quite old) spellcasters dedicated to the study of the arcane arts. Benevolent ones counsel kings and queens, while evil ones rule as tyrants and pursue lichdom. Those who are neither good nor evil sequester themselves in remote towers to practice their magic without interruption.'
+	monster.value = 10000
 	return monster
 	
 def create_assassin(x, y):
@@ -11597,6 +11647,7 @@ def create_assassin(x, y):
 	monster.small_char = int("0xE765", 16)
 	monster.flavour_text = ["Do not come too close unless you seek to taste my blade."]
 	monster.description = 'Trained in the use of poison, assassins are remorseless killers who work for nobles, guildmasters, sovereigns, and anyone else who can afford them.'
+	monster.value = 1000
 	return monster
 	
 def create_bandit(x, y):
@@ -11608,6 +11659,7 @@ def create_bandit(x, y):
 	monster.small_char = int("0xE766", 16)
 	monster.flavour_text = ["What's that you've got in your pack?"]
 	monster.description = 'Bandits rove in gangs and are sometimes led by more powerful NPCs, including spellcasters. Not all bandits are evil. Oppression, drought, disease, or famine can often drive otherwise honest folk to a life of banditry.'
+	monster.value = 250
 	return monster
 	
 def create_bandit_captain(x, y):
@@ -11619,6 +11671,7 @@ def create_bandit_captain(x, y):
 	monster.small_char = int("0xE767", 16)
 	monster.flavour_text = ["If you don't want trouble then you'll stay out of our way."]
 	monster.description = 'It takes a strong personality, ruthless cunning, and a silver tongue to keep a gang of bandits in line. The bandit captain has these qualities in spades.'
+	monster.value = 750
 	return monster
 	
 def create_berserker(x, y):
@@ -11630,6 +11683,7 @@ def create_berserker(x, y):
 	monster.small_char = int("0xE768", 16)
 	monster.flavour_text = ["It has been far too long since the battle lust has consumed me."]
 	monster.description = 'Hailing from uncivilized lands, unpredictable berserkers come together in war parties and seek conflict wherever they can find it.'
+	monster.value = 450
 	return monster
 	
 def create_commoner(x, y):
@@ -11641,6 +11695,7 @@ def create_commoner(x, y):
 	monster.small_char = int("0xE769", 16)
 	monster.flavour_text = ["Good day sir, I'll just be on my way if that's alright by you."]
 	monster.description = 'Commoners include peasants, serfs, slaves, servants, pilgrims, merchants, artisans, and hermits.'
+	monster.value = 10
 	return monster
 	
 def create_cultist(x, y):
@@ -11652,6 +11707,7 @@ def create_cultist(x, y):
 	monster.small_char = int("0xE770", 16)
 	monster.flavour_text = ["The whispers from the shadows haunt my dreams."]
 	monster.description = 'Cultists swear allegiance to dark powers, and often show signs of insanity in their beliefs and practices.'
+	monster.value = 100
 	return monster
 	
 def create_cult_fanatic(x, y):
@@ -11664,6 +11720,7 @@ def create_cult_fanatic(x, y):
 	monster.small_char = int("0xE771", 16)
 	monster.flavour_text = ["You have no idea about the glorious dark things that I have seen."]
 	monster.description = "Fanatics are often part of a cult's leadership, using their charisma and dogma to influence and prey on those of weak will. Most are interested in personal power above all else."
+	monster.value = 500
 	return monster
 	
 def create_gladiator(x, y):
@@ -11675,6 +11732,7 @@ def create_gladiator(x, y):
 	monster.small_char = int("0xE772", 16)
 	monster.flavour_text = ["I have won many battles against greater odds than this."]
 	monster.description = 'Gladiators battle for the entertainment of raucous crowds. Some gladiators are brutal pit fighters who treat each match as a life-or-death struggle, while others are professional duelists who command huge fees but rarely fight to the death.'
+	monster.value = 2500
 	return monster	
 	
 def create_guard(x, y):
@@ -11686,6 +11744,7 @@ def create_guard(x, y):
 	monster.small_char = int("0xE773", 16)
 	monster.flavour_text = ["Through the strength of my arms, I dedicate myself to keeping those safe around me."]
 	monster.description = 'Guards include members of a city watch, sentries in a citadel or fortified town, and the bodyguards of merchants and nobles.'
+	monster.value = 150
 	return monster
 	
 def create_knight(x, y):
@@ -11697,6 +11756,7 @@ def create_knight(x, y):
 	monster.small_char = int("0xE774", 16)
 	monster.flavour_text = ["It takes much more than being able to swing a sword to become a knight."]
 	monster.description = "Knights are warriors who pledge service to rulers, religious orders, and noble causes. A knight's alignment determines the extent to which a pledge is honoured."
+	monster.value = 1250
 	return monster
 	
 def create_mage(x, y):
@@ -11709,6 +11769,7 @@ def create_mage(x, y):
 	monster.small_char = int("0xE775", 16)
 	monster.flavour_text = ["My studies of the mysteries of the arcane have granted me great power."]
 	monster.description = 'Mages spend their lives in the study and practice of magic.'
+	monster.value = 5000
 	return monster
 	
 def create_noble(x, y):
@@ -11720,6 +11781,7 @@ def create_noble(x, y):
 	monster.small_char = int("0xE776", 16)
 	monster.flavour_text = ["I have little time for the likes of you."]
 	monster.description = 'Nobles wield great authority and influence as members of the upper class, possessing wealth and connections that can make them as powerful as monarchs and generals. A noble often travels in the company of guards, as well as servants who are commoners.'
+	monster.value = 50000
 	return monster
 	
 def create_priest(x, y):
@@ -11732,6 +11794,7 @@ def create_priest(x, y):
 	monster.small_char = int("0xE777", 16)
 	monster.flavour_text = ["True wisdom comes from contemplation, meditation and prayer."]
 	monster.description = 'Priests are the spiritual leaders of temples and shrines.'
+	monster.value = 4000
 	return monster
 	
 def create_scout(x, y):
@@ -11743,6 +11806,7 @@ def create_scout(x, y):
 	monster.small_char = int("0xE778", 16)
 	monster.flavour_text = ["I could hear you coming a mile away."]
 	monster.description = 'Scouts are skilled hunters and trackers who offer their services for a fee. Most hunt wild game, but a few work as bounty hunters, serve as guides, or provide military reconnaissance.'
+	monster.value = 250
 	return monster
 	
 def create_spy(x, y):
@@ -11754,6 +11818,7 @@ def create_spy(x, y):
 	monster.small_char = int("0xE779", 16)
 	monster.flavour_text = ["The best way to gain influence in this world is through intelligence and cunning."]
 	monster.description = 'Rulers, nobles, merchants, guildmasters, and other wealthy individuals use spies to gain the upper hand in a world of cutthroat politics. A spy is trained to secretly gather information. Loyal spies would rather die than divulge information that could compromise them or their employers.'
+	monster.value = 750
 	return monster
 	
 def create_thug(x, y):
@@ -11765,6 +11830,7 @@ def create_thug(x, y):
 	monster.small_char = int("0xE780", 16)
 	monster.flavour_text = ["If you want anything for yourself in this world, then you've just got to take it."]
 	monster.description = 'Thugs are ruthless enforcers skilled at intimidation and violence. They work for money and have few scruples.'
+	monster.value = 350
 	return monster
 	
 def create_tribal_warrior(x, y):
@@ -11776,6 +11842,7 @@ def create_tribal_warrior(x, y):
 	monster.small_char = int("0xE781", 16)
 	monster.flavour_text = ["To battle and die alongside my tribe is the highest honour of all."]
 	monster.description = 'Tribal warriors live beyond civilization, most often subsisting on fishing and hunting. Each tribe acts in accordance with the wishes of its chief, who is the greatest or oldest warrior of the tribe or a tribe member blessed by the gods.'
+	monster.value = 200
 	return monster
 	
 def create_veteran(x, y):
@@ -11787,6 +11854,7 @@ def create_veteran(x, y):
 	monster.small_char = int("0xE782", 16)
 	monster.flavour_text = ["I have forgotten more battles than you've ever seen."]
 	monster.description = 'Veterans are professional fighters that take up arms for pay or to protect something they believe in or value. Their ranks include soldiers retired from long service and warriors who never served anyone but themselves.'
+	monster.value = 600
 	return monster
 	
 ###
@@ -12010,6 +12078,18 @@ def create_godfrey(x, y):
 	for i in range(random.randint(3, 5)):
 		func = random.choice(rare_magic_func_list)
 		monster.inventory.append(func())
+	return monster
+	
+def create_ingefred(x, y):
+	monster = create_veteran(x, y)
+	monster.name = 'Ingefred'
+	monster.proper_noun = True
+	monster.fighter.faction = 'neutral'
+	monster.fighter.true_faction = 'neutral'
+	monster.fighter.can_join = False
+	monster.chatty = True
+	monster.flavour_text = ["You there, come and speak to me about the North Warren Adventurer's Guild.", "There is not much more reliable in these troubled times than a strong arm with a sharp sword.", "Safety in numbers; truer words have never been spoken.", "Forget the empty prayers of cowardly priests, I can offer you real protection."]
+	monster.guildmaster = [create_guard(0, 0), create_guard(0, 0), create_acolyte(0, 0), create_acolyte(0, 0), create_thug(0, 0), create_knight(0, 0), create_veteran(0, 0), create_scout(0, 0)]
 	return monster
 	
 ###

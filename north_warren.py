@@ -5,6 +5,7 @@ actors = {'a': ('town_commoner', 'indoors'),
 'B': ('sunny', 'indoors'),
 'C': ('susie', 'indoors'), 
 'D': ('saint_barnabas', None),
+'E': ('ingefred', 'indoors')
 } #tuple with actor creation function and the tile to underneath
 
 items = None
@@ -35,7 +36,7 @@ vault_layouts = [
 '                       ######  ####+#           ####+##      #,,,,,,#           ',
 '                       #,,,,#                ######          ########           ',
 '           ######      #,c,,#           b    #,,,,#                   t         ',
-'           #,,,,#      #,,,,#                #,a,,#                             ',
+'           #,,,,#      #,,,,#                #,E,,#                             ',
 '           #,,a,#      #,,,,#                #,,,,#                             ',
 '     TT    #,,a,+      #,,,,+      t         #,,,,#                             ',
 '           #,,,,#      ######                ##++##       ####                  ',
