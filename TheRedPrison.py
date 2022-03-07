@@ -3320,6 +3320,14 @@ def merge_items(): #use this function to tidy up items on screen which should be
 					if item.name == item2.name and item != item2: #we've found a candidate for merging - two distinct items with same name on same square
 						item.quantity += item2.quantity
 						items.remove(item2)
+						
+def merge_items_in_inventory(target):
+	for item in target.inventory:
+		if item.quantity is not None:
+			for item2 in target.inventory:
+				if item.name == item2.name and item != item2: #we've found a candidate for merging - two distinct items with same name
+					item.quantity += item2.quantity
+					target.inventory.remove(item2)
 
 def is_blocked(x, y):
 
@@ -6298,18 +6306,21 @@ def merchant_buy(actor):
 		bought_item = actor.inventory[index]
 		
 		if bought_item.quantity is not None:
-			bought_quantity = text_input('How many do you want to buy?')
-			if not bought_quantity.isdigit():
-				message('That is not a valid number!')
-				return
+			if bought_item.quantity == 1:
+				bought_quantity = 1
 			else:
-				bought_quantity = int(bought_quantity)
-			if bought_quantity < 1:
-				message('That is not a valid number!')
-				return
-			elif bought_quantity > bought_item.quantity:
-				message('That is more than there is for sale!')
-				return
+				bought_quantity = text_input('How many do you want to buy?')
+				if not bought_quantity.isdigit():
+					message('That is not a valid number!')
+					return
+				else:
+					bought_quantity = int(bought_quantity)
+				if bought_quantity < 1:
+					message('That is not a valid number!')
+					return
+				elif bought_quantity > bought_item.quantity:
+					message('That is more than there is for sale!')
+					return
 		
 		if bought_item.quantity is None:
 			item_cost = round(bought_item.value * price_modifier, 2)
@@ -7746,7 +7757,7 @@ def player_ko(player, attacker):
 	global game_state
 	message('You were knocked unconscious by ' + attacker.name_for_printing() + '!', 'red')
 	player.fighter.hp = 0
-	obj = Condition(name='unconscious', duration=20, colour='red')
+	obj = Condition(name='unconscious', duration=40, colour='red')
 	player.fighter.conditions.append(obj)
 	obj.owner = player
  
@@ -12060,6 +12071,19 @@ def create_merchant(x, y):
 		monster.inventory.append(func())
 	func = random.choice(common_magic_func_list)
 	monster.inventory.append(func())
+	merge_items_in_inventory(monster)
+	### create follower to guard merchant in case of player aggression
+	(follower_x, follower_y) = random_unblocked_spot_near(x, y)
+	follower = create_gladiator(follower_x, follower_y)
+	follower.name = 'bodyguard'
+	follower.fighter.faction = 'neutral'
+	follower.fighter.true_faction = 'neutral'
+	follower_ai_component = CompanionMonster(monster, 2)
+	follower_ai_component.owner = follower
+	follower.ai = follower_ai_component
+	follower.fighter.can_join = False
+	monster.followers.append(follower)
+	actors.append(follower)
 	return monster
 	
 def create_godfrey(x, y):
@@ -12078,6 +12102,20 @@ def create_godfrey(x, y):
 	for i in range(random.randint(3, 5)):
 		func = random.choice(rare_magic_func_list)
 		monster.inventory.append(func())
+	merge_items_in_inventory(monster)
+	### create follower to guard merchant in case of player aggression
+	for i in range(2):
+		(follower_x, follower_y) = random_unblocked_spot_near(x, y)
+		follower = create_gladiator(follower_x, follower_y)
+		follower.name = 'bodyguard'
+		follower.fighter.faction = 'neutral'
+		follower.fighter.true_faction = 'neutral'
+		follower_ai_component = CompanionMonster(monster, 2)
+		follower_ai_component.owner = follower
+		follower.ai = follower_ai_component
+		follower.fighter.can_join = False
+		monster.followers.append(follower)
+		actors.append(follower)
 	return monster
 	
 def create_ingefred(x, y):

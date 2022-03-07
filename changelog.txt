@@ -1368,3 +1368,13 @@ Added code for price of hirelings to shift based on player charisma.
 Added stored value for each possible type of NPC.
 
 Added list of standard hirelings for Ingefred and placed her in a house in North Warren.
+
+7/3/22
+
+Added function for merging items in merchant inventories after creation.
+
+Tidied up buying items with multiple quantities but only in single amounts.
+
+Added gladiators as bodyguards for merchants (two for Godfrey) so players can't just murder them and steal their goods without a fight.
+
+Doubled time that player can remain unconscious to allow allies more time to revive them.
