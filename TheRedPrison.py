@@ -12050,7 +12050,7 @@ def create_saint_cormag(x, y):
 def create_merchant(x, y):
 	monster = create_noble(x, y)
 	monster.name = 'Merchant'
-	monster.proper_noun = True
+	monster.proper_noun = False
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
 	monster.fighter.can_join = False
@@ -14680,11 +14680,11 @@ def main_menu():
 			new_game()
 			if player is not None: play_game()
 		if choice == 1:	 #load last game
-			#try:
-			load_game()
-			#except:
-			#	simplemsgbox('No saved game to load',)
-			#	continue
+			try:
+				load_game()
+			except:
+				simplemsgbox('No saved game to load',)
+				continue
 			play_game()
 		elif choice == 2:  #quit
 			break
