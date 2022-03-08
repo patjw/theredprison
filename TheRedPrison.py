@@ -24,8 +24,7 @@ import cindemere
 import overworld
 import quests as master_quests
 import encounters
-#import dbhash
-#import anydbm
+import dbm.dumb
 import sys
 from PIL import Image
  
