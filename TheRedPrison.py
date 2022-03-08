@@ -12049,7 +12049,7 @@ def create_saint_cormag(x, y):
 
 def create_merchant(x, y):
 	monster = create_noble(x, y)
-	monster.name = 'Merchant'
+	monster.name = 'merchant'
 	monster.proper_noun = False
 	monster.fighter.faction = 'neutral'
 	monster.fighter.true_faction = 'neutral'
