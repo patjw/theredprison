@@ -1378,3 +1378,11 @@ Tidied up buying items with multiple quantities but only in single amounts.
 Added gladiators as bodyguards for merchants (two for Godfrey) so players can't just murder them and steal their goods without a fight.
 
 Doubled time that player can remain unconscious to allow allies more time to revive them.
+
+14/3/22
+
+Fixed horrible bug that meant that levels were always being regenerated which broke dungeon structures.
+
+8/5/22
+
+Fixed bug with monetary quest rewards.

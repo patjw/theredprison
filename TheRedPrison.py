@@ -4473,16 +4473,20 @@ def make_encounter(encounter, room):
 		
 def create_reward(reward):
 	if reward[-4:] == 'gold':
-		item = create_gold(quantity=int(reward.strip(' gold')))
-	elif reward in ['weapon', 'armour', 'misc', 'common', 'common_magic', 'rare_magic']:
-		func_name = random.choice(eval(reward + '_func_list'))
-		item = func_name()
+		reward_amount = reward.strip(' gold')
+		player.gold += int(reward_amount)
+		message('You have been given ' + reward_amount + ' gold!', colour = 'yellow')
+		#item = create_gold(quantity=int(reward.strip(' gold')))
 	else:
-		func_name = eval('create_' + reward)
-		item = func_name()
-	item.x = player.x
-	item.y = player.y
-	items.append(item)
+		if reward in ['weapon', 'armour', 'misc', 'common', 'common_magic', 'rare_magic']:
+			func_name = random.choice(eval(reward + '_func_list'))
+			item = func_name()
+		else:
+			func_name = eval('create_' + reward)
+			item = func_name()
+		item.x = player.x
+		item.y = player.y
+		items.append(item)
 	
 def get_attack_stats(target):
 	
@@ -12081,6 +12085,7 @@ def create_merchant(x, y):
 	follower_ai_component.owner = follower
 	follower.ai = follower_ai_component
 	follower.fighter.can_join = False
+	follower.chatty = False
 	monster.followers.append(follower)
 	actors.append(follower)
 	return monster
@@ -14466,7 +14471,7 @@ def change_level(links_to):
 		if branch.name == target_branch:
 			dungeon_branch = branch
 	dungeon_level = target_level
-	if os.path.exists('save/' + dungeon_branch.name + str(dungeon_level)):
+	if os.path.exists('save/' + dungeon_branch.name + str(dungeon_level) + '.dat'):
 		load_level()
 		for item in items:
 			if item.links_to is not None:
