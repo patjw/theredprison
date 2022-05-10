@@ -2790,7 +2790,7 @@ class Item:
 	def pick_up(self, monster):
 		#add to the player's inventory and remove from the map
 		if self.owner.name == 'gold coins':
-			self.owner.gold += self.owner.quantity
+			monster.gold += self.owner.quantity
 		else:
 			monster.inventory.append(self.owner)
 		items.remove(self.owner)
